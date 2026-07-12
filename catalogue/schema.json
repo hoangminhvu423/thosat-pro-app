@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mẫu catalogue ThợSắt Pro",
+  "type": "object",
+  "required": ["ma", "ten", "nhom", "phien_ban", "dau_vao", "hang_so", "chi_tiet"],
+  "properties": {
+    "ma": { "type": "string", "description": "Mã mẫu, vd LC-01, C-01" },
+    "ten": { "type": "string" },
+    "nhom": { "enum": ["lan_can", "mai_ton", "sen_hoa", "cua_sat", "khung_san", "mai_kinh", "cau_thang"] },
+    "phien_ban": { "type": "integer" },
+    "trang_thai": { "enum": ["nhap", "da_audit", "da_kiem_chung_cong_trinh"] },
+    "dau_vao": {
+      "type": "array",
+      "description": "Tham số người thợ nhập",
+      "items": { "type": "object",
+        "required": ["ten", "nhan", "don_vi"],
+        "properties": {
+          "ten": { "type": "string" }, "nhan": { "type": "string" },
+          "don_vi": { "enum": ["mm", "m", "phan_tram", "so_luong"] },
+          "mac_dinh": { "type": "number" }
+        } }
+    },
+    "hang_so": {
+      "type": "object",
+      "description": "Hằng số nghề. Giá trị TẠM phải có ghi chú cho_chot=true",
+      "additionalProperties": {
+        "type": "object",
+        "properties": { "gia_tri": { "type": "number" },
+          "don_vi": { "type": "string" }, "cho_chot": { "type": "boolean" } }
+      }
+    },
+    "bien": {
+      "type": "array",
+      "description": "Biến trung gian: tên + công thức theo dau_vao/hang_so/biến khác/kết quả chia_khoang (<ten>_n, <ten>_khe). Phân giải đệ quy, có chặn vòng lặp.",
+      "items": { "type": "object",
+        "required": ["ten", "cong_thuc"],
+        "properties": {
+          "ten": { "type": "string" }, "cong_thuc": { "type": "string" },
+          "ghi_chu": { "type": "string" }
+        } }
+    },
+    "chi_tiet": {
+      "type": "array",
+      "description": "Danh sách chi tiết cắt. 'dai' và 'sl' là biểu thức theo dau_vao/hang_so",
+      "items": { "type": "object",
+        "required": ["ten", "quy_cach", "sl", "dai"],
+        "properties": {
+          "ten": { "type": "string" }, "quy_cach": { "type": "string" },
+          "sl": { "type": "string" }, "dai": { "type": "string" },
+          "cat_vat": { "type": "string", "description": "vd: '45 độ 2 đầu cùng chiều', bỏ trống = cắt vuông" },
+          "ghi_chu": { "type": "string" }
+        } }
+    },
+    "chia_khoang": {
+      "type": "array",
+      "description": "Các phép chia đều: khai báo để engine tự tính n và khe",
+      "items": { "type": "object",
+        "properties": {
+          "ten": { "type": "string" }, "usable": { "type": "string" },
+          "be_rong_thanh": { "type": "string" }, "khe_toi_da": { "type": "string" } } }
+    },
+    "ket_qua_phu": {
+      "type": "array",
+      "description": "Biến cần hiện lên phiếu ngoài chi tiết cắt (số bậc, góc vát, cao bậc...)",
+      "items": { "type": "object",
+        "required": ["ten"],
+        "properties": {
+          "ten": { "type": "string" }, "nhan": { "type": "string" },
+          "don_vi": { "type": "string" } } }
+    },
+    "audit": { "type": "object",
+      "properties": { "ngay": {"type":"string"}, "nguoi": {"type":"string"},
+        "ket_qua": {"type":"string"} } }
+  }
+}

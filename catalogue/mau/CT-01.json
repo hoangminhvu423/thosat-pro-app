@@ -1,0 +1,42 @@
+{
+  "ma": "CT-01",
+  "ten": "Cầu thang thẳng 1 vế — limon kép, chia bậc tự động",
+  "nhom": "cau_thang",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "H", "nhan": "Cao tầng (đo SÀN tới SÀN, cả lớp lát)", "don_vi": "mm" },
+    { "ten": "L", "nhan": "Chiều dài mặt bằng vế thang", "don_vi": "mm" },
+    { "ten": "W", "nhan": "Bề rộng vế thang", "don_vi": "mm", "mac_dinh": 900 }
+  ],
+  "hang_so": {
+    "cao_bac_muon": { "gia_tri": 165, "don_vi": "mm", "cho_chot": false }
+  },
+  "bien": [
+    { "ten": "so_bac",   "cong_thuc": "bac_lo_ban(H, cao_bac_muon)" },
+    { "ten": "cao_bac",  "cong_thuc": "H / so_bac" },
+    { "ten": "so_mat",   "cong_thuc": "so_bac - 1" },
+    { "ten": "rong_bac", "cong_thuc": "L / so_mat" },
+    { "ten": "dai_limon","cong_thuc": "sqrt(H^2 + L^2)" },
+    { "ten": "goc_do",   "cong_thuc": "atan(H/L) * 180 / 3.14159265359" },
+    { "ten": "blondel",  "cong_thuc": "2*cao_bac + rong_bac" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "so_bac",   "nhan": "Số bậc (cổ bậc)", "don_vi": "bậc" },
+    { "ten": "cao_bac",  "nhan": "Cao bậc — chia ĐỀU trên tổng", "don_vi": "mm" },
+    { "ten": "rong_bac", "nhan": "Rộng mặt bậc", "don_vi": "mm" },
+    { "ten": "goc_do",   "nhan": "GÓC VÁT LIMON", "don_vi": "độ" },
+    { "ten": "blondel",  "nhan": "Nhịp bước 2h+b (chuẩn 600±30)", "don_vi": "mm" }
+  ],
+  "chi_tiet": [
+    { "ten": "Limon (dầm chéo) trái + phải", "quy_cach": "hộp 50x100 // TẠM - CHỜ CHỐT",
+      "sl": "2", "dai": "dai_limon",
+      "cat_vat": "vát theo góc dốc 2 đầu (xem GÓC VÁT trên phiếu)",
+      "ghi_chu": "Dài hơn 6m phải nối hoặc đặt cây 7.3m — tab Đề-xê sẽ báo" },
+    { "ten": "Mặt bậc (khung đỡ)", "quy_cach": "hộp 40x80 // TẠM - CHỜ CHỐT",
+      "sl": "so_mat", "dai": "W",
+      "ghi_chu": "Bậc trên cùng là sàn tầng nên số mặt bậc = số bậc − 1" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 với ENGINE.cauThang (4 test lõi + 3 test catalogue). Chia bậc ĐỀU tuyệt đối trên tổng H; chuẩn TCVN 13967:2024 (cao 150-180, mặt 250-300, Blondel 600±30) cài trong cảnh báo UI. Quy cách limon/mặt bậc TẠM; kiểu chữ L/U/xoắn chưa làm — chờ phản hồi beta." }
+}

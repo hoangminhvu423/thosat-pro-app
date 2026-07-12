@@ -1,0 +1,30 @@
+{
+  "ma": "C-01",
+  "ten": "Cửa sắt 2 cánh mở quay",
+  "nhom": "cua_sat",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Rộng ô chờ (lọt lòng tường)", "don_vi": "mm" },
+    { "ten": "H", "nhan": "Cao ô chờ", "don_vi": "mm" }
+  ],
+  "hang_so": {
+    "khung_bao_rong": { "gia_tri": 80, "don_vi": "mm", "cho_chot": true },
+    "canh_rong":      { "gia_tri": 50, "don_vi": "mm", "cho_chot": true },
+    "khe_canh_khung": { "gia_tri": 5,  "don_vi": "mm", "cho_chot": true },
+    "khe_giua_canh":  { "gia_tri": 5,  "don_vi": "mm", "cho_chot": true },
+    "khe_chan":       { "gia_tri": 10, "don_vi": "mm", "cho_chot": true }
+  },
+  "chi_tiet": [
+    { "ten": "Khung bao đứng", "quy_cach": "hộp 40x80", "sl": "2", "dai": "H" },
+    { "ten": "Khung bao ngang trên", "quy_cach": "hộp 40x80", "sl": "1",
+      "dai": "W - 2*khung_bao_rong",
+      "ghi_chu": "CHỜ CHỐT: khung ôm 3 mặt hay 4 mặt?" },
+    { "ten": "Thanh đứng cánh", "quy_cach": "hộp 25x50", "sl": "4",
+      "dai": "H - khung_bao_rong - khe_canh_khung - khe_chan" },
+    { "ten": "Thanh ngang cánh (trên/giữa/dưới)", "quy_cach": "hộp 25x50", "sl": "6",
+      "dai": "(W - 2*khung_bao_rong - 2*khe_canh_khung - khe_giua_canh)/2 - 2*canh_rong" }
+  ],
+  "audit": { "ngay": "11/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT checklist A/E qua bộ nạp + 3 bộ test số tính tay (chuẩn 2400x2200, lẻ 2437x2151, biên báo lỗi thay vì ra số âm). Khe cánh-khung trừ ĐỦ 2 phía ở bề ngang, 1 phía + khe chân ở bề cao (giả định khung ôm 3 mặt). GIỮ NHÃN NHÁP: 5 hằng số TẠM + câu hỏi khung ôm 3 hay 4 mặt CHƯA CHỐT — cấm dùng cắt thật." }
+}

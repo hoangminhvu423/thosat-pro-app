@@ -1,0 +1,34 @@
+{
+  "ma": "MT-02",
+  "ten": "Mái tôn 2 dốc chữ A",
+  "nhom": "mai_ton",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "D", "nhan": "Chiều ngang mái (chạy dài nóc)", "don_vi": "m" },
+    { "ten": "R", "nhan": "Khẩu độ tổng 2 mái", "don_vi": "m" },
+    { "ten": "doc", "nhan": "Độ dốc", "don_vi": "phan_tram", "mac_dinh": 10 },
+    { "ten": "du", "nhan": "Tôn dư đuôi mái", "don_vi": "m", "mac_dinh": 0.1 }
+  ],
+  "hang_so": {
+    "kho_ton":  { "gia_tri": 1.0,  "don_vi": "m", "cho_chot": true },
+    "kc_xa_go": { "gia_tri": 0.85, "don_vi": "m", "cho_chot": true },
+    "kc_keo":   { "gia_tri": 3,    "don_vi": "m", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "dai_doc",    "cong_thuc": "(R/2)*sqrt(1 + (doc/100)^2) + du" },
+    { "ten": "so_tam_ben", "cong_thuc": "ceil(D / kho_ton)" },
+    { "ten": "hang_ben",   "cong_thuc": "floor(dai_doc / kc_xa_go) + 1" },
+    { "ten": "so_vi",      "cong_thuc": "ceil(D / kc_keo) + 1" }
+  ],
+  "chi_tiet": [
+    { "ten": "Tôn lợp (2 bên)", "quy_cach": "tôn khổ 1m", "sl": "2*so_tam_ben", "dai": "dai_doc*1000" },
+    { "ten": "Tôn úp nóc", "quy_cach": "úp nóc", "sl": "1", "dai": "D*1000" },
+    { "ten": "Xà gồ (2 bên)", "quy_cach": "hộp 40x80", "sl": "2*hang_ben", "dai": "D*1000",
+      "ghi_chu": "Dài hơn 6m thì nối — tab Đề-xê sẽ tự báo" },
+    { "ten": "Cánh vì kèo chữ A", "quy_cach": "theo khẩu độ", "sl": "2*so_vi", "dai": "dai_doc*1000",
+      "ghi_chu": "Chưa gồm thanh giằng ngang của vì kèo — CHỜ CHỐT cách anh hay giằng" }
+  ],
+  "audit": { "ngay": "12/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 với ENGINE.maiTon2Doc qua 3 bộ test. Hằng số khổ tôn/xà gồ/kèo TẠM — giữ nhãn nháp." }
+}

@@ -1,0 +1,50 @@
+{
+  "ma": "CT-03",
+  "ten": "Cầu thang giật cấp chiếu nghỉ (chữ L) — chia bậc lỗ ban",
+  "nhom": "cau_thang",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "H", "nhan": "Cao tầng (đo SÀN tới SÀN)", "don_vi": "mm" },
+    { "ten": "L1", "nhan": "Dài mặt bằng VẾ 1 (không kể chiếu nghỉ)", "don_vi": "mm" },
+    { "ten": "L2", "nhan": "Dài mặt bằng VẾ 2 (không kể chiếu nghỉ)", "don_vi": "mm" },
+    { "ten": "W", "nhan": "Bề rộng vế = cạnh chiếu nghỉ", "don_vi": "mm", "mac_dinh": 900 }
+  ],
+  "hang_so": {
+    "cao_bac_muon": { "gia_tri": 165, "don_vi": "mm", "cho_chot": false }
+  },
+  "bien": [
+    { "ten": "so_bac",  "cong_thuc": "bac_lo_ban(H, cao_bac_muon)" },
+    { "ten": "cao_bac", "cong_thuc": "H / so_bac" },
+    { "ten": "bac_ve1", "cong_thuc": "max(2, round(so_bac * L1 / (L1 + L2)))" },
+    { "ten": "bac_ve2", "cong_thuc": "so_bac - bac_ve1" },
+    { "ten": "mat_ve1", "cong_thuc": "bac_ve1 - 1" },
+    { "ten": "mat_ve2", "cong_thuc": "so_bac - bac_ve1 - 1" },
+    { "ten": "rong_bac1", "cong_thuc": "L1 / mat_ve1" },
+    { "ten": "rong_bac2", "cong_thuc": "L2 / mat_ve2" },
+    { "ten": "goc_do1", "cong_thuc": "atan(bac_ve1*cao_bac/L1) * 180/3.14159265359" },
+    { "ten": "goc_do2", "cong_thuc": "atan(bac_ve2*cao_bac/L2) * 180/3.14159265359" },
+    { "ten": "limon1", "cong_thuc": "sqrt((bac_ve1*cao_bac)^2 + L1^2)" },
+    { "ten": "limon2", "cong_thuc": "sqrt((bac_ve2*cao_bac)^2 + L2^2)" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "so_bac",   "nhan": "Tổng bậc (chiếu nghỉ = 1 bậc)", "don_vi": "bậc" },
+    { "ten": "cao_bac",  "nhan": "Cao bậc — chia ĐỀU trên tổng", "don_vi": "mm" },
+    { "ten": "bac_ve1",  "nhan": "Bậc vế 1 / vế 2 xem dưới", "don_vi": "bậc" },
+    { "ten": "bac_ve2",  "nhan": "Bậc vế 2", "don_vi": "bậc" },
+    { "ten": "goc_do1",  "nhan": "GÓC VÁT LIMON VẾ 1", "don_vi": "độ" },
+    { "ten": "goc_do2",  "nhan": "GÓC VÁT LIMON VẾ 2", "don_vi": "độ" }
+  ],
+  "chi_tiet": [
+    { "ten": "Limon vế 1", "quy_cach": "hộp 50x100 // TẠM", "sl": "2", "dai": "limon1",
+      "cat_vat": "vát theo góc vế 1" },
+    { "ten": "Limon vế 2", "quy_cach": "hộp 50x100 // TẠM", "sl": "2", "dai": "limon2",
+      "cat_vat": "vát theo góc vế 2" },
+    { "ten": "Mặt bậc vế 1", "quy_cach": "hộp 40x80 // TẠM", "sl": "mat_ve1", "dai": "W" },
+    { "ten": "Mặt bậc vế 2", "quy_cach": "hộp 40x80 // TẠM", "sl": "mat_ve2", "dai": "W" },
+    { "ten": "Khung chiếu nghỉ (4 cạnh)", "quy_cach": "hộp 50x100 // TẠM", "sl": "4", "dai": "W",
+      "ghi_chu": "QUY ƯỚC TẠM - CHỜ THỢ CHỐT: chiếu nghỉ ĐẾM LÀ 1 BẬC trong lỗ ban; bậc vế 1 tự chia theo tỉ lệ L1/L2, muốn khác thì đổi L1/L2" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 ENGINE.cauThangChieuNghi (3 test lõi + 3 catalogue). Quy ước chiếu-nghỉ-là-1-bậc ghi rõ TẠM chờ thợ beta xác nhận. Quy cách limon/mặt bậc TẠM." }
+}

@@ -1,0 +1,29 @@
+{
+  "ma": "CG-01",
+  "ten": "Cổng / hàng rào nan đứng bước cố định (từ bản vẽ Cổng.dwg 12/07)",
+  "nhom": "cua_sat",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Chiều rộng dàn nan", "don_vi": "mm", "mac_dinh": 7100 },
+    { "ten": "H_nan", "nhan": "Chiều cao nan", "don_vi": "mm", "mac_dinh": 4766 }
+  ],
+  "hang_so": {
+    "ban_nan":  { "gia_tri": 100, "don_vi": "mm", "cho_chot": false },
+    "buoc_nan": { "gia_tri": 200, "don_vi": "mm", "cho_chot": false }
+  },
+  "bien": [
+    { "ten": "so_nan", "cong_thuc": "max(0, floor((W - ban_nan) / buoc_nan) + 1)" },
+    { "ten": "khe_nan", "cong_thuc": "buoc_nan - ban_nan" }
+  ],
+  "chi_tiet": [
+    { "ten": "Nan đứng", "quy_cach": "hộp 100x50 // TẠM - CHỜ CHỐT bề dày",
+      "sl": "so_nan", "dai": "H_nan",
+      "ghi_chu": "Nan bám 2 mép (nan cả 2 biên), bước tâm-tâm 200mm, khe 100mm — đo từ bản vẽ" },
+    { "ten": "Thanh ngang trên + dưới", "quy_cach": "CHỜ CHỐT (bản vẽ chưa đọc được phần khung)",
+      "sl": "2", "dai": "W",
+      "ghi_chu": "Dài hơn 6m phải nối — hỏi chủ xưởng điểm nối" }
+  ],
+  "audit": { "ngay": "12/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT test 3 bộ. NGUỒN SỐ THẬT: đo hình học từ bản vẽ Cổng.dwg (36 nan × 4766, bản 100, bước 200 — khớp dim 7100). Khung/trụ/quy cách hộp CHƯA CHỐT — giữ nhãn nháp, cấm cắt thật phần khung." }
+}

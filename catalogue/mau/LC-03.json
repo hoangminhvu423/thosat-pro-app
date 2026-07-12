@@ -1,0 +1,47 @@
+{
+  "ma": "LC-03",
+  "ten": "Lan can chữ L (ban công góc) — 2 đoạn, cột góc chung",
+  "nhom": "lan_can",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "L1", "nhan": "Chiều dài đoạn 1", "don_vi": "m" },
+    { "ten": "L2", "nhan": "Chiều dài đoạn 2", "don_vi": "m" },
+    { "ten": "H", "nhan": "Chiều cao lan can", "don_vi": "m", "mac_dinh": 0.9 }
+  ],
+  "hang_so": {
+    "kc_cot_max":  { "gia_tri": 2200, "don_vi": "mm", "cho_chot": true },
+    "w_cot":       { "gia_tri": 50,   "don_vi": "mm", "cho_chot": true },
+    "w_do":        { "gia_tri": 14,   "don_vi": "mm", "cho_chot": true },
+    "khe_do_max":  { "gia_tri": 100,  "don_vi": "mm", "cho_chot": true },
+    "cao_tay_vin": { "gia_tri": 80,   "don_vi": "mm", "cho_chot": true },
+    "cao_thanh_de":{ "gia_tri": 50,   "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "kh1", "cong_thuc": "max(1, ceil(L1*1000 / kc_cot_max))" },
+    { "ten": "kh2", "cong_thuc": "max(1, ceil(L2*1000 / kc_cot_max))" },
+    { "ten": "so_cot", "cong_thuc": "kh1 + kh2 + 1" },
+    { "ten": "khoang1", "cong_thuc": "(L1*1000 - (kh1+1)*w_cot) / kh1" },
+    { "ten": "khoang2", "cong_thuc": "(L2*1000 - (kh2+1)*w_cot) / kh2" },
+    { "ten": "dai_do", "cong_thuc": "H*1000 - cao_tay_vin - cao_thanh_de" }
+  ],
+  "chia_khoang": [
+    { "ten": "do1", "usable": "khoang1", "be_rong_thanh": "w_do", "khe_toi_da": "khe_do_max" },
+    { "ten": "do2", "usable": "khoang2", "be_rong_thanh": "w_do", "khe_toi_da": "khe_do_max" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "so_cot", "nhan": "Tổng cột (cột góc dùng chung)", "don_vi": "cột" }
+  ],
+  "chi_tiet": [
+    { "ten": "Cột trụ", "quy_cach": "hộp 50x50 // TẠM", "sl": "so_cot", "dai": "H*1000" },
+    { "ten": "Tay vịn + đế đoạn 1", "quy_cach": "theo mẫu", "sl": "2", "dai": "L1*1000",
+      "cat_vat": "đầu góc vát 45° ghép vuông" },
+    { "ten": "Tay vịn + đế đoạn 2", "quy_cach": "theo mẫu", "sl": "2", "dai": "L2*1000",
+      "cat_vat": "đầu góc vát 45° ghép vuông" },
+    { "ten": "Đố đoạn 1", "quy_cach": "hộp 14x14 // TẠM", "sl": "do1_n * kh1", "dai": "dai_do" },
+    { "ten": "Đố đoạn 2", "quy_cach": "hộp 14x14 // TẠM", "sl": "do2_n * kh2", "dai": "dai_do",
+      "ghi_chu": "Cột góc tính chung 2 đoạn (đã trừ trùng); khe chia đều riêng từng khoang" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — 3 bộ test số tính tay (khoang lọt lòng trừ đủ cột 2 đầu từng đoạn, cột góc chỉ đếm 1 lần). Hằng số TẠM như LC-01. Ghép góc giả định vát 45° — thợ hàn đối đầu thì báo để bỏ ghi chú." }
+}
