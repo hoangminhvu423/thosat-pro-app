@@ -37,6 +37,12 @@
   function batBuocDuong(giaTri, ten) {
     if (!(giaTri > 0)) throw new Error('Thiếu hoặc sai ' + ten);
   }
+  function batBuocKhongAm(giaTri, ten) {
+    if (!(giaTri >= 0)) throw new Error('Sai ' + ten + ' (bỏ trống hoặc âm)');
+  }
+  // Chặn NaN lan tràn: mọi tham số phụ phải là số dương/không âm rõ ràng
+  function kiemDuong(ds) { ds.forEach(function (p) { batBuocDuong(p[0], p[1]); }); }
+  function kiemKhongAm(ds) { ds.forEach(function (p) { batBuocKhongAm(p[0], p[1]); }); }
 
   /* ==================== LAN CAN ==================== */
 
@@ -44,6 +50,8 @@
   function lanCanThang({ L, H, kcCot = 2200, wCot = 50, wDo = 14, kheMax = 100, tren = 80, duoi = 50 }) {
     batBuocDuong(L, 'chiều dài lan can');
     batBuocDuong(H, 'chiều cao lan can');
+    kiemDuong([[kcCot, 'khoảng cách cột'], [wCot, 'bề rộng cột'], [wDo, 'bề rộng đố'], [kheMax, 'khe hở tối đa']]);
+    kiemKhongAm([[tren, 'tay vịn + thanh trên'], [duoi, 'thanh đế dưới']]);
     const soKhoang = Math.max(1, Math.ceil(L / kcCot));
     const soCot = soKhoang + 1;
     const khoangTT = (L - soCot * wCot) / soKhoang; // lọt lòng mỗi khoang
@@ -71,6 +79,8 @@
     batBuocDuong(Lng, 'chiều ngang mặt bằng');
     batBuocDuong(Hc, 'chiều cao lên');
     batBuocDuong(H, 'chiều cao lan can');
+    kiemDuong([[kcCot, 'khoảng cách cột'], [wCot, 'bề rộng cột'], [wDo, 'bề rộng đố'], [kheMax, 'khe hở tối đa']]);
+    kiemKhongAm([[tren, 'tay vịn + thanh trên'], [duoi, 'thanh đế dưới']]);
     const Lx = Math.sqrt(Lng * Lng + Hc * Hc); // chiều dài xiên tay vịn
     const aRad = Math.atan(Hc / Lng);           // góc dốc
     const soKhoang = Math.max(1, Math.ceil(Lx / kcCot));
@@ -104,6 +114,8 @@
   function maiTon1Doc({ D, R, doc, du = 0.1, kho = 1.0, kcXG = 0.85, kcKeo = 3, vitM2 = 8 }) {
     batBuocDuong(D, 'chiều ngang mái');
     batBuocDuong(R, 'chiều sâu mái');
+    kiemDuong([[kho, 'khổ tôn'], [kcXG, 'khoảng cách xà gồ'], [kcKeo, 'khoảng cách kèo']]);
+    kiemKhongAm([[doc, 'độ dốc'], [du, 'tôn dư'], [vitM2, 'vít/m²']]);
     const heSoDoc = doc / 100;
     const daiDoc = R * Math.sqrt(1 + heSoDoc * heSoDoc) + du;
     const soTam = Math.ceil(D / kho);
@@ -121,6 +133,8 @@
   function maiTon2Doc({ D, R, doc, du = 0.1, kho = 1.0, kcXG = 0.85, kcKeo = 3, vitM2 = 8 }) {
     batBuocDuong(D, 'chiều ngang mái');
     batBuocDuong(R, 'khẩu độ mái');
+    kiemDuong([[kho, 'khổ tôn'], [kcXG, 'khoảng cách xà gồ'], [kcKeo, 'khoảng cách kèo']]);
+    kiemKhongAm([[doc, 'độ dốc'], [du, 'tôn dư'], [vitM2, 'vít/m²']]);
     const heSoDoc = doc / 100;
     const sauBen = R / 2;
     const daiDoc = sauBen * Math.sqrt(1 + heSoDoc * heSoDoc) + du;
@@ -140,6 +154,8 @@
     batBuocDuong(D, 'chiều ngang mái');
     batBuocDuong(R, 'khẩu độ mái');
     batBuocDuong(f, 'chiều cao vồng vòm');
+    kiemDuong([[kho, 'khổ tôn'], [kcXG, 'khoảng cách xà gồ'], [kcKeo, 'khoảng cách kèo']]);
+    kiemKhongAm([[du, 'tôn dư'], [vitM2, 'vít/m²']]);
     const banKinhUon = (f * f + (R / 2) * (R / 2)) / (2 * f); // bán kính uốn kèo
     const theta = Math.asin(Math.min(1, (R / 2) / banKinhUon));
     const cung = 2 * banKinhUon * theta;
@@ -162,6 +178,7 @@
   function khungBao({ W, H, khung, soBo }) {
     batBuocDuong(W, 'chiều rộng ô cửa');
     batBuocDuong(H, 'chiều cao ô cửa');
+    batBuocKhongAm(khung, 'bề khung bao');
     const tW = W - 2 * khung, tH = H - 2 * khung; // lọt lòng trong khung
     if (tW <= 0 || tH <= 0) throw new Error('Khung bao quá dày so với ô cửa');
     return { tW, tH, metKhung: 2 * (W + H) / 1000 * soBo };
@@ -171,6 +188,7 @@
   function senHoaNan({ W, H, khung = 20, soBo = 1, wNan = 14, kheMax = 100, huong = 'dung' }) {
     soBo = Math.max(1, soBo);
     const { tW, tH, metKhung } = khungBao({ W, H, khung, soBo });
+    kiemDuong([[wNan, 'bề rộng nan'], [kheMax, 'khe hở tối đa']]);
     const usable = (huong === 'dung') ? tW : tH;
     const daiNan = (huong === 'dung') ? tH : tW;
     const cd = chiaDeu(usable, wNan, kheMax);
@@ -189,6 +207,7 @@
   function senHoaCaro({ W, H, khung = 20, soBo = 1, wNan = 14, kheMax = 100 }) {
     soBo = Math.max(1, soBo);
     const { tW, tH, metKhung } = khungBao({ W, H, khung, soBo });
+    kiemDuong([[wNan, 'bề rộng nan'], [kheMax, 'khe hở tối đa']]);
     const cd = chiaDeu(tW, wNan, kheMax); // nan đứng
     const cn = chiaDeu(tH, wNan, kheMax); // nan ngang
     const metNanDung = cd.n * tH / 1000 * soBo, metNanNgang = cn.n * tW / 1000 * soBo;
@@ -207,6 +226,7 @@
   function senHoaCheo({ W, H, khung = 20, soBo = 1, wNan = 14, kheMax = 100 }) {
     soBo = Math.max(1, soBo);
     const { tW, tH, metKhung } = khungBao({ W, H, khung, soBo });
+    kiemDuong([[wNan, 'bề rộng nan'], [kheMax, 'khe hở tối đa']]);
     const buoc = kheMax + wNan; // bước tâm-tâm đo vuông góc giữa các nan
     const SQ2 = Math.SQRT2;
     const demTheoDai = {};
@@ -235,6 +255,7 @@
   function senHoaModule({ W, H, khung = 20, soBo = 1, hoaA = 200, hoaB = 200, kheHoaMax = 60 }) {
     soBo = Math.max(1, soBo);
     const { tW, tH, metKhung } = khungBao({ W, H, khung, soBo });
+    kiemDuong([[hoaA, 'hoa rộng'], [hoaB, 'hoa cao'], [kheHoaMax, 'khe hoa tối đa']]);
     if (hoaA > tW || hoaB > tH) throw new Error('Bông hoa lớn hơn lọt lòng khung');
     const cot = Math.max(1, Math.floor((tW + kheHoaMax) / (hoaA + kheHoaMax)));
     const hang = Math.max(1, Math.floor((tH + kheHoaMax) / (hoaB + kheHoaMax)));
@@ -282,6 +303,7 @@
     batBuocDuong(H, 'chiều cao tầng (đo sàn tới sàn)');
     batBuocDuong(L, 'chiều dài mặt bằng vế thang');
     batBuocDuong(W, 'bề rộng vế thang');
+    batBuocDuong(caoBacMuon, 'cao bậc mong muốn');
     var soBac = loBan ? chonSoBacLoBan(H, caoBacMuon)
                       : Math.max(3, Math.round(H / caoBacMuon)); // số cổ bậc
     var caoBac = H / soBac;                               // chia đều tuyệt đối
@@ -327,6 +349,7 @@
     batBuocDuong(Dngoai, 'đường kính ngoài thang');
     batBuocDuong(gocXoayTong, 'tổng góc xoay');
     if (dCot >= Dngoai) throw new Error('Cột tâm to hơn cả thang');
+    kiemDuong([[dCot, 'đường kính cột tâm'], [caoBacMuon, 'cao bậc mong muốn']]);
     var soBac = loBan ? chonSoBacLoBan(H, caoBacMuon)
                       : Math.max(3, Math.round(H / caoBacMuon));
     var caoBac = H / soBac;
@@ -377,6 +400,7 @@
     batBuocDuong(H, 'chiều cao tầng (đo sàn tới sàn)');
     batBuocDuong(L1, 'chiều dài mặt bằng vế 1');
     batBuocDuong(L2, 'chiều dài mặt bằng vế 2');
+    kiemDuong([[W, 'bề rộng vế'], [caoBacMuon, 'cao bậc mong muốn']]);
     var soBac = loBan ? chonSoBacLoBan(H, caoBacMuon)
                       : Math.max(4, Math.round(H / caoBacMuon));
     var caoBac = H / soBac;

@@ -53,7 +53,7 @@
     align-items:center; justify-content:center; overflow:hidden; white-space:nowrap;}
   .cay-bar .de{background:#C9D2DA;}
   .cay-bar .hao{background:var(--thep);}
-  .nut{width:100%; padding:14px; background:var(--cam); color:#fff; border:0; border-radius:10px;
+  .nut{width:100%; padding:14px; background:#D9480F; color:#fff; border:0; border-radius:10px;
     font-family:'Archivo',sans-serif; font-weight:900; font-size:16px; text-transform:uppercase;
     letter-spacing:.5px; cursor:pointer;}
   .nut:active{transform:scale(.98);}
@@ -65,7 +65,7 @@
   .phieu .phu{font-size:12px; color:var(--xam); margin-bottom:10px;}
   .kq-luoi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
   .kq{background:#fff; border:1px solid var(--ticket-vien); border-radius:8px; padding:8px 10px;}
-  .kq .nhan{font-size:11px; color:var(--xam); text-transform:uppercase; letter-spacing:.4px;}
+  .kq .nhan{font-size:12px; color:var(--xam); text-transform:uppercase; letter-spacing:.4px;}
   .kq .so{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:17px; color:var(--thep);}
   .kq .so em{font-style:normal; font-size:12px; color:var(--xam); font-weight:500;}
   .kq.nb .so{color:var(--cam);}
@@ -78,10 +78,11 @@
   .sodo{width:100%; margin:8px 0; display:block;}
   .copy{margin-top:10px; width:100%; padding:14px; background:var(--thep); color:#fff; border:0;
     border-radius:8px; font-weight:700; font-size:14px; cursor:pointer;}
-  .copy.anh{background:var(--cam);}
+  .copy.anh{background:#D9480F;}
   .cb-do{color:#C0392B; font-weight:700;}
-  .qc-sel{font-size:12px; max-width:118px; padding:5px 2px; border:1px solid var(--vien);
-    border-radius:6px; background:#FAFBFC; font-family:inherit; color:var(--muc);}
+  .qc-sel{font-size:15px; max-width:128px; min-height:44px; padding:10px 4px;
+    border:1px solid var(--vien); border-radius:6px; background:#FAFBFC;
+    font-family:inherit; color:var(--muc);}
   .mau-luoi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;}
   .mau-o{border:1.5px solid var(--vien); border-radius:8px; padding:6px 6px 8px;
     cursor:pointer; background:#fff;}
@@ -319,10 +320,10 @@
     <div id="cat_form"></div>
     <div class="hang">
       <div class="o"><label>Vật liệu</label>
-        <select id="cat_vatlieu"><option value="sat" selected>Sắt (sơn tĩnh điện)</option>
+        <select id="cat_vatlieu" onchange="if(kqCatalogue)tinhCatalogue()"><option value="sat" selected>Sắt (sơn tĩnh điện)</option>
         <option value="inox304">Inox 304</option><option value="inox201">Inox 201</option></select></div>
       <div class="o"><label>Độ dày hộp (mm)</label>
-        <select id="cat_day"><option>0.8</option><option>1.0</option><option selected>1.2</option>
+        <select id="cat_day" onchange="if(kqCatalogue)tinhCatalogue()"><option>0.8</option><option>1.0</option><option selected>1.2</option>
         <option>1.4</option><option>1.5</option><option>1.8</option><option>2.0</option><option>2.5</option><option>3.0</option></select></div>
     </div>
     <details style="margin-bottom:10px">
@@ -364,12 +365,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=19"></script>
-<script src="dexe.js?v=19"></script>
-<script src="catalogue.js?v=19"></script>
-<script src="phieu-anh.js?v=19"></script>
-<script src="minh-hoa.js?v=19"></script>
-<script src="vat-tu.js?v=19"></script>
+<script src="engine.js?v=20"></script>
+<script src="dexe.js?v=20"></script>
+<script src="catalogue.js?v=20"></script>
+<script src="phieu-anh.js?v=20"></script>
+<script src="minh-hoa.js?v=20"></script>
+<script src="vat-tu.js?v=20"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -420,6 +421,7 @@ function xoaLichSu(){
   veLichSu();
 }
 function mm(v){return Math.round(v).toLocaleString('vi-VN')+' mm';}
+function cuonToi(id){setTimeout(()=>$(id).scrollIntoView({block:'start'}), 60);}
 function m2(v){return v.toFixed(2).replace('.',',');}
 function doGoc(d){return d.toFixed(1).replace('.',',');}
 function oKQ(divId, ds){
@@ -508,13 +510,14 @@ function tinhLanCan(){
     '<span class="cb-do">⚠ Khe '+kq.khe+'mm VƯỢT chuẩn an toàn 100mm (QCXDVN 05:2008) — trẻ em chui lọt</span>');
   const caoLc = (kieu==='thang') ? num('lc_H')*1000 : num('lc_Hx')*1000;
   if(caoLc && caoLc < 1100) cbLc.push(
-    'ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(caoLc)+'mm)');
+    '<span style="color:#B45309;font-weight:700">ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(caoLc)+'mm)</span>');
   if(cbLc.length){
     $('lc_ghichu').innerHTML = cbLc.join('<br>')+'<br>'+$('lc_ghichu').innerHTML;
     copy += '\n'+cbLc.map(c=>c.replace(/<[^>]+>/g,'')).join('\n');
   }
   $('lc_phu').textContent = phu;
   $('lc_phieu').classList.add('hien');
+  cuonToi('lc_phieu');
   vanBanCopy.lc = copy;
   luuLichSu('lc', phu, copy);
 }
@@ -601,6 +604,7 @@ function tinhMaiTon(){
   $('mt_ghichu').innerHTML = ghichu;
   $('mt_phu').textContent = phu;
   $('mt_phieu').classList.add('hien');
+  cuonToi('mt_phieu');
   vanBanCopy.mt = copy;
   luuLichSu('mt', phu, copy);
 }
@@ -704,6 +708,7 @@ function tinhSenHoa(){
   $('sh_ghichu').innerHTML = ghichu;
   $('sh_phu').textContent = phu;
   $('sh_phieu').classList.add('hien');
+  cuonToi('sh_phieu');
   vanBanCopy.sh = copy;
   luuLichSu('sh', phu, copy);
 }
@@ -775,6 +780,7 @@ Cắt như sau:
   }).join('\n');
 
   $('dx_phieu').classList.add('hien');
+  cuonToi('dx_phieu');
   luuLichSu('dx', `Tối ưu ${kq.tongThanhCat} thanh → ${kq.tongCayMoi} cây mới`, vanBanCopy.dx);
 }
 
@@ -912,7 +918,10 @@ function tinhCatalogue(){
       canhBaoChuan.push(ct.cung === 'Sinh'
         ? '✅ Số bậc rơi cung <b>SINH</b> — đạt thước lỗ ban'
         : '<span class="cb-do">⚠ Số bậc rơi cung '+ct.cung.toUpperCase()+' (thước lỗ ban)</span>');
-    }catch(e){}
+    }catch(e){
+      // Không được nuốt im lặng: thợ phải biết phiếu này CHƯA được soát chuẩn
+      canhBaoChuan.push('<span class="cb-do">⚠ Chưa kiểm tra được chuẩn an toàn cho bộ số này — '+e.message+'</span>');
+    }
   }
   // CD-01: sinh mốc đánh dấu thước — mép TRÁI từng thanh, tính từ khe THÔ
   // (không dồn sai số làm tròn khi cộng chuỗi)
@@ -933,7 +942,7 @@ function tinhCatalogue(){
         '<span class="cb-do">⚠ Khe '+k.khe+'mm VƯỢT chuẩn an toàn 100mm (QCXDVN 05:2008) — trẻ em chui lọt</span>');
     });
     if(nhap.H && nhap.H*1000 < 1100) canhBaoChuan.push(
-      'ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(nhap.H*1000)+'mm)');
+      '<span style="color:#B45309;font-weight:700">ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(nhap.H*1000)+'mm)</span>');
   }
   $('cat_bang').innerHTML = kq.chiTiet.map((c,i)=>
     `<tr><td>${c.ten}${c.cat_vat?' <small>('+c.cat_vat+')</small>':''}</td>`+
@@ -946,6 +955,7 @@ function tinhCatalogue(){
   $('cat_phu').textContent = mauDangChon.ten+' — '+
     mauDangChon.dauVao.map(dv=>dv.nhan+' '+nhap[dv.ten]).join(', ');
   $('cat_phieu').classList.add('hien');
+  cuonToi('cat_phieu');
 
   vanBanCopy.cat = `PHIẾU CẮT ${mauDangChon.ma} — ${mauDangChon.ten}\n`+
     mauDangChon.dauVao.map(dv=>`${dv.nhan}: ${nhap[dv.ten]}`).join(' | ')+'\n'+

@@ -137,6 +137,12 @@
         if (!(gt > 0)) throw new Error('"' + (dv.nhan || dv.ten) + '" phải > 0');
       });
 
+      // Hằng số thợ sửa tay (ghi đè qua giaTriNhap) cũng phải > 0 — chặn NaN
+      Object.keys(giaTriNhap).forEach(function (k) {
+        if (mau.hang_so[k] && !(giaTriNhap[k] > 0))
+          throw new Error('Hằng số "' + k + '" sửa tay phải > 0');
+      });
+
       var dnBien = {};
       (mau.bien || []).forEach(function (b) { dnBien[b.ten] = b.cong_thuc; });
       var dnChia = {};
@@ -155,10 +161,16 @@
           var m = ten.match(/^(.+)_(n|khe)$/);
           if (m && dnChia[m[1]]) {
             var ck = dnChia[m[1]];
-            var cd = ENGINE.chiaDeu(
-              tinhBieuThuc(ck.usable, layBien),
-              tinhBieuThuc(ck.be_rong_thanh, layBien),
-              tinhBieuThuc(ck.khe_toi_da, layBien));
+            var usable = tinhBieuThuc(ck.usable, layBien);
+            var rongThanh = tinhBieuThuc(ck.be_rong_thanh, layBien);
+            var kheToiDa = tinhBieuThuc(ck.khe_toi_da, layBien);
+            // Chặn khe ÂM lên phiếu: khoang chia phải dương, thanh/khe phải dương
+            if (!(rongThanh > 0) || !(kheToiDa > 0))
+              throw new Error('Mẫu ' + mau.ma + ': bề thanh/khe tối đa của "' + m[1] + '" phải > 0');
+            if (!(usable > 0))
+              throw new Error('Khoang chia "' + m[1] + '" ra ' + Math.round(usable) +
+                'mm — kích thước nhập quá nhỏ so với mẫu');
+            var cd = ENGINE.chiaDeu(usable, rongThanh, kheToiDa);
             cache[m[1] + '_n'] = cd.n;
             cache[m[1] + '_khe'] = cd.khe;
             gt = cache[ten];
