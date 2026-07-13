@@ -83,6 +83,11 @@
   .qc-sel{font-size:15px; max-width:128px; min-height:44px; padding:10px 4px;
     border:1px solid var(--vien); border-radius:6px; background:#FAFBFC;
     font-family:inherit; color:var(--muc);}
+  .chip-loc{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .chip{border:1.5px solid var(--vien); background:#fff; color:var(--xam);
+    border-radius:22px; padding:11px 15px; font-size:13px; font-weight:700;
+    font-family:'Archivo',sans-serif; cursor:pointer; min-height:44px;}
+  .chip.on{background:#D9480F; border-color:#D9480F; color:#fff;}
   .mau-luoi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;}
   .mau-o{border:1.5px solid var(--vien); border-radius:8px; padding:6px 6px 8px;
     cursor:pointer; background:#fff;}
@@ -314,6 +319,7 @@
 <div class="man" id="man4">
   <div class="the">
     <h2>Chọn mẫu catalogue</h2>
+    <div class="chip-loc" id="cat_loc"></div>
     <div class="mau-luoi" id="cat_luoi"></div>
     <div class="o"><select id="cat_chon" onchange="doiMauCat()" style="display:none"></select></div>
     <svg class="sodo" id="cat_svg" viewBox="0 0 340 150"></svg>
@@ -365,12 +371,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=20"></script>
-<script src="dexe.js?v=20"></script>
-<script src="catalogue.js?v=20"></script>
-<script src="phieu-anh.js?v=20"></script>
-<script src="minh-hoa.js?v=20"></script>
-<script src="vat-tu.js?v=20"></script>
+<script src="engine.js?v=22"></script>
+<script src="dexe.js?v=22"></script>
+<script src="catalogue.js?v=22"></script>
+<script src="phieu-anh.js?v=22"></script>
+<script src="minh-hoa.js?v=22"></script>
+<script src="vat-tu.js?v=22"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -806,14 +812,28 @@ async function napDanhSachMau(){
 }
 
 // Lưới hình chọn mẫu — bấm hình là chọn, như lật catalogue giấy
+const NHOM_TEN = {tatca:'Tất cả', lan_can:'Lan can', cau_thang:'Cầu thang',
+  mai_ton:'Mái', mai_kinh:'Mái kính', cua_sat:'Cửa · Cổng', sen_hoa:'Trang trí · Bông'};
+let locNhom = 'tatca';
 function veLuoiMau(){
-  $('cat_luoi').innerHTML = Object.values(dsMau).map(m=>
+  // Chip lọc: theo thứ tự cố định trong NHOM_TEN, chỉ hiện nhóm thực có mẫu
+  const coMau = new Set(Object.values(dsMau).map(m=>m.nhom));
+  const nhomCo = Object.keys(NHOM_TEN).filter(n=> n!=='tatca' && coMau.has(n));
+  $('cat_loc').innerHTML = ['tatca', ...nhomCo].map(n=>
+    `<button class="chip ${n===locNhom?'on':''}" onclick="locMau('${n}')">${NHOM_TEN[n]||n}</button>`
+  ).join('');
+  const ds = Object.values(dsMau).filter(m=> locNhom==='tatca' || m.nhom===locNhom);
+  $('cat_luoi').innerHTML = ds.map(m=>
     `<div class="mau-o" id="mauo_${m.ma}" onclick="chonMauLuoi('${m.ma}')">`+
     `<svg viewBox="0 0 340 140"></svg><div class="ten">${m.ma} — ${m.ten.split('—')[0].split('(')[0].trim()}</div></div>`
   ).join('');
-  Object.values(dsMau).forEach(m=>
+  ds.forEach(m=>
     MINHHOA.ve(document.querySelector('#mauo_'+m.ma+' svg'), m, null, null, true));
+  // giữ nổi bật mẫu đang chọn nếu còn trong nhóm
+  if(mauDangChon) document.querySelectorAll('.mau-o').forEach(o=>
+    o.classList.toggle('on', o.id === 'mauo_'+mauDangChon.ma));
 }
+function locMau(n){ locNhom = n; veLuoiMau(); }
 function chonMauLuoi(ma){
   $('cat_chon').value = ma;
   doiMauCat();
