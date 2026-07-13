@@ -1,0 +1,34 @@
+{
+  "ma": "BV-01",
+  "ten": "Khung bảo vệ cửa sổ/cửa kính — nan ngang inox (kiểu không mối hàn)",
+  "nhom": "cua_sat",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Rộng ô chờ (phủ bì khung)", "don_vi": "mm", "mac_dinh": 1200 },
+    { "ten": "H", "nhan": "Cao ô chờ (phủ bì khung)", "don_vi": "mm", "mac_dinh": 1400 },
+    { "ten": "so_do_dung", "nhan": "Số đố đứng xuyên nan", "don_vi": "so_luong", "mac_dinh": 1 }
+  ],
+  "hang_so": {
+    "w_khung":     { "gia_tri": 25,  "don_vi": "mm", "cho_chot": true },
+    "w_nan":       { "gia_tri": 12,  "don_vi": "mm", "cho_chot": true },
+    "khe_nan_max": { "gia_tri": 150, "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "long_cao", "cong_thuc": "H - 2*w_khung" },
+    { "ten": "dai_nan",  "cong_thuc": "W - 2*w_khung" }
+  ],
+  "chia_khoang": [
+    { "ten": "nan", "usable": "long_cao", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Khung đứng 2 bên", "quy_cach": "hộp 25x25 (inox) // TẠM", "sl": "2", "dai": "H" },
+    { "ten": "Khung ngang trên + dưới", "quy_cach": "hộp 25x25 (inox) // TẠM", "sl": "2", "dai": "dai_nan" },
+    { "ten": "Nan ngang xuyên đố", "quy_cach": "hộp 12x12 (inox) // TẠM", "sl": "nan_n", "dai": "dai_nan",
+      "ghi_chu": "Kiểu KHÔNG MỐI HÀN: nan xuyên lỗ đột trên đố đứng — nhớ chọn vật liệu Inox ở ô trên" },
+    { "ten": "Đố đứng (đột lỗ xuyên nan)", "quy_cach": "hộp 25x25 (inox) // TẠM",
+      "sl": "so_do_dung", "dai": "long_cao" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — 3 bộ test số tính tay. NGUỒN: 2 ảnh công trình đội thợ gửi 13/07 (cửa kính nan ngang + cửa sổ TikTok không mối hàn). Quy cách 25/12 + khe 150 là TẠM ước từ ảnh — thợ chốt lại khi dùng." }
+}

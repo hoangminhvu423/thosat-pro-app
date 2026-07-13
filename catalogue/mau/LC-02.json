@@ -1,0 +1,42 @@
+{
+  "ma": "LC-02",
+  "ten": "Lan can cầu thang xiên, đố đứng",
+  "nhom": "lan_can",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "Lng", "nhan": "Chiều ngang mặt bằng", "don_vi": "m" },
+    { "ten": "Hc", "nhan": "Chiều cao lên", "don_vi": "m" },
+    { "ten": "H", "nhan": "Cao lan can đo thẳng đứng", "don_vi": "m", "mac_dinh": 0.9 }
+  ],
+  "hang_so": {
+    "kc_cot_max":   { "gia_tri": 2200, "don_vi": "mm", "cho_chot": true },
+    "w_cot":        { "gia_tri": 50,   "don_vi": "mm", "cho_chot": true },
+    "w_do":         { "gia_tri": 14,   "don_vi": "mm", "cho_chot": true },
+    "khe_do_max":   { "gia_tri": 100,  "don_vi": "mm", "cho_chot": true },
+    "cao_tay_vin":  { "gia_tri": 80,   "don_vi": "mm", "cho_chot": true },
+    "cao_thanh_de": { "gia_tri": 50,   "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "dai_xien",  "cong_thuc": "sqrt((Lng*1000)^2 + (Hc*1000)^2)" },
+    { "ten": "he_so_doc", "cong_thuc": "sqrt(1 + (Hc/Lng)^2)" },
+    { "ten": "so_khoang", "cong_thuc": "max(1, ceil(dai_xien / kc_cot_max))" },
+    { "ten": "so_cot",    "cong_thuc": "so_khoang + 1" },
+    { "ten": "khoang_ngang", "cong_thuc": "(Lng*1000 - so_cot*w_cot) / so_khoang" }
+  ],
+  "chia_khoang": [
+    { "ten": "do_khoang", "usable": "khoang_ngang",
+      "be_rong_thanh": "w_do", "khe_toi_da": "khe_do_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Cột trụ (đứng)", "quy_cach": "hộp 50x50", "sl": "so_cot", "dai": "H*1000" },
+    { "ten": "Tay vịn + thanh đế", "quy_cach": "theo mẫu", "sl": "2", "dai": "dai_xien",
+      "cat_vat": "vát theo dốc 2 đầu" },
+    { "ten": "Đố đứng", "quy_cach": "hộp 14x14", "sl": "do_khoang_n * so_khoang",
+      "dai": "H*1000 - (cao_tay_vin + cao_thanh_de)*he_so_doc",
+      "cat_vat": "vát theo dốc 2 đầu, CÙNG CHIỀU",
+      "ghi_chu": "Tất cả đố dài bằng nhau (hình bình hành). Khe đo theo phương ngang." }
+  ],
+  "audit": { "ngay": "12/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 với ENGINE.lanCanXien (34 test lõi) qua 3 bộ test catalogue. Toàn bộ hằng số TẠM chờ chốt như LC-01 — giữ nhãn nháp." }
+}

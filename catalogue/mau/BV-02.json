@@ -1,0 +1,35 @@
+{
+  "ma": "BV-02",
+  "ten": "Cửa bảo vệ inox 1 cánh — nan đứng + băng ngang (căn hộ/cửa hậu)",
+  "nhom": "cua_sat",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Rộng cánh cửa (phủ bì)", "don_vi": "mm", "mac_dinh": 800 },
+    { "ten": "H", "nhan": "Cao cánh cửa (phủ bì)", "don_vi": "mm", "mac_dinh": 2200 },
+    { "ten": "so_bang", "nhan": "Số băng ngang trang trí/gia cường", "don_vi": "so_luong", "mac_dinh": 4 }
+  ],
+  "hang_so": {
+    "w_khung":     { "gia_tri": 25,  "don_vi": "mm", "cho_chot": true },
+    "w_nan":       { "gia_tri": 12,  "don_vi": "mm", "cho_chot": true },
+    "khe_nan_max": { "gia_tri": 100, "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "long_ngang", "cong_thuc": "W - 2*w_khung" },
+    { "ten": "dai_nan",    "cong_thuc": "H - 2*w_khung" }
+  ],
+  "chia_khoang": [
+    { "ten": "nan", "usable": "long_ngang", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Khung cánh đứng 2 bên", "quy_cach": "hộp 25x50 (inox) // TẠM", "sl": "2", "dai": "H" },
+    { "ten": "Khung cánh ngang trên + dưới", "quy_cach": "hộp 25x50 (inox) // TẠM", "sl": "2", "dai": "long_ngang" },
+    { "ten": "Nan đứng chạy suốt", "quy_cach": "hộp 12x12 (inox) // TẠM", "sl": "nan_n", "dai": "dai_nan",
+      "ghi_chu": "Nan xuyên băng ngang (đột lỗ) — khe ≤100mm chống trẻ em chui" },
+    { "ten": "Băng ngang (đột lỗ xuyên nan)", "quy_cach": "hộp 25x50 (inox) // TẠM",
+      "sl": "so_bang", "dai": "long_ngang",
+      "ghi_chu": "Chưa gồm bản lề + khóa — phần ngũ kim thợ tự cộng" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — 3 bộ test số tính tay. NGUỒN: ảnh cửa bảo vệ inox căn hộ 104 đội thợ gửi 13/07. Quy cách 25x50/12 TẠM ước từ ảnh." }
+}

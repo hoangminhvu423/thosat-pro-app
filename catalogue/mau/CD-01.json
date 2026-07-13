@@ -1,0 +1,24 @@
+{
+  "ma": "CD-01",
+  "ten": "CHIA Ô ĐỀU — công cụ nhanh: ra khe lọt lòng + mốc đánh dấu thước",
+  "nhom": "sen_hoa",
+  "phien_ban": 1,
+  "trang_thai": "da_audit",
+  "dau_vao": [
+    { "ten": "L", "nhan": "Chiều dài khoang cần chia (lọt lòng)", "don_vi": "mm", "mac_dinh": 2000 },
+    { "ten": "w", "nhan": "Bề rộng thanh (hộp/V/inox)", "don_vi": "mm", "mac_dinh": 20 },
+    { "ten": "khe_max", "nhan": "Khe hở lọt lòng tối đa", "don_vi": "mm", "mac_dinh": 100 },
+    { "ten": "dai_thanh", "nhan": "Chiều dài cắt mỗi thanh", "don_vi": "mm", "mac_dinh": 900 }
+  ],
+  "hang_so": {},
+  "chia_khoang": [
+    { "ten": "nan", "usable": "L", "be_rong_thanh": "w", "khe_toi_da": "khe_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Thanh chia (sắt/inox — chọn vật liệu ở trên)", "quy_cach": "hộp 20x20",
+      "sl": "nan_n", "dai": "dai_thanh",
+      "ghi_chu": "Khe hiện trên phiếu là khe LỌT LÒNG giữa 2 mép hộp — đúng cái thợ cần đo" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — dùng chung chiaDeu của engine (34 test lõi): n·w + (n+1)·khe = L bảo toàn tuyệt đối. Mốc đánh dấu mép trái từng thanh do UI sinh từ khe thô (không dồn sai số làm tròn)." }
+}

@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#24303C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ThợSắt Pro — Tính phiếu cắt sắt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nen:#EDEFF1; --the:#FFFFFF; --muc:#1B2129; --xam:#5C6672;
+    --thep:#24303C; --cam:#F25C1F; --vien:#D6DBE0;
+    --ticket:#FFFBEE; --ticket-vien:#E8DFC4;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--nen); color:var(--muc);
+    font-family:-apple-system,'Segoe UI',Roboto,sans-serif; font-size:15px; padding-bottom:40px;}
+  header{background:var(--thep); color:#fff; padding:18px 16px 14px;}
+  header h1{margin:0; font-family:'Archivo',sans-serif; font-weight:900; font-size:20px;
+    letter-spacing:.5px; text-transform:uppercase;}
+  header h1 span{color:var(--cam);}
+  header p{margin:4px 0 0; font-size:12.5px; color:#AAB6C2;}
+  .tabs{display:flex; background:var(--thep); padding:0 8px; position:sticky; top:0; z-index:5;}
+  .tab{flex:1; border:0; background:none; color:#9FADBB; font-family:'Archivo',sans-serif;
+    font-weight:700; font-size:12px; padding:14px 2px; border-bottom:3px solid transparent;
+    cursor:pointer; white-space:nowrap;}
+  .tab.on{color:#fff; border-bottom-color:var(--cam);}
+  .man{display:none; padding:14px 12px;}
+  .man.on{display:block;}
+  .the{background:var(--the); border:1px solid var(--vien); border-radius:10px; padding:14px 12px; margin-bottom:12px;}
+  .the h2{margin:0 0 10px; font-family:'Archivo',sans-serif; font-size:13px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.8px; color:var(--xam);}
+  .hang{display:flex; gap:10px;}
+  .o{flex:1; margin-bottom:10px;}
+  .o label{display:block; font-size:12px; color:var(--xam); margin-bottom:4px;}
+  .o input, .o select{width:100%; padding:10px; font-size:16px; border:1.5px solid var(--vien);
+    border-radius:8px; background:#FAFBFC; font-family:'JetBrains Mono',monospace; font-weight:500;}
+  .o select{font-family:-apple-system,'Segoe UI',Roboto,sans-serif; font-weight:600;}
+  .o input:focus, .o select:focus, .o textarea:focus{outline:none; border-color:var(--cam);}
+  .o textarea{width:100%; padding:10px; font-size:14px; border:1.5px solid var(--vien);
+    border-radius:8px; background:#FAFBFC; font-family:'JetBrains Mono',monospace;
+    font-weight:500; resize:vertical; line-height:1.6;}
+  .cay-nhan{font-size:11.5px; color:var(--xam); margin-top:8px;
+    font-family:'JetBrains Mono',monospace; font-weight:700;}
+  .cay-bar{display:flex; height:24px; border:1.5px solid var(--thep); border-radius:4px;
+    overflow:hidden; margin:3px 0 6px; background:#fff;}
+  .cay-bar .doan{background:var(--cam); border-right:1.5px solid #fff; color:#fff;
+    font-size:9.5px; font-family:'JetBrains Mono',monospace; display:flex;
+    align-items:center; justify-content:center; overflow:hidden; white-space:nowrap;}
+  .cay-bar .de{background:#C9D2DA;}
+  .cay-bar .hao{background:var(--thep);}
+  .nut{width:100%; padding:14px; background:var(--cam); color:#fff; border:0; border-radius:10px;
+    font-family:'Archivo',sans-serif; font-weight:900; font-size:16px; text-transform:uppercase;
+    letter-spacing:.5px; cursor:pointer;}
+  .nut:active{transform:scale(.98);}
+  .an{display:none !important;}
+  .phieu{background:var(--ticket); border:1.5px dashed var(--ticket-vien); border-radius:10px;
+    padding:14px 12px; margin-top:12px; display:none;}
+  .phieu.hien{display:block;}
+  .phieu h3{margin:0 0 2px; font-family:'Archivo',sans-serif; font-weight:900; font-size:15px; text-transform:uppercase;}
+  .phieu .phu{font-size:12px; color:var(--xam); margin-bottom:10px;}
+  .kq-luoi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+  .kq{background:#fff; border:1px solid var(--ticket-vien); border-radius:8px; padding:8px 10px;}
+  .kq .nhan{font-size:11px; color:var(--xam); text-transform:uppercase; letter-spacing:.4px;}
+  .kq .so{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:17px; color:var(--thep);}
+  .kq .so em{font-style:normal; font-size:12px; color:var(--xam); font-weight:500;}
+  .kq.nb .so{color:var(--cam);}
+  table{width:100%; border-collapse:collapse; font-size:13px; margin-bottom:6px;}
+  th{font-family:'Archivo',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--xam); text-align:left; padding:6px 4px; border-bottom:2px solid var(--thep);}
+  td{padding:7px 4px; border-bottom:1px solid var(--ticket-vien); vertical-align:top;}
+  td.mono{font-family:'JetBrains Mono',monospace; font-weight:700; white-space:nowrap;}
+  .ghichu{font-size:12px; color:var(--xam); margin-top:8px; line-height:1.5;}
+  .sodo{width:100%; margin:8px 0; display:block;}
+  .copy{margin-top:10px; width:100%; padding:14px; background:var(--thep); color:#fff; border:0;
+    border-radius:8px; font-weight:700; font-size:14px; cursor:pointer;}
+  .copy.anh{background:var(--cam);}
+  .cb-do{color:#C0392B; font-weight:700;}
+  .qc-sel{font-size:12px; max-width:118px; padding:5px 2px; border:1px solid var(--vien);
+    border-radius:6px; background:#FAFBFC; font-family:inherit; color:var(--muc);}
+  .mau-luoi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;}
+  .mau-o{border:1.5px solid var(--vien); border-radius:8px; padding:6px 6px 8px;
+    cursor:pointer; background:#fff;}
+  .mau-o.on{border-color:var(--cam); box-shadow:0 0 0 1.5px var(--cam);}
+  .mau-o svg{width:100%; display:block;}
+  .mau-o .ten{font-size:11px; font-weight:700; color:var(--xam); margin-top:5px;
+    text-align:center; line-height:1.3;}
+  .mau-o.on .ten{color:var(--cam);}
+  .ls-muc{padding:10px 12px; border:1px solid var(--vien); border-radius:8px; margin-bottom:8px;
+    cursor:pointer; background:#FAFBFC; font-size:13.5px; line-height:1.5;}
+  .ls-muc small{color:var(--xam);}
+  .ls-muc:active{border-color:var(--cam);}
+  #ls_noidung{background:#fff; border:1px solid var(--ticket-vien); border-radius:8px;
+    padding:12px; font-family:'JetBrains Mono',monospace; font-size:12.5px;
+    white-space:pre-wrap; word-break:break-word; margin:0 0 4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Thợ Sắt <span>Pro</span> <small style="font-size:12px;color:#9FADBB">beta</small></h1>
+  <p>Chọn kiểu / mẫu → nhập kích thước → ra phiếu cắt sắt</p>
+</header>
+
+<div class="tabs">
+  <button class="tab on" onclick="chonTab(0)">Lan can</button>
+  <button class="tab" onclick="chonTab(1)">Mái tôn</button>
+  <button class="tab" onclick="chonTab(2)">Sen hoa</button>
+  <button class="tab" onclick="chonTab(3)">Đề-xê</button>
+  <button class="tab" onclick="chonTab(4)">Mẫu</button>
+  <button class="tab" onclick="chonTab(5)">Sổ</button>
+</div>
+
+<!-- ============ LAN CAN ============ -->
+<div class="man on" id="man0">
+  <div class="the">
+    <h2>Kiểu lan can</h2>
+    <div class="o">
+      <select id="lc_kieu" onchange="doiKieuLC()">
+        <option value="thang">Thẳng (ban công, hành lang)</option>
+        <option value="xien">Cầu thang xiên</option>
+      </select>
+    </div>
+    <div id="lc_nhapThang">
+      <div class="hang">
+        <div class="o"><label>Chiều dài lan can (m)</label><input type="number" id="lc_L" value="6" step="0.01"></div>
+        <div class="o"><label>Chiều cao (m)</label><input type="number" id="lc_H" value="0.9" step="0.01"></div>
+      </div>
+    </div>
+    <div id="lc_nhapXien" class="an">
+      <div class="hang">
+        <div class="o"><label>Chiều ngang mặt bằng (m)</label><input type="number" id="lc_Lng" value="3.6" step="0.01"></div>
+        <div class="o"><label>Chiều cao lên (m)</label><input type="number" id="lc_Hc" value="1.8" step="0.01"></div>
+      </div>
+      <div class="o"><label>Cao lan can đo thẳng đứng (m)</label><input type="number" id="lc_Hx" value="0.9" step="0.01"></div>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Cột trụ</h2>
+    <div class="hang">
+      <div class="o"><label>Khoảng cách cột tối đa (m)</label><input type="number" id="lc_kcCot" value="2.2" step="0.1"></div>
+      <div class="o"><label>Bề rộng cột (mm)</label><input type="number" id="lc_wCot" value="50"></div>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Đố (song) đứng</h2>
+    <div class="hang">
+      <div class="o"><label>Bề rộng đố (mm)</label><input type="number" id="lc_wDo" value="14"></div>
+      <div class="o"><label>Khe hở tối đa (mm)</label><input type="number" id="lc_khe" value="100"></div>
+    </div>
+    <div class="hang">
+      <div class="o"><label>Tay vịn + thanh trên (mm)</label><input type="number" id="lc_tren" value="80"></div>
+      <div class="o"><label>Thanh đế dưới (mm)</label><input type="number" id="lc_duoi" value="50"></div>
+    </div>
+  </div>
+  <button class="nut" onclick="tinhLanCan()">Tính lan can</button>
+
+  <div class="phieu" id="lc_phieu">
+    <h3>Phiếu cắt sắt — Lan can</h3>
+    <div class="phu" id="lc_phu"></div>
+    <div class="kq-luoi" id="lc_kq"></div>
+    <svg class="sodo" id="lc_svg" viewBox="0 0 340 90"></svg>
+    <table><thead><tr><th>Chi tiết</th><th>Dài cắt</th><th>SL</th><th>Tổng</th></tr></thead>
+    <tbody id="lc_bang"></tbody></table>
+    <div class="ghichu" id="lc_ghichu"></div>
+    <button class="copy anh" onclick="xuatAnh('lc')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('lc')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<!-- ============ MÁI TÔN ============ -->
+<div class="man" id="man1">
+  <div class="the">
+    <h2>Kiểu mái</h2>
+    <div class="o">
+      <select id="mt_kieu" onchange="doiKieuMT()">
+        <option value="1doc">1 mái dốc</option>
+        <option value="2doc">2 mái dốc (chữ A)</option>
+        <option value="vom">Mái vòm (cung tròn)</option>
+      </select>
+    </div>
+    <div class="hang">
+      <div class="o"><label>Chiều ngang mái (m)</label><input type="number" id="mt_D" value="8" step="0.01"></div>
+      <div class="o"><label id="mt_nhanR">Chiều sâu / khẩu độ (m)</label><input type="number" id="mt_R" value="4" step="0.01"></div>
+    </div>
+    <div class="hang">
+      <div class="o" id="mt_oDoc"><label>Độ dốc (%)</label><input type="number" id="mt_doc" value="10"></div>
+      <div class="o an" id="mt_oVom"><label>Chiều cao vồng vòm (m)</label><input type="number" id="mt_f" value="0.8" step="0.05"></div>
+      <div class="o"><label>Tôn dư đuôi mái (m)</label><input type="number" id="mt_du" value="0.1" step="0.05"></div>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Tôn & khung</h2>
+    <div class="hang">
+      <div class="o"><label>Khổ tôn hữu dụng (m)</label><input type="number" id="mt_kho" value="1.0" step="0.01"></div>
+      <div class="o"><label>K.cách xà gồ (m)</label><input type="number" id="mt_xg" value="0.85" step="0.05"></div>
+    </div>
+    <div class="hang">
+      <div class="o"><label>K.cách kèo / vì kèo (m)</label><input type="number" id="mt_keo" value="3" step="0.1"></div>
+      <div class="o"><label>Vít / m² tôn</label><input type="number" id="mt_vit" value="8"></div>
+    </div>
+  </div>
+  <button class="nut" onclick="tinhMaiTon()">Tính mái tôn</button>
+
+  <div class="phieu" id="mt_phieu">
+    <h3>Phiếu vật tư — Mái tôn</h3>
+    <div class="phu" id="mt_phu"></div>
+    <div class="kq-luoi" id="mt_kq"></div>
+    <table><thead><tr><th>Hạng mục</th><th>Quy cách</th><th>SL</th></tr></thead>
+    <tbody id="mt_bang"></tbody></table>
+    <div class="ghichu" id="mt_ghichu"></div>
+    <button class="copy anh" onclick="xuatAnh('mt')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('mt')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<!-- ============ SEN HOA ============ -->
+<div class="man" id="man2">
+  <div class="the">
+    <h2>Mẫu sen hoa</h2>
+    <div class="o">
+      <select id="sh_mau" onchange="doiMauSH()">
+        <option value="nand">Nan đứng</option>
+        <option value="nann">Nan ngang</option>
+        <option value="caro">Ô caro vuông (đan lưới)</option>
+        <option value="cheo">Caro chéo 45°</option>
+        <option value="hoa">Hoa rời gắn khung (module)</option>
+      </select>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Kích thước ô cửa (lọt lòng)</h2>
+    <div class="hang">
+      <div class="o"><label>Rộng (mm)</label><input type="number" id="sh_W" value="1200"></div>
+      <div class="o"><label>Cao (mm)</label><input type="number" id="sh_H" value="1400"></div>
+    </div>
+    <div class="hang">
+      <div class="o"><label>Khung bao (mm)</label><input type="number" id="sh_khung" value="20"></div>
+      <div class="o"><label>Số bộ giống nhau</label><input type="number" id="sh_soBo" value="1"></div>
+    </div>
+  </div>
+  <div class="the" id="sh_theNan">
+    <h2>Thông số nan</h2>
+    <div class="hang">
+      <div class="o"><label>Bề rộng nan (mm)</label><input type="number" id="sh_wNan" value="14"></div>
+      <div class="o"><label>Khe hở tối đa (mm)</label><input type="number" id="sh_khe" value="100"></div>
+    </div>
+  </div>
+  <div class="the an" id="sh_theHoa">
+    <h2>Thông số bông hoa</h2>
+    <div class="hang">
+      <div class="o"><label>Hoa rộng (mm)</label><input type="number" id="sh_hoaA" value="200"></div>
+      <div class="o"><label>Hoa cao (mm)</label><input type="number" id="sh_hoaB" value="200"></div>
+    </div>
+    <div class="o"><label>Khe giữa hoa tối đa (mm)</label><input type="number" id="sh_kheHoa" value="60"></div>
+  </div>
+  <button class="nut" onclick="tinhSenHoa()">Tính sen hoa</button>
+
+  <div class="phieu" id="sh_phieu">
+    <h3>Phiếu cắt sắt — Sen hoa</h3>
+    <div class="phu" id="sh_phu"></div>
+    <div class="kq-luoi" id="sh_kq"></div>
+    <svg class="sodo" id="sh_svg" viewBox="0 0 340 160"></svg>
+    <table><thead><tr><th>Chi tiết</th><th>Dài cắt</th><th>SL</th><th>Tổng</th></tr></thead>
+    <tbody id="sh_bang"></tbody></table>
+    <div class="ghichu" id="sh_ghichu"></div>
+    <button class="copy anh" onclick="xuatAnh('sh')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('sh')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<!-- ============ ĐỀ-XÊ ============ -->
+<div class="man" id="man3">
+  <div class="the">
+    <h2>Đoạn cần cắt — mỗi dòng: dài × SL (tên tùy chọn)</h2>
+    <div class="o">
+      <textarea id="dx_chitiet" rows="5" placeholder="900 x 4 cột&#10;770 x 51 đố">900 x 4 cột
+770 x 51 đố</textarea>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Cây sắt & lưỡi cắt</h2>
+    <div class="hang">
+      <div class="o"><label>Dài cây (mm)</label><input type="number" id="dx_cay" value="6000"></div>
+      <div class="o"><label>Hao đầu cây (mm)</label><input type="number" id="dx_hao" value="50"></div>
+      <div class="o"><label>Kerf lưỡi (mm)</label><input type="number" id="dx_kerf" value="2"></div>
+    </div>
+  </div>
+  <div class="the">
+    <h2>Đầu thừa tồn kho — mỗi dòng: dài × SL (bỏ trống nếu không có)</h2>
+    <div class="o"><textarea id="dx_ton" rows="3" placeholder="1200 x 2&#10;850 x 1"></textarea></div>
+  </div>
+  <button class="nut" onclick="tinhDeXe()">Tối ưu đề-xê</button>
+
+  <div class="phieu" id="dx_phieu">
+    <h3>Sơ đồ cắt cây</h3>
+    <div class="phu" id="dx_phu"></div>
+    <div class="kq-luoi" id="dx_kq"></div>
+    <div id="dx_sodo"></div>
+    <table><thead><tr><th>Cây</th><th>Cắt các đoạn</th><th>SL</th><th>Dư</th></tr></thead>
+    <tbody id="dx_bang"></tbody></table>
+    <div class="ghichu" id="dx_ghichu"></div>
+    <button class="copy anh" onclick="xuatAnh('dx')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('dx')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<!-- ============ CATALOGUE MẪU ============ -->
+<div class="man" id="man4">
+  <div class="the">
+    <h2>Chọn mẫu catalogue</h2>
+    <div class="mau-luoi" id="cat_luoi"></div>
+    <div class="o"><select id="cat_chon" onchange="doiMauCat()" style="display:none"></select></div>
+    <svg class="sodo" id="cat_svg" viewBox="0 0 340 150"></svg>
+    <div id="cat_form"></div>
+    <div class="hang">
+      <div class="o"><label>Vật liệu</label>
+        <select id="cat_vatlieu"><option value="sat" selected>Sắt (sơn tĩnh điện)</option>
+        <option value="inox304">Inox 304</option><option value="inox201">Inox 201</option></select></div>
+      <div class="o"><label>Độ dày hộp (mm)</label>
+        <select id="cat_day"><option>0.8</option><option>1.0</option><option selected>1.2</option>
+        <option>1.4</option><option>1.5</option><option>1.8</option><option>2.0</option><option>2.5</option><option>3.0</option></select></div>
+    </div>
+    <details style="margin-bottom:10px">
+      <summary style="font-size:13px;font-weight:700;color:var(--xam);padding:6px 0;cursor:pointer">⚙ Tùy chỉnh theo yêu cầu khách (khe, bề rộng thanh, hằng số mẫu)</summary>
+      <div id="cat_hangso"></div>
+      <div class="ghichu">Khách yêu cầu khác (nan to hơn, khe khít hơn...) thì sửa số ở đây
+      rồi bấm tính lại. Còn QUY CÁCH TỪNG THANH (hộp 3x6, 4x8, kèo V, tôn xốp...) đổi
+      trực tiếp trên bảng phiếu sau khi tính.</div>
+    </details>
+    <div class="ghichu" id="cat_canhbao"></div>
+  </div>
+  <button class="nut" onclick="tinhCatalogue()">Tính theo mẫu</button>
+
+  <div class="phieu" id="cat_phieu">
+    <h3>Phiếu cắt — <span id="cat_tenmau"></span></h3>
+    <div class="phu" id="cat_phu"></div>
+    <div class="kq-luoi" id="cat_kq"></div>
+    <table><thead><tr><th>Chi tiết</th><th>Quy cách</th><th>Dài cắt</th><th>SL</th></tr></thead>
+    <tbody id="cat_bang"></tbody></table>
+    <div class="ghichu" id="cat_ghichu"></div>
+    <button class="copy" style="background:var(--cam)" onclick="guiSangDeXe()">Đưa sang tối ưu Đề-xê →</button>
+    <button class="copy anh" onclick="xuatAnh('cat')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('cat')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<!-- ============ SỔ CÔNG TRÌNH ============ -->
+<div class="man" id="man5">
+  <div class="the">
+    <h2>Sổ công trình — phiếu đã tính, lưu ngay trên máy</h2>
+    <div id="ls_danhsach"></div>
+  </div>
+  <div class="phieu" id="ls_phieu">
+    <h3>Phiếu đã lưu</h3>
+    <div class="phu" id="ls_phu"></div>
+    <pre id="ls_noidung"></pre>
+    <button class="copy anh" onclick="xuatAnh('ls')">Gửi ảnh phiếu (Zalo)</button>
+    <button class="copy" onclick="saoChep('ls')">Sao chép kết quả</button>
+  </div>
+</div>
+
+<script src="engine.js?v=19"></script>
+<script src="dexe.js?v=19"></script>
+<script src="catalogue.js?v=19"></script>
+<script src="phieu-anh.js?v=19"></script>
+<script src="minh-hoa.js?v=19"></script>
+<script src="vat-tu.js?v=19"></script>
+<script>
+/* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
+   KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
+const vanBanCopy = {};
+function $(id){return document.getElementById(id);}
+function num(id){return parseFloat($(id).value) || 0;}
+function chonTab(i){
+  document.querySelectorAll('.tab').forEach((t,k)=>t.classList.toggle('on',k===i));
+  document.querySelectorAll('.man').forEach((m,k)=>m.classList.toggle('on',k===i));
+  if(i===4) napDanhSachMau();
+  if(i===5) veLichSu();
+}
+
+/* ============ SỔ CÔNG TRÌNH (localStorage) ============ */
+const LS_KHOA = 'tsp_lichsu';
+function docLichSu(){
+  try{ return JSON.parse(localStorage.getItem(LS_KHOA)) || []; }catch(e){ return []; }
+}
+function luuLichSu(khoa, phu, vanBan){
+  try{
+    const ds = docLichSu();
+    ds.unshift({luc: Date.now(), khoa, phu, vanBan});
+    localStorage.setItem(LS_KHOA, JSON.stringify(ds.slice(0, 30)));
+  }catch(e){/* hết chỗ lưu thì bỏ qua, không chặn việc tính */}
+}
+function veLichSu(){
+  const ds = docLichSu();
+  const tenTab = {lc:'Lan can', mt:'Mái tôn', sh:'Sen hoa', dx:'Đề-xê', cat:'Mẫu'};
+  $('ls_danhsach').innerHTML = ds.length
+    ? ds.map((m,i)=>
+        `<div class="ls-muc" onclick="moLichSu(${i})"><b>${tenTab[m.khoa]||m.khoa}</b> — ${m.phu}`+
+        `<br><small>${new Date(m.luc).toLocaleString('vi-VN')}</small></div>`).join('')
+      + `<button class="copy" onclick="xoaLichSu()">Xóa toàn bộ sổ</button>`
+    : '<div class="ghichu">Chưa có phiếu nào — cứ tính ở các tab khác, phiếu tự lưu vào đây (giữ 30 phiếu gần nhất).</div>';
+  $('ls_phieu').classList.remove('hien');
+}
+function moLichSu(i){
+  const m = docLichSu()[i];
+  if(!m) return;
+  $('ls_phu').textContent = m.phu+' — '+new Date(m.luc).toLocaleString('vi-VN');
+  $('ls_noidung').textContent = m.vanBan;
+  vanBanCopy.ls = m.vanBan;
+  $('ls_phieu').classList.add('hien');
+}
+function xoaLichSu(){
+  if(!confirm('Xóa toàn bộ sổ công trình trên máy này?')) return;
+  localStorage.removeItem(LS_KHOA);
+  veLichSu();
+}
+function mm(v){return Math.round(v).toLocaleString('vi-VN')+' mm';}
+function m2(v){return v.toFixed(2).replace('.',',');}
+function doGoc(d){return d.toFixed(1).replace('.',',');}
+function oKQ(divId, ds){
+  $(divId).innerHTML = ds.map(d=>
+    `<div class="kq ${d[2]?'nb':''}"><div class="nhan">${d[0]}</div><div class="so">${d[1]}</div></div>`).join('');
+}
+function bang4(tbodyId, dongs){
+  $(tbodyId).innerHTML = dongs.map(d=>
+    `<tr><td>${d[0]}</td><td class="mono">${d[1]}</td><td class="mono">${d[2]}</td><td class="mono">${d[3]}</td></tr>`).join('');
+}
+
+/* ============ LAN CAN ============ */
+function doiKieuLC(){
+  const xien = $('lc_kieu').value === 'xien';
+  $('lc_nhapThang').classList.toggle('an', xien);
+  $('lc_nhapXien').classList.toggle('an', !xien);
+}
+
+function tinhLanCan(){
+  const kieu = $('lc_kieu').value;
+  const wCot = num('lc_wCot'), wDo = num('lc_wDo');
+  const thamSo = {
+    kcCot: num('lc_kcCot')*1000, wCot, wDo,
+    kheMax: num('lc_khe'), tren: num('lc_tren'), duoi: num('lc_duoi')
+  };
+  let kq;
+  try{
+    kq = (kieu === 'thang')
+      ? ENGINE.lanCanThang({L: num('lc_L')*1000, H: num('lc_H')*1000, ...thamSo})
+      : ENGINE.lanCanXien({Lng: num('lc_Lng')*1000, Hc: num('lc_Hc')*1000,
+                           H: num('lc_Hx')*1000, ...thamSo});
+  }catch(e){alert(e.message); return;}
+  let copy = '', phu = '';
+
+  if(kieu === 'thang'){
+    oKQ('lc_kq', [
+      ['Số cột trụ', kq.soCot+' <em>cột</em>'],
+      ['Khoang lọt lòng', kq.soKhoang+' <em>× '+mm(kq.khoangTT)+'</em>'],
+      ['Tổng số đố', kq.tongDo+' <em>('+kq.doMoiKhoang+'/khoang)</em>'],
+      ['Khe hở thực tế', mm(kq.khe), true],
+    ]);
+    veNan('lc_svg', kq.khoangTT, kq.doMoiKhoang, wDo, kq.kheRaw,
+      `1 khoang ${mm(kq.khoangTT)} — ${kq.doMoiKhoang} đố, khe ${mm(kq.khe)}`);
+    bang4('lc_bang', [
+      ['Cột trụ '+wCot+'×'+wCot, mm(kq.daiCot), kq.soCot, m2(kq.metCot)+' m'],
+      ['Tay vịn + thanh đế', mm(kq.daiTayVin)+' /hàng', 2, m2(kq.metTayVin)+' m'],
+      ['Đố đứng '+wDo+'mm (cắt vuông)', mm(kq.daiDo), kq.tongDo, m2(kq.metDo)+' m'],
+    ]);
+    $('lc_ghichu').innerHTML =
+      `Quy cây 6m: cột <b>${kq.cay.cot}</b> · tay vịn/đế <b>${kq.cay.tayVin}</b> · đố <b>${kq.cay.do}</b> cây.`;
+    phu = `Lan can thẳng ${num('lc_L')} m × cao ${num('lc_H')} m`;
+    copy = `PHIẾU CẮT SẮT - LAN CAN THẲNG ${num('lc_L')}m x ${num('lc_H')}m
+- Cột ${wCot}x${wCot}: ${kq.soCot} cây x ${kq.daiCot}mm
+- Tay vịn + đế: 2 hàng x ${kq.daiTayVin}mm
+- Đố ${wDo}mm: ${kq.tongDo} cây x ${kq.daiDo}mm (cắt vuông)
+- Khe hở ${kq.khe}mm, mỗi khoang ${kq.doMoiKhoang} đố`;
+  }
+  else { // ===== CẦU THANG XIÊN =====
+    const gocVat = doGoc(kq.gocDo);
+    oKQ('lc_kq', [
+      ['Dài xiên tay vịn', m2(kq.daiXienRaw/1000)+' <em>m</em>', true],
+      ['GÓC CẮT VÁT', gocVat+'° <em>2 đầu đố</em>', true],
+      ['Số cột / số đố', kq.soCot+' <em>cột · '+kq.tongDo+' đố</em>'],
+      ['Khe hở ngang thực tế', mm(kq.khe)],
+    ]);
+    veNan('lc_svg', kq.khoangNgang, kq.doMoiKhoang, wDo, kq.kheRaw,
+      `1 khoang ngang ${mm(kq.khoangNgang)} — ${kq.doMoiKhoang} đố, khe ${mm(kq.khe)}`);
+    bang4('lc_bang', [
+      ['Cột trụ '+wCot+'×'+wCot+' (đứng)', mm(kq.daiCot), kq.soCot, m2(kq.metCot)+' m'],
+      ['Tay vịn + đế (vát '+gocVat+'° 2 đầu)', mm(kq.daiXien)+' /hàng', 2, m2(kq.metTayVin)+' m'],
+      ['Đố '+wDo+'mm (vát '+gocVat+'° 2 đầu, cùng chiều)', mm(kq.daiDo), kq.tongDo, m2(kq.metDo)+' m'],
+    ]);
+    $('lc_ghichu').innerHTML =
+      `<b>Tất cả đố dài bằng nhau</b> vì tay vịn và thanh đế song song bản dốc — 2 đầu cắt vát ${gocVat}° <b>cùng chiều</b> (hình bình hành).`+
+      `<br>Khe hở đo theo phương ngang giữa các đố đứng. Quy cây 6m: cột <b>${kq.cay.cot}</b> · tay vịn/đế <b>${kq.cay.tayVin}</b> · đố <b>${kq.cay.do}</b> cây.`;
+    phu = `Cầu thang xiên: ngang ${num('lc_Lng')} m, lên ${num('lc_Hc')} m — dốc ${gocVat}°`;
+    copy = `PHIẾU CẮT SẮT - LAN CAN CẦU THANG (dốc ${gocVat} độ)
+- Dài xiên tay vịn: ${m2(kq.daiXienRaw/1000)}m x 2 hàng, 2 đầu vát ${gocVat} độ
+- Cột ${wCot}x${wCot}: ${kq.soCot} cây x ${kq.daiCot}mm (đứng)
+- Đố ${wDo}mm: ${kq.tongDo} cây x ${kq.daiDo}mm, 2 đầu vát ${gocVat} độ CÙNG CHIỀU
+- Khe hở ngang ${kq.khe}mm, mỗi khoang ${kq.doMoiKhoang} đố`;
+  }
+  // Cảnh báo chuẩn an toàn (QCXDVN 05:2008/BXD)
+  const cbLc = [];
+  if(kq.khe > 100) cbLc.push(
+    '<span class="cb-do">⚠ Khe '+kq.khe+'mm VƯỢT chuẩn an toàn 100mm (QCXDVN 05:2008) — trẻ em chui lọt</span>');
+  const caoLc = (kieu==='thang') ? num('lc_H')*1000 : num('lc_Hx')*1000;
+  if(caoLc && caoLc < 1100) cbLc.push(
+    'ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(caoLc)+'mm)');
+  if(cbLc.length){
+    $('lc_ghichu').innerHTML = cbLc.join('<br>')+'<br>'+$('lc_ghichu').innerHTML;
+    copy += '\n'+cbLc.map(c=>c.replace(/<[^>]+>/g,'')).join('\n');
+  }
+  $('lc_phu').textContent = phu;
+  $('lc_phieu').classList.add('hien');
+  vanBanCopy.lc = copy;
+  luuLichSu('lc', phu, copy);
+}
+
+/* ============ MÁI TÔN ============ */
+function doiKieuMT(){
+  const k = $('mt_kieu').value;
+  $('mt_oDoc').classList.toggle('an', k==='vom');
+  $('mt_oVom').classList.toggle('an', k!=='vom');
+  $('mt_nhanR').textContent = (k==='2doc') ? 'Khẩu độ tổng 2 mái (m)' : 'Chiều sâu / khẩu độ (m)';
+}
+
+function tinhMaiTon(){
+  const k = $('mt_kieu').value;
+  const D = num('mt_D'), R = num('mt_R'), du = num('mt_du');
+  const kho = num('mt_kho'), vitM2 = num('mt_vit');
+  const chung = {D, R, du, kho, kcXG: num('mt_xg'), kcKeo: num('mt_keo'), vitM2};
+  let kq;
+  try{
+    if(k === '1doc')      kq = ENGINE.maiTon1Doc({...chung, doc: num('mt_doc')});
+    else if(k === '2doc') kq = ENGINE.maiTon2Doc({...chung, doc: num('mt_doc')});
+    else                  kq = ENGINE.maiVom({...chung, f: num('mt_f')});
+  }catch(e){alert(e.message); return;}
+  let dongs = [], kqs = [], ghichu = '', phu = '', copy = '';
+
+  if(k === '1doc'){
+    kqs = [['Chiều dài tấm tôn', m2(kq.daiDoc)+' <em>m</em>', true],
+           ['Số tấm tôn', kq.soTam+' <em>tấm</em>', true],
+           ['Diện tích tôn', m2(kq.dienTich)+' <em>m²</em>'],
+           ['Vít bắn tôn', kq.soVit+' <em>con</em>']];
+    dongs = [['Tôn khổ '+kho+'m', 'dài '+m2(kq.daiDoc)+' m/tấm', kq.soTam+' tấm'],
+             ['Xà gồ ('+kq.hangXaGo+' hàng × '+m2(D)+'m)', m2(kq.metXaGo)+' m', '≈ '+kq.cayXaGo+' cây 6m'],
+             ['Kèo thẳng', 'dài '+m2(kq.daiDoc)+' m/cây', kq.soKeo+' cây'],
+             ['Vít', vitM2+' con/m²', kq.soVit+' con']];
+    ghichu = `Dài mái dốc = √(sâu² + (sâu×dốc)²) + dư ${du}m.`;
+    phu = `1 mái dốc ${D}×${R} m, dốc ${num('mt_doc')}%`;
+    copy = `MÁI TÔN 1 DỐC ${D}x${R}m dốc ${num('mt_doc')}%
+- Tôn: ${kq.soTam} tấm x ${m2(kq.daiDoc)}m = ${m2(kq.dienTich)} m²
+- Xà gồ: ${kq.hangXaGo} hàng x ${m2(D)}m ≈ ${kq.cayXaGo} cây 6m
+- Kèo: ${kq.soKeo} cây x ${m2(kq.daiDoc)}m | Vít: ${kq.soVit} con`;
+  }
+  else if(k === '2doc'){
+    kqs = [['Dài tấm tôn / bên', m2(kq.daiDoc)+' <em>m</em>', true],
+           ['Tổng tấm tôn', kq.soTam+' <em>('+kq.soTamBen+'/bên)</em>', true],
+           ['Diện tích tôn', m2(kq.dienTich)+' <em>m²</em>'],
+           ['Tôn úp nóc', m2(kq.daiUpNoc)+' <em>m</em>']];
+    dongs = [['Tôn khổ '+kho+'m (2 bên)', 'dài '+m2(kq.daiDoc)+' m/tấm', kq.soTam+' tấm'],
+             ['Tôn úp nóc', 'chạy dài nóc', m2(kq.daiUpNoc)+' m'],
+             ['Xà gồ (2 bên × '+kq.hangBen+' hàng)', m2(kq.metXaGo)+' m', '≈ '+kq.cayXaGo+' cây 6m'],
+             ['Vì kèo chữ A ('+kq.soVi+' vì)', '2 cánh × '+m2(kq.daiDoc)+' m', m2(kq.metKeo)+' m'],
+             ['Vít', vitM2+' con/m²', kq.soVit+' con']];
+    ghichu = `Mỗi bên sâu ${m2(kq.sauBen)}m. Vì kèo chữ A: mỗi vì gồm 2 cánh dài ${m2(kq.daiDoc)}m (chưa gồm thanh giằng).`;
+    phu = `2 mái dốc ${D} m × khẩu độ ${R} m, dốc ${num('mt_doc')}%`;
+    copy = `MÁI TÔN 2 DỐC ${D}m x khẩu độ ${R}m dốc ${num('mt_doc')}%
+- Tôn: ${kq.soTam} tấm x ${m2(kq.daiDoc)}m (${kq.soTamBen} tấm/bên) = ${m2(kq.dienTich)} m²
+- Úp nóc: ${m2(kq.daiUpNoc)}m
+- Xà gồ: ${2*kq.hangBen} hàng x ${m2(D)}m ≈ ${kq.cayXaGo} cây 6m
+- Vì kèo: ${kq.soVi} vì x 2 cánh ${m2(kq.daiDoc)}m | Vít: ${kq.soVit} con`;
+  }
+  else { // ===== MÁI VÒM =====
+    const f = num('mt_f');
+    kqs = [['BÁN KÍNH UỐN KÈO', m2(kq.banKinhUon)+' <em>m</em>', true],
+           ['Dài cung (tấm tôn)', m2(kq.daiTon)+' <em>m</em>', true],
+           ['Số tấm tôn', kq.soTam+' <em>tấm</em>'],
+           ['Diện tích tôn', m2(kq.dienTich)+' <em>m²</em>']];
+    dongs = [['Tôn khổ '+kho+'m (lợp theo cung)', 'dài '+m2(kq.daiTon)+' m/tấm', kq.soTam+' tấm'],
+             ['Kèo vòm — uốn R = '+m2(kq.banKinhUon)+'m', 'dài '+m2(kq.cung)+' m/cây', kq.soKeo+' cây'],
+             ['Xà gồ ('+kq.hangXaGo+' hàng × '+m2(D)+'m)', m2(kq.metXaGo)+' m', '≈ '+kq.cayXaGo+' cây 6m'],
+             ['Vít', vitM2+' con/m²', kq.soVit+' con']];
+    ghichu = `<b>Đưa máy uốn: bán kính R = ${m2(kq.banKinhUon)} m</b> (khẩu độ ${R}m, vồng ${f}m). Chiều dài phôi kèo trước khi uốn = ${m2(kq.cung)}m + hao 2 đầu.`;
+    phu = `Mái vòm ${D} m × khẩu độ ${R} m, vồng ${f} m`;
+    copy = `MÁI VÒM ${D}m x khẩu độ ${R}m, vồng ${f}m
+- BÁN KÍNH UỐN KÈO: R = ${m2(kq.banKinhUon)}m
+- Kèo vòm: ${kq.soKeo} cây, phôi dài ${m2(kq.cung)}m/cây
+- Tôn: ${kq.soTam} tấm x ${m2(kq.daiTon)}m = ${m2(kq.dienTich)} m²
+- Xà gồ: ${kq.hangXaGo} hàng x ${m2(D)}m ≈ ${kq.cayXaGo} cây 6m | Vít: ${kq.soVit} con`;
+  }
+
+  oKQ('mt_kq', kqs);
+  $('mt_bang').innerHTML = dongs.map(d=>
+    `<tr><td>${d[0]}</td><td class="mono">${d[1]}</td><td class="mono">${d[2]}</td></tr>`).join('');
+  $('mt_bang').closest('table').querySelector('thead').innerHTML =
+    '<tr><th>Hạng mục</th><th>Quy cách</th><th>SL</th></tr>';
+  $('mt_ghichu').innerHTML = ghichu;
+  $('mt_phu').textContent = phu;
+  $('mt_phieu').classList.add('hien');
+  vanBanCopy.mt = copy;
+  luuLichSu('mt', phu, copy);
+}
+
+/* ============ SEN HOA ============ */
+function doiMauSH(){
+  const m = $('sh_mau').value;
+  $('sh_theNan').classList.toggle('an', m==='hoa');
+  $('sh_theHoa').classList.toggle('an', m!=='hoa');
+}
+
+function tinhSenHoa(){
+  const m = $('sh_mau').value;
+  const W = num('sh_W'), H = num('sh_H');
+  const soBo = Math.max(1, num('sh_soBo'));
+  const w = num('sh_wNan');
+  const chung = {W, H, khung: num('sh_khung'), soBo};
+  let kq;
+  try{
+    if(m==='nand' || m==='nann')
+      kq = ENGINE.senHoaNan({...chung, wNan: w, kheMax: num('sh_khe'),
+                             huong: m==='nand' ? 'dung' : 'ngang'});
+    else if(m==='caro')
+      kq = ENGINE.senHoaCaro({...chung, wNan: w, kheMax: num('sh_khe')});
+    else if(m==='cheo')
+      kq = ENGINE.senHoaCheo({...chung, wNan: w, kheMax: num('sh_khe')});
+    else
+      kq = ENGINE.senHoaModule({...chung, hoaA: num('sh_hoaA'), hoaB: num('sh_hoaB'),
+                                kheHoaMax: num('sh_kheHoa')});
+  }catch(e){alert(e.message); return;}
+  const tW = kq.tW, tH = kq.tH;
+  let dongs = [['Khung bao ngang', mm(W), 2*soBo, m2(2*W*soBo/1000)+' m'],
+               ['Khung bao đứng', mm(H), 2*soBo, m2(2*H*soBo/1000)+' m']];
+  let kqs = [], ghichu = '', phu = '', copy = '';
+  const svg = $('sh_svg'); svg.innerHTML='';
+
+  if(m==='nand' || m==='nann'){
+    kqs = [['Số nan / bộ', kq.soNan+' <em>'+(m==='nand'?'đứng':'ngang')+'</em>', true],
+           ['Khe hở thực tế', mm(kq.khe), true],
+           ['Dài cắt mỗi nan', mm(kq.daiNan)],
+           ['Số bộ', soBo+' <em>bộ</em>']];
+    dongs.push(['Nan '+w+'mm', mm(kq.daiNan), kq.tongNan, m2(kq.metNan)+' m']);
+    veNan('sh_svg', m==='nand'?tW:tH, kq.soNan, w, kq.kheRaw, `${kq.soNan} nan, khe ${mm(kq.khe)}`, m==='nann');
+    ghichu = `Quy cây 6m: khung <b>${kq.cay.khung}</b> · nan <b>${kq.cay.nan}</b> cây (${soBo} bộ).`;
+    phu = `Nan ${m==='nand'?'đứng':'ngang'} — ô ${W}×${H} mm, ${soBo} bộ`;
+    copy = `SEN HOA NAN ${m==='nand'?'ĐỨNG':'NGANG'} ${W}x${H}mm (${soBo} bộ)
+- Khung: ${2*soBo}x${W}mm + ${2*soBo}x${H}mm
+- Nan ${w}mm: ${kq.tongNan} thanh x ${kq.daiNan}mm, khe ${kq.khe}mm`;
+  }
+  else if(m==='caro'){
+    const cd = kq.nanDung, cn = kq.nanNgang;
+    kqs = [['Nan đứng / bộ', cd.n+' <em>khe '+mm(cd.khe)+'</em>', true],
+           ['Nan ngang / bộ', cn.n+' <em>khe '+mm(cn.khe)+'</em>', true],
+           ['Ô lưới', kq.oLuoi.cot+'×'+kq.oLuoi.hang+' <em>ô</em>'],
+           ['Mối hàn giao nhau', kq.moiHanMoiBo+' <em>/bộ</em>']];
+    dongs.push(['Nan đứng '+w+'mm', mm(cd.dai), cd.n*soBo, m2(kq.metNanDung)+' m']);
+    dongs.push(['Nan ngang '+w+'mm', mm(cn.dai), cn.n*soBo, m2(kq.metNanNgang)+' m']);
+    veCaro(svg, tW, tH, {n:cd.n, khe:cd.kheRaw}, {n:cn.n, khe:cn.kheRaw}, w);
+    ghichu = `Ô lưới thông thủy ≈ ${mm(cd.khe)} × ${mm(cn.khe)}. Quy cây 6m: khung <b>${kq.cay.khung}</b> · nan <b>${kq.cay.nan}</b> cây.`;
+    phu = `Caro vuông — ô ${W}×${H} mm, ${soBo} bộ`;
+    copy = `SEN HOA CARO VUÔNG ${W}x${H}mm (${soBo} bộ)
+- Khung: ${2*soBo}x${W}mm + ${2*soBo}x${H}mm
+- Nan đứng: ${cd.n*soBo} x ${cd.dai}mm (khe ${cd.khe}mm)
+- Nan ngang: ${cn.n*soBo} x ${cn.dai}mm (khe ${cn.khe}mm)`;
+  }
+  else if(m==='cheo'){
+    kq.thanh.forEach(t=>{
+      dongs.push(['Nan chéo '+w+'mm (vát 45° 2 đầu)', mm(t.dai), t.sl, m2(t.sl*t.dai/1000)+' m']);
+    });
+    kqs = [['Tổng nan chéo / bộ', kq.tongThanhBo+' <em>thanh</em>', true],
+           ['Bước nan (tâm-tâm)', mm(kq.buoc), true],
+           ['Khe vuông góc', mm(kq.kheVuongGoc)],
+           ['Tổng mét nan / bộ', m2(kq.tongMetBo)+' <em>m</em>']];
+    veCheo(svg, tW, tH, kq.buoc);
+    ghichu = `Tất cả nan cắt <b>vát 45° hai đầu</b>. Danh sách trên đã gộp 2 hướng chéo (mỗi chiều dài × 2). `+
+      `Quy cây 6m nan: <b>${kq.cay.nan}</b> cây (${soBo} bộ) · khung <b>${kq.cay.khung}</b> cây.`;
+    phu = `Caro chéo 45° — ô ${W}×${H} mm, ${soBo} bộ`;
+    copy = `SEN HOA CARO CHÉO 45° ${W}x${H}mm (${soBo} bộ)
+- Khung: ${2*soBo}x${W}mm + ${2*soBo}x${H}mm
+- Nan vát 45° 2 đầu, bước ${Math.round(kq.buoc)}mm:
+` + kq.thanh.map(t=>`  + ${t.sl} thanh x ${t.dai}mm`).join('\n');
+  }
+  else { // ===== HOA MODULE =====
+    const a = num('sh_hoaA'), b = num('sh_hoaB');
+    kqs = [['Số bông hoa / bộ', kq.hoaMoiBo+' <em>('+kq.cot+'×'+kq.hang+')</em>', true],
+           ['Tổng hoa cần làm', kq.tongHoa+' <em>bông</em>', true],
+           ['Khe ngang thực tế', mm(kq.kheNgang)],
+           ['Khe dọc thực tế', mm(kq.kheDoc)]];
+    dongs.push(['Bông hoa '+a+'×'+b+'mm', a+'×'+b, kq.tongHoa, '—']);
+    veHoa(svg, tW, tH, kq.cot, kq.hang, a, b, kq.kheNgangRaw, kq.kheDocRaw);
+    ghichu = `Hoa xếp ${kq.cot} cột × ${kq.hang} hàng, khe chia đều. Nếu khe lệch nhiều so với ý muốn, đổi kích thước hoa hoặc khe tối đa rồi tính lại.`;
+    phu = `Hoa module ${a}×${b} — ô ${W}×${H} mm, ${soBo} bộ`;
+    copy = `SEN HOA MODULE ${W}x${H}mm (${soBo} bộ)
+- Khung: ${2*soBo}x${W}mm + ${2*soBo}x${H}mm
+- Hoa ${a}x${b}mm: ${kq.tongHoa} bông (${kq.cot} cột x ${kq.hang} hàng/bộ)
+- Khe ngang ${kq.kheNgang}mm, khe dọc ${kq.kheDoc}mm`;
+  }
+
+  oKQ('sh_kq', kqs);
+  bang4('sh_bang', dongs);
+  $('sh_ghichu').innerHTML = ghichu;
+  $('sh_phu').textContent = phu;
+  $('sh_phieu').classList.add('hien');
+  vanBanCopy.sh = copy;
+  luuLichSu('sh', phu, copy);
+}
+
+/* ============ ĐỀ-XÊ ============ */
+function docDongCat(txt, coTen){
+  const ds = [];
+  for(const dongTho of txt.split('\n')){
+    const dong = dongTho.trim();
+    if(!dong) continue;
+    const m = dong.match(/^(\d+)(?:\s*[xX×*]\s*(\d+))?\s*(.*)$/);
+    if(!m) throw new Error('Không đọc được dòng: "'+dong+'"\nViết dạng: 770 x 51 tên (tên bỏ trống cũng được)');
+    ds.push({dai:+m[1], sl:m[2]?+m[2]:1, ten:(coTen&&m[3])?m[3].trim():''});
+  }
+  return ds;
+}
+
+function tinhDeXe(){
+  let kq;
+  try{
+    kq = DEXE.toiUuCat({
+      chiTiet: docDongCat($('dx_chitiet').value, true),
+      tonKho: docDongCat($('dx_ton').value, false),
+      cayMoi: num('dx_cay'), haoDauCay: num('dx_hao'), kerf: num('dx_kerf')
+    });
+  }catch(e){alert(e.message); return;}
+  const ts = kq.thongSo;
+  const ptHS = (kq.hieuSuat*100).toFixed(1).replace('.',',');
+
+  oKQ('dx_kq', [
+    ['Cây mới phải bổ', kq.tongCayMoi+' <em>cây '+ts.cayMoi/1000+'m</em>', true],
+    ['Đầu thừa tận dụng', kq.soTonKhoDung+' <em>thanh</em>'],
+    ['Hiệu suất sắt', ptHS+' <em>%</em>', true],
+    ['Đề-xê mới sinh', m2(kq.tongDeXe/1000)+' <em>m</em>'],
+  ]);
+
+  let sodo = '';
+  kq.soDo.forEach(d=>{
+    const hao = (d.nguon==='cay_moi' && !d.nguyenCay) ? ts.haoDauCay : 0;
+    let seg = hao ? `<div class="hao" style="width:${hao/d.daiCay*100}%"></div>` : '';
+    d.cat.forEach(c=>{
+      seg += `<div class="doan" style="width:${c.dai/d.daiCay*100}%">${c.dai}</div>`;
+    });
+    if(d.conLai>0) seg += `<div class="de" style="width:${d.conLai/d.daiCay*100}%"></div>`;
+    const nhan = (d.nguon==='cay_moi' ? 'Cây mới '+mm(d.daiCay) : 'Tồn kho '+mm(d.daiCay))
+      + ' × '+d.soCay + (d.nguyenCay ? ' — NGUYÊN CÂY (không cắt đầu)' : '')
+      + (d.conLai>0 ? ' — dư '+mm(d.conLai) : '');
+    sodo += `<div class="cay-nhan">${nhan}</div><div class="cay-bar">${seg}</div>`;
+  });
+  $('dx_sodo').innerHTML = sodo;
+
+  $('dx_bang').innerHTML = kq.soDo.map(d=>{
+    const catTxt = d.cat.map(c=>c.dai+(c.ten?' <small>('+c.ten+')</small>':'')).join(' + ');
+    return `<tr><td>${d.nguon==='cay_moi'?'Mới':'Tồn'} ${mm(d.daiCay)}${d.nguyenCay?' (nguyên cây)':''}</td>`+
+      `<td class="mono">${catTxt}</td><td class="mono">${d.soCay}</td><td class="mono">${d.conLai>0?mm(d.conLai):'—'}</td></tr>`;
+  }).join('');
+
+  $('dx_ghichu').innerHTML =
+    `Đã tính kerf ${ts.kerf}mm mỗi nhát, hao đầu cây mới ${ts.haoDauCay}mm (đầu thừa tồn kho dùng trọn). `+
+    `Cắt ${kq.tongThanhCat} thanh = ${m2(kq.tongMetCat)}m sắt thành chi tiết. Sơ đồ: cam = đoạn cắt, xám nhạt = đề-xê, đen = hao đầu.`;
+  $('dx_phu').textContent = `Cây ${ts.cayMoi}mm · kerf ${ts.kerf}mm · hao đầu ${ts.haoDauCay}mm`;
+
+  vanBanCopy.dx = `TỐI ƯU ĐỀ-XÊ (cây ${ts.cayMoi}mm, kerf ${ts.kerf}mm, hao đầu ${ts.haoDauCay}mm)
+- Bổ ${kq.tongCayMoi} cây mới`+(kq.soTonKhoDung?` + dùng ${kq.soTonKhoDung} đầu thừa tồn kho`:'')+` | hiệu suất ${ptHS}%
+Cắt như sau:
+`+ kq.soDo.map((d,i)=>{
+    const catTxt = d.cat.map(c=>c.dai+(c.ten?'('+c.ten+')':'')).join(' + ');
+    return `${i+1}) ${d.nguon==='cay_moi'?'Cây mới':'Tồn kho '+d.daiCay} x${d.soCay}${d.nguyenCay?' NGUYÊN CÂY':''}: ${catTxt}${d.conLai>0?' | dư '+d.conLai:''}`;
+  }).join('\n');
+
+  $('dx_phieu').classList.add('hien');
+  luuLichSu('dx', `Tối ưu ${kq.tongThanhCat} thanh → ${kq.tongCayMoi} cây mới`, vanBanCopy.dx);
+}
+
+/* ============ CATALOGUE MẪU ============ */
+const dsMau = {};          // ma → máy tính đã nạp từ JSON
+let mauDangChon = null, kqCatalogue = null, quyCachDoi = {};
+
+async function napDanhSachMau(){
+  if(Object.keys(dsMau).length) return;
+  try{
+    const ds = await (await fetch('../catalogue/mau/danh-sach.json')).json();
+    for(const ma of ds){
+      const json = await (await fetch('../catalogue/mau/'+ma+'.json')).json();
+      dsMau[ma] = CATALOGUE.napMau(json);
+    }
+    $('cat_chon').innerHTML = Object.values(dsMau).map(m=>
+      `<option value="${m.ma}">${m.ma} — ${m.ten}</option>`).join('');
+    veLuoiMau();
+    doiMauCat();
+  }catch(e){
+    $('cat_form').innerHTML = '<div class="ghichu">Không nạp được catalogue: '+e.message+'</div>';
+  }
+}
+
+// Lưới hình chọn mẫu — bấm hình là chọn, như lật catalogue giấy
+function veLuoiMau(){
+  $('cat_luoi').innerHTML = Object.values(dsMau).map(m=>
+    `<div class="mau-o" id="mauo_${m.ma}" onclick="chonMauLuoi('${m.ma}')">`+
+    `<svg viewBox="0 0 340 140"></svg><div class="ten">${m.ma} — ${m.ten.split('—')[0].split('(')[0].trim()}</div></div>`
+  ).join('');
+  Object.values(dsMau).forEach(m=>
+    MINHHOA.ve(document.querySelector('#mauo_'+m.ma+' svg'), m, null, null, true));
+}
+function chonMauLuoi(ma){
+  $('cat_chon').value = ma;
+  doiMauCat();
+}
+function doiMauCat(){
+  mauDangChon = dsMau[$('cat_chon').value];
+  if(!mauDangChon) return;
+  document.querySelectorAll('.mau-o').forEach(o=>
+    o.classList.toggle('on', o.id === 'mauo_'+mauDangChon.ma));
+  const tenDV = {mm:'mm', m:'m', phan_tram:'%', so_luong:'cái'};
+  $('cat_form').innerHTML = mauDangChon.dauVao.map(dv=>
+    `<div class="o"><label>${dv.nhan} (${tenDV[dv.don_vi]||dv.don_vi})</label>`+
+    `<input type="number" step="any" id="cat_in_${dv.ten}" value="${dv.mac_dinh??''}"></div>`
+  ).join('');
+  // Hằng số mẫu cho thợ sửa theo yêu cầu khách (bề rộng nan, khe, khung...)
+  quyCachDoi = {};
+  $('cat_hangso').innerHTML = Object.entries(mauDangChon.hangSo).map(([k, hs])=>
+    `<div class="o"><label>${k.replace(/_/g,' ')}${hs.cho_chot?' — TẠM':''} (${hs.don_vi||'mm'})</label>`+
+    `<input type="number" step="any" id="cat_hs_${k}" value="${hs.gia_tri}"></div>`
+  ).join('');
+  $('cat_canhbao').innerHTML = mauDangChon.hangSoChoChot.length
+    ? `⚠ <b>Mẫu nháp</b> — ${mauDangChon.hangSoChoChot.length} hằng số nghề đang TẠM `+
+      `chờ chủ xưởng chốt: <i>${mauDangChon.hangSoChoChot.join(', ')}</i>`
+    : '';
+  MINHHOA.ve($('cat_svg'), mauDangChon, null, null);
+  $('cat_phieu').classList.remove('hien');
+}
+
+// Danh sách quy cách cho ô đổi trên phiếu — hộp/V/ống từ danh mục + tôn
+function dsQuyCach(hienTai){
+  const ds = [];
+  VATTU.DANH_MUC.forEach(q=>ds.push('hộp '+q.a+'x'+q.b));
+  VATTU.DANH_MUC_V.forEach(a=>ds.push('kèo V '+a));
+  VATTU.DANH_MUC_ONG.forEach(D=>ds.push('ống ∅'+D));
+  ds.push('tôn thường', 'tôn xốp (chống nóng)');
+  return `<option selected>${hienTai}</option><option disabled>── đổi sang ──</option>`+
+    ds.filter(d=>d!==hienTai).map(d=>`<option>${d}</option>`).join('');
+}
+function doiQuyCach(i, qc){
+  quyCachDoi[i] = qc;
+  tinhCatalogue(); // tính lại: kg, m² sơn, bản copy, ảnh phiếu đều theo quy cách mới
+}
+
+function tinhCatalogue(){
+  if(!mauDangChon){alert('Chưa nạp được mẫu nào'); return;}
+  const nhap = {};
+  mauDangChon.dauVao.forEach(dv=>{
+    const v = parseFloat($('cat_in_'+dv.ten).value);
+    if(!isNaN(v)) nhap[dv.ten] = v;
+  });
+  // Hằng số thợ đã sửa → đưa vào nhap (bộ nạp ưu tiên giá trị nhập trước hằng số mẫu)
+  Object.entries(mauDangChon.hangSo).forEach(([k, hs])=>{
+    const el = $('cat_hs_'+k);
+    if(!el) return;
+    const v = parseFloat(el.value);
+    if(!isNaN(v) && v !== hs.gia_tri) nhap[k] = v;
+  });
+  let kq;
+  try{ kq = mauDangChon.tinh(nhap); }catch(e){alert(e.message); return;}
+  // Quy cách thợ đã đổi trên bảng → áp lại vào phiếu mới tính
+  Object.entries(quyCachDoi).forEach(([i, qc])=>{
+    if(kq.chiTiet[i]) kq.chiTiet[i].quy_cach = qc;
+  });
+  kqCatalogue = kq;
+  MINHHOA.ve($('cat_svg'), mauDangChon, kq, nhap);
+
+  const tongThanh = kq.chiTiet.reduce((s,c)=>s+c.sl,0);
+  const tongMet = kq.chiTiet.reduce((s,c)=>s+c.sl*c.dai/1000,0);
+  const oKhe = Object.entries(kq.khe).map(([ten,k])=>
+    [ten.replace(/_/g,' '), k.n+' <em>thanh · khe '+mm(k.khe)+'</em>', true]);
+  // Khối lượng + diện tích sơn — theo vật liệu và độ dày đang chọn
+  const day = parseFloat($('cat_day').value);
+  const vatLieu = VATTU.VAT_LIEU[$('cat_vatlieu').value] || VATTU.VAT_LIEU.sat;
+  const laInox = $('cat_vatlieu').value !== 'sat';
+  let tongKg = 0, coKg = false, tongM2 = 0;
+  kq.chiTiet.forEach(c=>{
+    const kg = VATTU.kgChiTiet(c, day, vatLieu.kgRieng);
+    if(kg != null){ tongKg += kg; coKg = true; tongM2 += VATTU.m2ChiTiet(c) || 0; }
+  });
+  // Kết quả phụ mẫu khai báo (số bậc, góc vát...) — hiện nổi bật đầu phiếu
+  const oPhu = (kq.phuThem||[]).map(p=>
+    [p.nhan, p.gia_tri.toLocaleString('vi-VN')+' <em>'+p.don_vi+'</em>', true]);
+  oKQ('cat_kq', [
+    ...oPhu,
+    ['Tổng thanh cắt', tongThanh+' <em>thanh</em>'],
+    ['Tổng mét sắt', m2(tongMet)+' <em>m</em>'],
+    ...(coKg ? [['KL '+vatLieu.ten.split(' (')[0]+' (dày '+day+')', '≈ '+m2(tongKg)+' <em>kg</em>', true]] : []),
+    ...(coKg && !laInox ? [['DT sơn tĩnh điện', '≈ '+m2(tongM2)+' <em>m²</em>']] : []),
+    ...oKhe,
+  ]);
+  // Cảnh báo chuẩn an toàn
+  const canhBaoChuan = [];
+  if(mauDangChon.nhom === 'cau_thang'){
+    // nguồn cảnh báo duy nhất: engine (đã test chuẩn TCVN 13967 + thước lỗ ban)
+    try{
+      let ct;
+      const cbm = nhap.cao_bac_muon; // thợ có thể đã sửa trong tùy chỉnh
+      if(nhap.D != null)       ct = ENGINE.cauThangXoan({H: nhap.H, Dngoai: nhap.D, gocXoayTong: nhap.goc_xoay, caoBacMuon: cbm});
+      else if(nhap.L1 != null) ct = ENGINE.cauThangChieuNghi({H: nhap.H, L1: nhap.L1, L2: nhap.L2, W: nhap.W, caoBacMuon: cbm});
+      else                     ct = ENGINE.cauThang({H: nhap.H, L: nhap.L, W: nhap.W, caoBacMuon: cbm});
+      ct.canhBao.forEach(c=>canhBaoChuan.push('<span class="cb-do">⚠ '+c+'</span>'));
+      canhBaoChuan.push(ct.cung === 'Sinh'
+        ? '✅ Số bậc rơi cung <b>SINH</b> — đạt thước lỗ ban'
+        : '<span class="cb-do">⚠ Số bậc rơi cung '+ct.cung.toUpperCase()+' (thước lỗ ban)</span>');
+    }catch(e){}
+  }
+  // CD-01: sinh mốc đánh dấu thước — mép TRÁI từng thanh, tính từ khe THÔ
+  // (không dồn sai số làm tròn khi cộng chuỗi)
+  if(mauDangChon.ma === 'CD-01' && kq.khe.nan && kq.khe.nan.n > 0){
+    const kheRaw = kq.bien.nan_khe, w = nhap.w;
+    const moc = [];
+    for(let i = 1; i <= kq.khe.nan.n; i++) moc.push(Math.round(i*kheRaw + (i-1)*w));
+    canhBaoChuan.push('<b>MỐC ĐÁNH DẤU mép trái từng thanh</b> (mm — kéo thước từ đầu khoang, '+
+      'bút dấu tại mốc, mép phải = mốc + '+w+'):<br>'+
+      '<span style="font-family:\'JetBrains Mono\',monospace;font-weight:700;font-size:14px">'+
+      moc.join(' · ')+'</span>');
+    canhBaoChuan.push('Soát: mốc cuối '+moc[moc.length-1]+' + thanh '+w+' + khe '+kq.khe.nan.khe+
+      ' = '+(moc[moc.length-1]+w+kq.khe.nan.khe)+' ≈ '+Math.round(nhap.L)+'mm ✓');
+  }
+  if(mauDangChon.nhom === 'lan_can'){
+    Object.values(kq.khe).forEach(k=>{
+      if(k.khe > 100) canhBaoChuan.push(
+        '<span class="cb-do">⚠ Khe '+k.khe+'mm VƯỢT chuẩn an toàn 100mm (QCXDVN 05:2008) — trẻ em chui lọt</span>');
+    });
+    if(nhap.H && nhap.H*1000 < 1100) canhBaoChuan.push(
+      'ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(nhap.H*1000)+'mm)');
+  }
+  $('cat_bang').innerHTML = kq.chiTiet.map((c,i)=>
+    `<tr><td>${c.ten}${c.cat_vat?' <small>('+c.cat_vat+')</small>':''}</td>`+
+    `<td><select class="qc-sel" onchange="doiQuyCach(${i}, this.value)">${dsQuyCach(c.quy_cach)}</select></td>`+
+    `<td class="mono">${mm(c.dai)}</td><td class="mono">${c.sl}</td></tr>`
+  ).join('');
+  const ghiChuDong = kq.chiTiet.filter(c=>c.ghi_chu).map(c=>`• ${c.ten}: ${c.ghi_chu}`);
+  $('cat_ghichu').innerHTML = [...canhBaoChuan, ...ghiChuDong].join('<br>');
+  $('cat_tenmau').textContent = mauDangChon.ma;
+  $('cat_phu').textContent = mauDangChon.ten+' — '+
+    mauDangChon.dauVao.map(dv=>dv.nhan+' '+nhap[dv.ten]).join(', ');
+  $('cat_phieu').classList.add('hien');
+
+  vanBanCopy.cat = `PHIẾU CẮT ${mauDangChon.ma} — ${mauDangChon.ten}\n`+
+    mauDangChon.dauVao.map(dv=>`${dv.nhan}: ${nhap[dv.ten]}`).join(' | ')+'\n'+
+    (kq.phuThem||[]).map(p=>`* ${p.nhan}: ${p.gia_tri} ${p.don_vi}`).join('\n')+
+    ((kq.phuThem||[]).length ? '\n' : '')+
+    kq.chiTiet.map(c=>`- ${c.ten} (${c.quy_cach}): ${c.sl} x ${c.dai}mm${c.cat_vat?' — '+c.cat_vat:''}`).join('\n')+
+    (coKg ? `\n≈ ${m2(tongKg)} kg ${vatLieu.ten} (dày ${day}mm)`+
+            (!laInox ? ` | sơn tĩnh điện ≈ ${m2(tongM2)} m²` : '') : '')+
+    (canhBaoChuan.length ? '\n'+canhBaoChuan.map(c=>c.replace(/<[^>]+>/g,'')).join('\n') : '');
+  luuLichSu('cat', $('cat_phu').textContent, vanBanCopy.cat);
+}
+
+function guiSangDeXe(){
+  if(!kqCatalogue) return;
+  $('dx_chitiet').value = kqCatalogue.chiTiet.map(c=>`${c.dai} x ${c.sl} ${c.ten}`).join('\n');
+  chonTab(3);
+}
+
+/* ============ VẼ SƠ ĐỒ ============ */
+function veNan(svgId, usable, n, w, khe, nhan, ngang){
+  const svg = (typeof svgId==='string') ? $(svgId) : svgId;
+  svg.setAttribute('viewBox','0 0 340 90'); svg.innerHTML='';
+  const W=320, X=10, Y=15, Hh=50, tl=W/usable;
+  let s = `<rect x="${X}" y="${Y}" width="${W}" height="${Hh}" fill="none" stroke="#24303C" stroke-width="2"/>`;
+  let pos = khe;
+  for(let i=0;i<n;i++){
+    if(ngang) s += `<rect x="${X}" y="${Y + pos*(Hh/usable)*(usable/Hh)*0}" width="0" height="0"/>`;
+    s += `<rect x="${X+pos*tl}" y="${Y}" width="${Math.max(w*tl,2)}" height="${Hh}" fill="#F25C1F"/>`;
+    pos += w + khe;
+  }
+  s += `<text x="${X+W/2}" y="${Y+Hh+18}" text-anchor="middle" font-size="11" fill="#5C6672" font-family="monospace">${nhan}</text>`;
+  svg.innerHTML = s;
+}
+function veCaro(svg, tW, tH, cd, cn, w){
+  svg.setAttribute('viewBox','0 0 340 160');
+  const S = Math.min(300/tW, 130/tH), X=(340-tW*S)/2, Y=10;
+  let s = `<rect x="${X}" y="${Y}" width="${tW*S}" height="${tH*S}" fill="none" stroke="#24303C" stroke-width="2"/>`;
+  let p = cd.khe;
+  for(let i=0;i<cd.n;i++){ s+=`<rect x="${X+p*S}" y="${Y}" width="${Math.max(w*S,1.5)}" height="${tH*S}" fill="#F25C1F"/>`; p+=w+cd.khe; }
+  p = cn.khe;
+  for(let i=0;i<cn.n;i++){ s+=`<rect x="${X}" y="${Y+p*S}" width="${tW*S}" height="${Math.max(w*S,1.5)}" fill="#24303C" opacity=".75"/>`; p+=w+cn.khe; }
+  svg.innerHTML = s;
+}
+function veCheo(svg, tW, tH, buoc){
+  svg.setAttribute('viewBox','0 0 340 160');
+  const S = Math.min(300/tW, 130/tH), X=(340-tW*S)/2, Y=10, W2=tW*S, H2=tH*S;
+  let s = `<rect x="${X}" y="${Y}" width="${W2}" height="${H2}" fill="none" stroke="#24303C" stroke-width="2"/>
+    <clipPath id="cl"><rect x="${X}" y="${Y}" width="${W2}" height="${H2}"/></clipPath><g clip-path="url(#cl)">`;
+  const b = buoc*Math.SQRT2*S;
+  for(let c=b; c<W2+H2; c+=b){
+    s += `<line x1="${X}" y1="${Y+c}" x2="${X+c}" y2="${Y}" stroke="#F25C1F" stroke-width="2.5"/>`;
+    s += `<line x1="${X+W2-c}" y1="${Y}" x2="${X+W2}" y2="${Y+c}" stroke="#24303C" stroke-width="2.5" opacity=".7"/>`;
+  }
+  svg.innerHTML = s + '</g>';
+}
+function veHoa(svg, tW, tH, cot, hang, a, b, kheNg, kheDoc){
+  svg.setAttribute('viewBox','0 0 340 160');
+  const S = Math.min(300/tW, 130/tH), X=(340-tW*S)/2, Y=10;
+  let s = `<rect x="${X}" y="${Y}" width="${tW*S}" height="${tH*S}" fill="none" stroke="#24303C" stroke-width="2"/>`;
+  for(let i=0;i<cot;i++) for(let j=0;j<hang;j++){
+    const x = X + (kheNg + i*(a+kheNg))*S, y = Y + (kheDoc + j*(b+kheDoc))*S;
+    s += `<rect x="${x}" y="${y}" width="${a*S}" height="${b*S}" rx="${Math.min(a,b)*S*.3}" fill="none" stroke="#F25C1F" stroke-width="2"/>
+          <circle cx="${x+a*S/2}" cy="${y+b*S/2}" r="${Math.min(a,b)*S*.18}" fill="#F25C1F"/>`;
+  }
+  svg.innerHTML = s;
+}
+
+function saoChep(k){
+  if(!vanBanCopy[k]) return;
+  navigator.clipboard.writeText(vanBanCopy[k]).then(()=>alert('Đã sao chép — dán vào Zalo/Ghi chú để gửi thợ.'));
+}
+function xuatAnh(k){
+  if(!vanBanCopy[k]){alert('Bấm nút tính trước rồi mới xuất ảnh phiếu.'); return;}
+  PHIEUANH.xuat(vanBanCopy[k], k, msg=>alert(msg));
+}
+
+/* ============ PWA: chạy offline + cài lên màn hình chính ============ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

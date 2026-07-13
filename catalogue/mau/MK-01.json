@@ -1,0 +1,46 @@
+{
+  "ma": "MK-01",
+  "ten": "Mái kính 1 dốc — khung quanh + cột hộp 5x10, đòn tay trong 4x8",
+  "nhom": "mai_kinh",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Chiều ngang mái, phủ bì khung", "don_vi": "mm" },
+    { "ten": "L", "nhan": "Chiều dốc mái (đo theo mặt kính), phủ bì khung", "don_vi": "mm" },
+    { "ten": "so_cot", "nhan": "Số cột chống", "don_vi": "so_luong", "mac_dinh": 2 },
+    { "ten": "cao_cot", "nhan": "Chiều cao cột", "don_vi": "mm", "mac_dinh": 400 }
+  ],
+  "hang_so": {
+    "ban_khung":    { "gia_tri": 50,  "don_vi": "mm", "cho_chot": false },
+    "ban_don_tay":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": false },
+    "kho_kinh_max": { "gia_tri": 900, "don_vi": "mm", "cho_chot": true },
+    "goi_mi_kinh":  { "gia_tri": 15,  "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "long_ngang",  "cong_thuc": "W - 2*ban_khung" },
+    { "ten": "dai_don_tay", "cong_thuc": "L - 2*ban_khung" }
+  ],
+  "chia_khoang": [
+    { "ten": "kho_kinh",
+      "usable": "long_ngang",
+      "be_rong_thanh": "ban_don_tay",
+      "khe_toi_da": "kho_kinh_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Khung ngang (đỉnh + chân dốc)", "quy_cach": "hộp 50x100",
+      "sl": "2", "dai": "W" },
+    { "ten": "Khung dọc 2 bên (theo dốc)", "quy_cach": "hộp 50x100",
+      "sl": "2", "dai": "L - 2*ban_khung",
+      "ghi_chu": "Lọt giữa 2 thanh ngang. CHỜ CHỐT: anh ghép đối đầu hay bắn góc 45°?" },
+    { "ten": "Đòn tay trong (theo dốc, chia kính)", "quy_cach": "hộp 40x80",
+      "sl": "kho_kinh_n", "dai": "dai_don_tay" },
+    { "ten": "Cột chống", "quy_cach": "hộp 50x100",
+      "sl": "so_cot", "dai": "cao_cot",
+      "ghi_chu": "Cao cột 400 là số TẠM — thợ nhập theo công trình thật" },
+    { "ten": "Kính (đặt cắt, không phải sắt)", "quy_cach": "kính cường lực",
+      "sl": "kho_kinh_n + 1", "dai": "L - 2*ban_khung + 2*goi_mi_kinh",
+      "ghi_chu": "RỘNG mỗi tấm = khổ chia (mục khe) + 2×gối mí 15mm. Khổ chia app tự tính ≤ 900mm" }
+  ],
+  "audit": { "ngay": "12/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT checklist qua bộ nạp + 3 bộ test (chuẩn 3000x2500 → 3 đòn tay, khổ kính 695; lẻ 4321x1987 → 4 đòn tay, khổ 812; biên L quá nhỏ → báo lỗi thay vì số âm). Quy cách 5x10/4x8 là SỐ THẬT chủ dự án cấp 12/07 kèm ảnh công trình. GIỮ NHÃN NHÁP: khổ kính max 900 + gối mí 15 + kiểu ghép góc khung CHƯA CHỐT — cấm dùng cắt thật." }
+}

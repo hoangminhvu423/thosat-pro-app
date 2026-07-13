@@ -1,0 +1,29 @@
+{
+  "ma": "MT-01",
+  "ten": "Mái tôn 1 dốc",
+  "nhom": "mai_ton",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "D", "nhan": "Chiều ngang mái", "don_vi": "m" },
+    { "ten": "R", "nhan": "Chiều sâu / khẩu độ", "don_vi": "m" },
+    { "ten": "doc", "nhan": "Độ dốc", "don_vi": "phan_tram", "mac_dinh": 10 }
+  ],
+  "hang_so": {
+    "kho_ton":   { "gia_tri": 1.0,  "don_vi": "m",  "cho_chot": true },
+    "du_duoi":   { "gia_tri": 0.1,  "don_vi": "m",  "cho_chot": true },
+    "kc_xa_go":  { "gia_tri": 0.85, "don_vi": "m",  "cho_chot": true },
+    "kc_keo":    { "gia_tri": 3.0,  "don_vi": "m",  "cho_chot": true },
+    "vit_m2":    { "gia_tri": 8,    "don_vi": "con/m2", "cho_chot": true }
+  },
+  "chi_tiet": [
+    { "ten": "Tôn", "quy_cach": "khổ kho_ton", "sl": "ceil(D/kho_ton)",
+      "dai": "(R*sqrt(1+(doc/100)^2) + du_duoi)*1000" },
+    { "ten": "Xà gồ", "quy_cach": "theo mẫu",
+      "sl": "floor((R*sqrt(1+(doc/100)^2)+du_duoi)/kc_xa_go)+1", "dai": "D*1000" },
+    { "ten": "Kèo", "quy_cach": "theo mẫu", "sl": "ceil(D/kc_keo)+1",
+      "dai": "(R*sqrt(1+(doc/100)^2)+du_duoi)*1000" }
+  ],
+  "audit": { "ngay": "11/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT checklist A/E qua bộ nạp + 4 test đối chiếu engine (chuẩn 8x4, lẻ 7.3x3.45 dốc 15%, biên 1x1, mặc định độ dốc). Xà gồ floor(dài dốc/kc)+1 đã kiểm tra: khoảng cuối luôn < kc nên không hụt hàng mép. B/C/D không áp dụng. GIỮ NHÃN NHÁP: 5 hằng số TẠM chờ chốt." }
+}

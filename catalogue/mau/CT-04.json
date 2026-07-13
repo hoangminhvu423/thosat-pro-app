@@ -1,0 +1,41 @@
+{
+  "ma": "CT-04",
+  "ten": "Cầu thang xương cá — sống zigzag giữa, mặt bậc gỗ/khung",
+  "nhom": "cau_thang",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "H", "nhan": "Cao tầng (đo SÀN tới SÀN)", "don_vi": "mm" },
+    { "ten": "L", "nhan": "Chiều dài mặt bằng vế thang", "don_vi": "mm" },
+    { "ten": "W", "nhan": "Bề rộng bậc", "don_vi": "mm", "mac_dinh": 900 }
+  ],
+  "hang_so": {
+    "cao_bac_muon": { "gia_tri": 165, "don_vi": "mm", "cho_chot": false },
+    "w_hop_song":   { "gia_tri": 100, "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "so_bac",   "cong_thuc": "bac_lo_ban(H, cao_bac_muon)" },
+    { "ten": "cao_bac",  "cong_thuc": "H / so_bac" },
+    { "ten": "so_mat",   "cong_thuc": "so_bac - 1" },
+    { "ten": "rong_bac", "cong_thuc": "L / so_mat" },
+    { "ten": "dai_dung", "cong_thuc": "cao_bac - w_hop_song" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "so_bac",   "nhan": "Số bậc (lỗ ban)", "don_vi": "bậc" },
+    { "ten": "cao_bac",  "nhan": "Cao bậc — chia ĐỀU trên tổng", "don_vi": "mm" },
+    { "ten": "rong_bac", "nhan": "Rộng mặt bậc", "don_vi": "mm" }
+  ],
+  "chi_tiet": [
+    { "ten": "Sống ngang (đỡ mặt bậc)", "quy_cach": "hộp 100x100 // TẠM - CHỜ CHỐT",
+      "sl": "so_mat", "dai": "rong_bac",
+      "ghi_chu": "Xương sống zigzag 1 dầm giữa — hàn so le đối đầu, mài mối phẳng" },
+    { "ten": "Sống đứng (cổ bậc)", "quy_cach": "hộp 100x100 // TẠM - CHỜ CHỐT",
+      "sl": "so_bac", "dai": "dai_dung",
+      "ghi_chu": "Dài = cao bậc − bề hộp sống; nếu ra quá ngắn (<30mm) thì tăng bề hộp trong ⚙ Tùy chỉnh hoặc hàn chồng trực tiếp" },
+    { "ten": "Khung mặt bậc (đặt gỗ lên trên)", "quy_cach": "hộp 40x80 // TẠM",
+      "sl": "so_mat", "dai": "W",
+      "ghi_chu": "Mặt gỗ/đá đặt ngoài — không tính vào kg sắt" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — 3 bộ test số tính tay; tổng đoạn đứng × cao + kiểm bảo toàn H. Kiểu thịnh hành theo khảo sát Google 13/07 (xem docs/nghien-cuu). Quy cách sống 100x100 TẠM; cảnh báo chuẩn bậc dùng chung engine cầu thang." }
+}

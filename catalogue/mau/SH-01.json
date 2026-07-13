@@ -1,0 +1,34 @@
+{
+  "ma": "SH-01",
+  "ten": "Bông cửa sổ ô caro (đan lưới)",
+  "nhom": "sen_hoa",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Rộng ô cửa (lọt lòng tường)", "don_vi": "mm", "mac_dinh": 1200 },
+    { "ten": "H", "nhan": "Cao ô cửa (lọt lòng tường)", "don_vi": "mm", "mac_dinh": 1400 },
+    { "ten": "so_bo", "nhan": "Số bộ giống nhau", "don_vi": "so_luong", "mac_dinh": 1 }
+  ],
+  "hang_so": {
+    "w_khung":  { "gia_tri": 20,  "don_vi": "mm", "cho_chot": true },
+    "w_nan":    { "gia_tri": 14,  "don_vi": "mm", "cho_chot": true },
+    "khe_max":  { "gia_tri": 100, "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "tW", "cong_thuc": "W - 2*w_khung" },
+    { "ten": "tH", "cong_thuc": "H - 2*w_khung" }
+  ],
+  "chia_khoang": [
+    { "ten": "dung",  "usable": "tW", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_max" },
+    { "ten": "ngang", "usable": "tH", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_max" }
+  ],
+  "chi_tiet": [
+    { "ten": "Khung bao ngang", "quy_cach": "hộp 20x20 // TẠM", "sl": "2*so_bo", "dai": "W" },
+    { "ten": "Khung bao đứng", "quy_cach": "hộp 20x20 // TẠM", "sl": "2*so_bo", "dai": "H" },
+    { "ten": "Nan đứng", "quy_cach": "hộp 14x14 // TẠM", "sl": "dung_n*so_bo", "dai": "tH" },
+    { "ten": "Nan ngang", "quy_cach": "hộp 14x14 // TẠM", "sl": "ngang_n*so_bo", "dai": "tW",
+      "ghi_chu": "Mối hàn giao nhau = nan đứng × nan ngang mỗi bộ" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 ENGINE.senHoaCaro (nguồn 34 test lõi). Kiểu phổ biến nhất theo khảo sát bông cửa 13/07. Hằng số TẠM." }
+}

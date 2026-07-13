@@ -1,0 +1,44 @@
+{
+  "ma": "CT-02",
+  "ten": "Cầu thang xoắn ốc quanh cột tâm — chia bậc lỗ ban",
+  "nhom": "cau_thang",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "H", "nhan": "Cao tầng (đo SÀN tới SÀN)", "don_vi": "mm" },
+    { "ten": "D", "nhan": "Đường kính ngoài thang", "don_vi": "mm", "mac_dinh": 2000 },
+    { "ten": "goc_xoay", "nhan": "Tổng góc xoay (270-450 thường gặp)", "don_vi": "phan_tram", "mac_dinh": 360 }
+  ],
+  "hang_so": {
+    "d_cot":        { "gia_tri": 114, "don_vi": "mm", "cho_chot": true },
+    "cao_bac_muon": { "gia_tri": 165, "don_vi": "mm", "cho_chot": false }
+  },
+  "bien": [
+    { "ten": "so_bac",   "cong_thuc": "bac_lo_ban(H, cao_bac_muon)" },
+    { "ten": "cao_bac",  "cong_thuc": "H / so_bac" },
+    { "ten": "so_mat",   "cong_thuc": "so_bac - 1" },
+    { "ten": "goc_bac",  "cong_thuc": "goc_xoay / so_mat" },
+    { "ten": "sau_bac",  "cong_thuc": "D/2 - d_cot/2" },
+    { "ten": "r_tuyen",  "cong_thuc": "d_cot/2 + sau_bac*2/3" },
+    { "ten": "rong_tuyen", "cong_thuc": "goc_bac * 3.14159265359/180 * r_tuyen" },
+    { "ten": "cung_ngoai", "cong_thuc": "goc_bac * 3.14159265359/180 * D/2" },
+    { "ten": "dai_tay_vin", "cong_thuc": "sqrt((goc_xoay*3.14159265359/180 * D/2)^2 + H^2)" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "so_bac",     "nhan": "Số bậc (lỗ ban)", "don_vi": "bậc" },
+    { "ten": "cao_bac",    "nhan": "Cao bậc — chia ĐỀU trên tổng", "don_vi": "mm" },
+    { "ten": "goc_bac",    "nhan": "Góc xoay mỗi bậc", "don_vi": "độ" },
+    { "ten": "rong_tuyen", "nhan": "Rộng bậc tại tuyến đi (chuẩn ≥210)", "don_vi": "mm" },
+    { "ten": "cung_ngoai", "nhan": "Cung mép ngoài mỗi bậc", "don_vi": "mm" }
+  ],
+  "chi_tiet": [
+    { "ten": "Cột tâm", "quy_cach": "ống ∅114 // TẠM - CHỜ CHỐT", "sl": "1", "dai": "H" },
+    { "ten": "Bậc quạt (sâu = kết quả, mép ngoài xem cung)", "quy_cach": "tôn gân/khung hộp // TẠM",
+      "sl": "so_mat", "dai": "sau_bac",
+      "ghi_chu": "Bậc hình quạt: sâu D/2 − cột/2, mép ngoài theo 'cung mép ngoài', mép trong ôm cột" },
+    { "ten": "Tay vịn xoắn (uốn theo thang)", "quy_cach": "ống/lập là // TẠM", "sl": "1", "dai": "dai_tay_vin",
+      "ghi_chu": "Chiều dài đường xoắn ốc — đặt uốn hoặc uốn nguội tại xưởng" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — đối chiếu 1-1 ENGINE.cauThangXoan (3 test lõi + 3 catalogue). Lỗ ban cài trong bac_lo_ban. Cột ∅114 + vật liệu bậc TẠM. Cảnh báo tuyến đi <210 + cụng đầu nằm ở UI qua engine." }
+}

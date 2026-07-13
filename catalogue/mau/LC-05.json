@@ -1,0 +1,36 @@
+{
+  "ma": "LC-05",
+  "ten": "Lan can tấm CNC hoa văn (khung sắt + tấm cắt CNC đặt ngoài)",
+  "nhom": "lan_can",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "L", "nhan": "Chiều dài lan can", "don_vi": "m" },
+    { "ten": "H", "nhan": "Chiều cao lan can", "don_vi": "m", "mac_dinh": 0.9 }
+  ],
+  "hang_so": {
+    "kc_cot_max":  { "gia_tri": 2200, "don_vi": "mm", "cho_chot": true },
+    "w_cot":       { "gia_tri": 50,   "don_vi": "mm", "cho_chot": true },
+    "cao_tay_vin": { "gia_tri": 80,   "don_vi": "mm", "cho_chot": true },
+    "cao_thanh_de":{ "gia_tri": 50,   "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "so_khoang", "cong_thuc": "max(1, ceil(L*1000 / kc_cot_max))" },
+    { "ten": "so_cot",    "cong_thuc": "so_khoang + 1" },
+    { "ten": "khoang_tt", "cong_thuc": "(L*1000 - so_cot*w_cot) / so_khoang" },
+    { "ten": "cao_tam",   "cong_thuc": "H*1000 - cao_tay_vin - cao_thanh_de" },
+    { "ten": "dt_cnc",    "cong_thuc": "so_khoang * khoang_tt * cao_tam / 1000000" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "dt_cnc", "nhan": "DT tấm CNC đặt cắt", "don_vi": "m²" }
+  ],
+  "chi_tiet": [
+    { "ten": "Cột trụ", "quy_cach": "hộp 50x50 // TẠM", "sl": "so_cot", "dai": "H*1000" },
+    { "ten": "Tay vịn + thanh đế", "quy_cach": "hộp 25x50 // TẠM", "sl": "2", "dai": "L*1000" },
+    { "ten": "Tấm CNC hoa văn (đặt cắt ngoài)", "quy_cach": "tấm CNC 5li",
+      "sl": "so_khoang", "dai": "khoang_tt",
+      "ghi_chu": "Mỗi tấm = khoang lọt lòng × cao tấm; hoa văn chọn tại xưởng CNC — app tính đủ kích thước đặt hàng" }
+  ],
+  "audit": { "ngay": "13/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT — cột/khoang đối chiếu ENGINE.lanCanThang; DT tấm CNC = số khoang × khoang × cao (test tay). Kiểu CNC theo khảo sát lan can 13/07. Tấm CNC không tính kg sắt hộp (đặt ngoài)." }
+}

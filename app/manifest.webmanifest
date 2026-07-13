@@ -1,0 +1,16 @@
+{
+  "name": "ThợSắt Pro — Tính phiếu cắt sắt",
+  "short_name": "ThợSắt Pro",
+  "description": "Chọn mẫu → nhập kích thước → ra phiếu cắt sắt, tối ưu đề-xê cây 6m. Chạy offline.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#24303C",
+  "background_color": "#EDEFF1",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
