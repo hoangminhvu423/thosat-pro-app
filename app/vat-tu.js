@@ -100,7 +100,18 @@
     return kgm * (chiTiet.dai / 1000) * (chiTiet.sl || 1);
   }
 
+  // Tổng diện tích (m²) từ danh sách ô chữ nhật: [{dai, rong, sl}] — dài/rộng mm.
+  // Dùng cho tính nhanh: sơn, tôn, kính, bạt... Bỏ qua dòng thiếu số.
+  function dienTich(ds) {
+    var tong = 0;
+    (ds || []).forEach(function (o) {
+      var dai = o.dai, rong = o.rong, sl = o.sl != null ? o.sl : 1;
+      if (dai > 0 && rong > 0 && sl > 0) tong += dai / 1000 * (rong / 1000) * sl;
+    });
+    return tong; // m²
+  }
+
   return { DANH_MUC: DANH_MUC, DANH_MUC_V: DANH_MUC_V, DANH_MUC_ONG: DANH_MUC_ONG,
            VAT_LIEU: VAT_LIEU, kgMoiMet: kgMoiMet, kgMoiMetV: kgMoiMetV, kgMoiMetOng: kgMoiMetOng,
-           docQuyCach: docQuyCach, kgChiTiet: kgChiTiet, m2ChiTiet: m2ChiTiet };
+           docQuyCach: docQuyCach, kgChiTiet: kgChiTiet, m2ChiTiet: m2ChiTiet, dienTich: dienTich };
 });

@@ -24,9 +24,11 @@
     letter-spacing:.5px; text-transform:uppercase;}
   header h1 span{color:var(--cam);}
   header p{margin:4px 0 0; font-size:12.5px; color:#AAB6C2;}
-  .tabs{display:flex; background:var(--thep); padding:0 8px; position:sticky; top:0; z-index:5;}
-  .tab{flex:1; border:0; background:none; color:#9FADBB; font-family:'Archivo',sans-serif;
-    font-weight:700; font-size:12px; padding:14px 2px; border-bottom:3px solid transparent;
+  .tabs{display:flex; background:var(--thep); padding:0 8px; position:sticky; top:0; z-index:5;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{flex:0 0 auto; border:0; background:none; color:#9FADBB; font-family:'Archivo',sans-serif;
+    font-weight:700; font-size:13px; padding:14px 12px; border-bottom:3px solid transparent;
     cursor:pointer; white-space:nowrap;}
   .tab.on{color:#fff; border-bottom-color:var(--cam);}
   .man{display:none; padding:14px 12px;}
@@ -113,12 +115,57 @@
 </header>
 
 <div class="tabs">
-  <button class="tab on" onclick="chonTab(0)">Lan can</button>
-  <button class="tab" onclick="chonTab(1)">Mái tôn</button>
-  <button class="tab" onclick="chonTab(2)">Sen hoa</button>
-  <button class="tab" onclick="chonTab(3)">Đề-xê</button>
-  <button class="tab" onclick="chonTab(4)">Mẫu</button>
-  <button class="tab" onclick="chonTab(5)">Sổ</button>
+  <button class="tab on" data-man="tinh" onclick="chonTab('tinh')">⚡ Tính nhanh</button>
+  <button class="tab" data-man="man4" onclick="chonTab('man4')">Mẫu</button>
+  <button class="tab" data-man="man3" onclick="chonTab('man3')">Đề-xê</button>
+  <button class="tab" data-man="man0" onclick="chonTab('man0')">Lan can</button>
+  <button class="tab" data-man="man1" onclick="chonTab('man1')">Mái tôn</button>
+  <button class="tab" data-man="man2" onclick="chonTab('man2')">Sen hoa</button>
+  <button class="tab" data-man="man5" onclick="chonTab('man5')">Sổ</button>
+</div>
+
+<!-- ============ TÍNH NHANH (công cụ thợ dùng hằng ngày) ============ -->
+<div class="man on" id="man_tinh">
+  <div class="the">
+    <h2>Chia ô đều — ra khe lọt lòng + mốc đánh dấu thước</h2>
+    <div class="hang">
+      <div class="o"><label>Dài khoang lọt lòng (mm)</label><input type="number" id="tn_L" value="2000"></div>
+      <div class="o"><label>Bề rộng thanh (mm)</label><input type="number" id="tn_w" value="20"></div>
+    </div>
+    <div class="o"><label>Khe hở lọt lòng tối đa (mm)</label><input type="number" id="tn_khe" value="100"></div>
+    <button class="nut" onclick="tinhChia()">Chia ô</button>
+    <div class="phieu" id="tn_chia_kq" style="margin-top:12px"></div>
+  </div>
+
+  <div class="the">
+    <h2>Diện tích nhanh — cộng dồn nhiều ô (sơn / tôn / kính)</h2>
+    <div id="tn_dt_dong"></div>
+    <button class="copy" style="background:var(--thep)" onclick="themODienTich()">+ Thêm ô</button>
+    <button class="nut" style="margin-top:8px" onclick="tinhDienTich()">Tính diện tích</button>
+    <div class="phieu" id="tn_dt_kq" style="margin-top:12px"></div>
+  </div>
+
+  <div class="the">
+    <h2>Khối lượng nhanh — theo quy cách + vật liệu</h2>
+    <div class="hang">
+      <div class="o"><label>Loại</label><select id="tn_kl_loai" onchange="doiLoaiKL()">
+        <option value="hop">Hộp chữ nhật/vuông</option><option value="V">Thép V</option>
+        <option value="ong">Ống tròn</option></select></div>
+      <div class="o"><label>Vật liệu</label><select id="tn_kl_vl">
+        <option value="sat">Sắt</option><option value="inox304">Inox 304</option>
+        <option value="inox201">Inox 201</option></select></div>
+    </div>
+    <div class="hang" id="tn_kl_kt">
+      <div class="o"><label>Cạnh a (mm)</label><input type="number" id="tn_kl_a" value="40"></div>
+      <div class="o" id="tn_kl_ob"><label>Cạnh b (mm)</label><input type="number" id="tn_kl_b" value="80"></div>
+    </div>
+    <div class="hang">
+      <div class="o"><label>Độ dày (mm)</label><input type="number" id="tn_kl_day" value="1.2" step="0.1"></div>
+      <div class="o"><label>Tổng chiều dài (m)</label><input type="number" id="tn_kl_met" value="12" step="0.1"></div>
+    </div>
+    <button class="nut" onclick="tinhKhoiLuong()">Tính khối lượng</button>
+    <div class="phieu" id="tn_kl_kq" style="margin-top:12px"></div>
+  </div>
 </div>
 
 <!-- ============ LAN CAN ============ -->
@@ -371,23 +418,92 @@
   </div>
 </div>
 
-<script src="engine.js?v=22"></script>
-<script src="dexe.js?v=22"></script>
-<script src="catalogue.js?v=22"></script>
-<script src="phieu-anh.js?v=22"></script>
-<script src="minh-hoa.js?v=22"></script>
-<script src="vat-tu.js?v=22"></script>
+<script src="engine.js?v=23"></script>
+<script src="dexe.js?v=23"></script>
+<script src="catalogue.js?v=23"></script>
+<script src="phieu-anh.js?v=23"></script>
+<script src="minh-hoa.js?v=23"></script>
+<script src="vat-tu.js?v=23"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
 const vanBanCopy = {};
 function $(id){return document.getElementById(id);}
 function num(id){return parseFloat($(id).value) || 0;}
-function chonTab(i){
-  document.querySelectorAll('.tab').forEach((t,k)=>t.classList.toggle('on',k===i));
-  document.querySelectorAll('.man').forEach((m,k)=>m.classList.toggle('on',k===i));
-  if(i===4) napDanhSachMau();
-  if(i===5) veLichSu();
+function chonTab(key){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.man===key));
+  document.querySelectorAll('.man').forEach(m=>m.classList.toggle('on', m.id===(key==='tinh'?'man_tinh':key)));
+  if(key==='man4') napDanhSachMau();
+  if(key==='man5') veLichSu();
+}
+
+/* ============ TÍNH NHANH ============ */
+function tinhChia(){
+  let kq;
+  try{ kq = ENGINE.mocChia(num('tn_L'), num('tn_w'), num('tn_khe')); }
+  catch(e){ $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML='<div class="ghichu cb-do">⚠ '+e.message+'</div>'; return; }
+  const w = num('tn_w');
+  let html = '<div class="kq-luoi">'+
+    '<div class="kq nb"><div class="nhan">Số thanh</div><div class="so">'+kq.n+' <em>thanh</em></div></div>'+
+    '<div class="kq nb"><div class="nhan">Khe lọt lòng</div><div class="so">'+mm(kq.khe)+'</div></div></div>';
+  if(kq.n>0){
+    html += '<div class="ghichu"><b>MỐC ĐÁNH DẤU mép trái từng thanh</b> (kéo thước từ đầu khoang, bút dấu tại mốc; mép phải = mốc + '+w+'mm):<br>'+
+      '<span style="font-family:\'JetBrains Mono\',monospace;font-weight:700;font-size:15px">'+kq.moc.join(' · ')+'</span><br>'+
+      '<small>Soát: mốc cuối '+kq.moc[kq.n-1]+' + thanh '+w+' + khe '+kq.khe+' ≈ '+num('tn_L')+'mm ✓</small></div>';
+    vanBanCopy.tn_chia = `CHIA Ô ĐỀU — khoang ${num('tn_L')}mm, thanh ${w}mm\n`+
+      `${kq.n} thanh, khe lọt lòng ${kq.khe}mm\nMốc đánh dấu: ${kq.moc.join(' · ')}`;
+    html += '<button class="copy" onclick="saoChep(\'tn_chia\')">Sao chép</button>';
+  }
+  $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML = html;
+  cuonToi('tn_chia_kq');
+}
+
+let soODT = 0;
+function themODienTich(){
+  soODT++;
+  const div = document.createElement('div'); div.className='hang'; div.id='dt_'+soODT;
+  div.innerHTML = '<div class="o"><label>Dài (mm)</label><input type="number" class="dt_dai" value=""></div>'+
+    '<div class="o"><label>Rộng (mm)</label><input type="number" class="dt_rong" value=""></div>'+
+    '<div class="o" style="max-width:64px"><label>SL</label><input type="number" class="dt_sl" value="1"></div>';
+  $('tn_dt_dong').appendChild(div);
+}
+function tinhDienTich(){
+  const ds = [...document.querySelectorAll('#tn_dt_dong .hang')].map(h=>({
+    dai: parseFloat(h.querySelector('.dt_dai').value)||0,
+    rong: parseFloat(h.querySelector('.dt_rong').value)||0,
+    sl: parseFloat(h.querySelector('.dt_sl').value)||1 }));
+  const m2v = VATTU.dienTich(ds);
+  vanBanCopy.tn_dt = `DIỆN TÍCH: ${m2(m2v)} m² (${ds.filter(o=>o.dai>0&&o.rong>0).length} ô)`;
+  $('tn_dt_kq').className='phieu hien';
+  $('tn_dt_kq').innerHTML = '<div class="kq-luoi"><div class="kq nb"><div class="nhan">Tổng diện tích</div>'+
+    '<div class="so">'+m2(m2v)+' <em>m²</em></div></div></div>'+
+    '<button class="copy" onclick="saoChep(\'tn_dt\')">Sao chép</button>';
+  cuonToi('tn_dt_kq');
+}
+function doiLoaiKL(){
+  const l = $('tn_kl_loai').value;
+  $('tn_kl_ob').style.display = l==='hop' ? '' : 'none';
+  $('tn_kl_kt').querySelector('label').textContent =
+    l==='ong' ? 'Đường kính ∅ (mm)' : (l==='V' ? 'Cạnh V (mm)' : 'Cạnh a (mm)');
+}
+function tinhKhoiLuong(){
+  const l = $('tn_kl_loai').value, a=num('tn_kl_a'), b=num('tn_kl_b'), t=num('tn_kl_day'), met=num('tn_kl_met');
+  const vl = VATTU.VAT_LIEU[$('tn_kl_vl').value];
+  let kgm;
+  try{
+    kgm = l==='hop' ? VATTU.kgMoiMet(a,b,t,vl.kgRieng)
+        : l==='V'   ? VATTU.kgMoiMetV(a,t,vl.kgRieng)
+        : VATTU.kgMoiMetOng(a,t,vl.kgRieng);
+  }catch(e){ $('tn_kl_kq').className='phieu hien'; $('tn_kl_kq').innerHTML='<div class="ghichu cb-do">⚠ '+e.message+'</div>'; return; }
+  const tong = kgm*met;
+  const qc = l==='hop' ? a+'×'+b : (l==='V'?'V'+a:'∅'+a);
+  vanBanCopy.tn_kl = `KHỐI LƯỢNG: ${qc} dày ${t} (${vl.ten}) × ${met}m = ${m2(tong)} kg (${m2(kgm)} kg/m)`;
+  $('tn_kl_kq').className='phieu hien';
+  $('tn_kl_kq').innerHTML = '<div class="kq-luoi">'+
+    '<div class="kq nb"><div class="nhan">Tổng khối lượng</div><div class="so">'+m2(tong)+' <em>kg</em></div></div>'+
+    '<div class="kq"><div class="nhan">Đơn trọng</div><div class="so">'+m2(kgm)+' <em>kg/m</em></div></div></div>'+
+    '<button class="copy" onclick="saoChep(\'tn_kl\')">Sao chép</button>';
+  cuonToi('tn_kl_kq');
 }
 
 /* ============ SỔ CÔNG TRÌNH (localStorage) ============ */
@@ -991,7 +1107,7 @@ function tinhCatalogue(){
 function guiSangDeXe(){
   if(!kqCatalogue) return;
   $('dx_chitiet').value = kqCatalogue.chiTiet.map(c=>`${c.dai} x ${c.sl} ${c.ten}`).join('\n');
-  chonTab(3);
+  chonTab('man3');
 }
 
 /* ============ VẼ SƠ ĐỒ ============ */
@@ -1051,6 +1167,9 @@ function xuatAnh(k){
   if(!vanBanCopy[k]){alert('Bấm nút tính trước rồi mới xuất ảnh phiếu.'); return;}
   PHIEUANH.xuat(vanBanCopy[k], k, msg=>alert(msg));
 }
+
+/* Khởi tạo 2 ô diện tích sẵn cho tab Tính nhanh */
+themODienTich(); themODienTich();
 
 /* ============ PWA: chạy offline + cài lên màn hình chính ============ */
 if('serviceWorker' in navigator){

@@ -32,6 +32,18 @@
   const DAI_HUU_DUNG_CAY_M = 5.9;
   function cay6(met) { return Math.ceil(met / DAI_HUU_DUNG_CAY_M); }
 
+  // Chia ô đều + sinh MỐC ĐÁNH DẤU thước (mép trái từng thanh, tính từ khe THÔ
+  // để không dồn sai số làm tròn). Trả về đủ cho công cụ chia nhanh.
+  function mocChia(usable, w, kheMax) {
+    batBuocDuong(usable, 'chiều dài khoang');
+    batBuocDuong(w, 'bề rộng thanh');
+    batBuocDuong(kheMax, 'khe hở tối đa');
+    const cd = chiaDeu(usable, w, kheMax);
+    const moc = [];
+    for (let i = 1; i <= cd.n; i++) moc.push(Math.round(i * cd.khe + (i - 1) * w));
+    return { n: cd.n, khe: Math.round(cd.khe), kheRaw: cd.khe, moc: moc };
+  }
+
   function radSangDo(rad) { return rad * 180 / Math.PI; }
 
   function batBuocDuong(giaTri, ten) {
@@ -446,7 +458,7 @@
 
   return {
     // tiện ích
-    chiaDeu, cay6, DAI_HUU_DUNG_CAY_M,
+    chiaDeu, mocChia, cay6, DAI_HUU_DUNG_CAY_M,
     // cầu thang
     cauThang, cauThangXoan, cauThangChieuNghi, cungLoBan, chonSoBacLoBan,
     // lan can
