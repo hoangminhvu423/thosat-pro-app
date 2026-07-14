@@ -105,6 +105,22 @@
   #ls_noidung{background:#fff; border:1px solid var(--ticket-vien); border-radius:8px;
     padding:12px; font-family:'JetBrains Mono',monospace; font-size:12.5px;
     white-space:pre-wrap; word-break:break-word; margin:0 0 4px;}
+  .fab-gy{position:fixed; right:14px; bottom:14px; z-index:20; border:0; cursor:pointer;
+    background:#0068FF; color:#fff; border-radius:26px; height:52px; padding:0 18px;
+    font-family:'Archivo',sans-serif; font-weight:900; font-size:15px;
+    box-shadow:0 4px 14px rgba(0,0,0,.28);}
+  .gy-nen{position:fixed; inset:0; z-index:25; background:rgba(0,0,0,.45);
+    display:none; align-items:flex-end;}
+  .gy-nen.hien{display:flex;}
+  .gy-hop{background:var(--the); width:100%; border-radius:16px 16px 0 0; padding:18px 16px 22px;}
+  .gy-hop h3{margin:0 0 4px; font-family:'Archivo',sans-serif; font-size:17px;}
+  .gy-hop p{margin:0 0 12px; font-size:13px; color:var(--xam);}
+  .gy-hop textarea{width:100%; min-height:110px; padding:12px; font-size:15px;
+    border:1.5px solid var(--vien); border-radius:10px; font-family:inherit; resize:vertical;}
+  .gy-hang{display:flex; gap:10px; margin-top:12px;}
+  .gy-hang button{flex:1; padding:14px; border:0; border-radius:10px; cursor:pointer;
+    font-family:'Archivo',sans-serif; font-weight:900; font-size:15px;}
+  .gy-gui{background:#0068FF; color:#fff;} .gy-huy{background:var(--vien); color:var(--muc);}
 </style>
 </head>
 <body>
@@ -418,12 +434,26 @@
   </div>
 </div>
 
-<script src="engine.js?v=23"></script>
-<script src="dexe.js?v=23"></script>
-<script src="catalogue.js?v=23"></script>
-<script src="phieu-anh.js?v=23"></script>
-<script src="minh-hoa.js?v=23"></script>
-<script src="vat-tu.js?v=23"></script>
+<!-- Nút góp ý nổi + hộp góp ý -->
+<button class="fab-gy" onclick="moGopY()">💬 Góp ý</button>
+<div class="gy-nen" id="gy_nen">
+  <div class="gy-hop">
+    <h3>Góp ý cho ThợSắt Pro</h3>
+    <p>Anh thấy chỗ nào khó dùng, tính sai, hay cần thêm gì? Gõ vào đây rồi bấm Gửi — app soạn sẵn tin để anh gửi qua Zalo.</p>
+    <textarea id="gy_text" placeholder="Ví dụ: chia ô cầu thang cần thêm ô nhập bề dày mặt bậc..."></textarea>
+    <div class="gy-hang">
+      <button class="gy-huy" onclick="dongGopY()">Đóng</button>
+      <button class="gy-gui" onclick="guiGopY()">Gửi qua Zalo</button>
+    </div>
+  </div>
+</div>
+
+<script src="engine.js?v=24"></script>
+<script src="dexe.js?v=24"></script>
+<script src="catalogue.js?v=24"></script>
+<script src="phieu-anh.js?v=24"></script>
+<script src="minh-hoa.js?v=24"></script>
+<script src="vat-tu.js?v=24"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -1166,6 +1196,36 @@ function saoChep(k){
 function xuatAnh(k){
   if(!vanBanCopy[k]){alert('Bấm nút tính trước rồi mới xuất ảnh phiếu.'); return;}
   PHIEUANH.xuat(vanBanCopy[k], k, msg=>alert(msg));
+}
+
+/* ============ THEO DÕI LỖI + GÓP Ý ============ */
+const APP_VER = 'v19';
+// Ghi lỗi runtime gần nhất vào localStorage để đính kèm khi góp ý (giúp sửa trúng)
+window.addEventListener('error', e=>{
+  try{ localStorage.setItem('tsp_loi', (e.message||'')+' @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||'')); }catch(_){}
+});
+function tabHienTai(){
+  const m = document.querySelector('.man.on');
+  const t = document.querySelector('.tab.on');
+  return t ? t.textContent.trim().replace(/^⚡\s*/,'') : (m?m.id:'?');
+}
+function moGopY(){ $('gy_nen').classList.add('hien'); setTimeout(()=>$('gy_text').focus(),100); }
+function dongGopY(){ $('gy_nen').classList.remove('hien'); }
+function guiGopY(){
+  const noiDung = $('gy_text').value.trim();
+  if(!noiDung){ alert('Anh gõ vài chữ góp ý trước nhé.'); return; }
+  let loi=''; try{ loi = localStorage.getItem('tsp_loi')||''; }catch(_){}
+  const tin = `[GÓP Ý ThợSắt Pro ${APP_VER}]\n${noiDung}\n\n---\n(màn: ${tabHienTai()}`+
+    (loi?` | lỗi gần nhất: ${loi}`:'')+`)`;
+  // lưu lại phòng khi chưa gửi được
+  try{ const ds=JSON.parse(localStorage.getItem('tsp_gopy')||'[]'); ds.unshift({luc:Date.now(),tin}); localStorage.setItem('tsp_gopy',JSON.stringify(ds.slice(0,20))); }catch(_){}
+  const xong = ()=>{ dongGopY(); $('gy_text').value=''; };
+  if(navigator.share){
+    navigator.share({text: tin, title:'Góp ý ThợSắt Pro'}).then(xong).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(tin).then(()=>{ alert('Đã chép góp ý — dán vào Zalo gửi cho anh Vũ giúp em.'); xong(); })
+      .catch(()=>{ alert('Góp ý:\n\n'+tin); xong(); });
+  }
 }
 
 /* Khởi tạo 2 ô diện tích sẵn cho tab Tính nhanh */
