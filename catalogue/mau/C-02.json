@@ -24,7 +24,8 @@
     { "ten": "lot_cao",   "cong_thuc": "cao_canh - 2*w_khung_canh" }
   ],
   "chia_khoang": [
-    { "ten": "nan", "usable": "lot_canh", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max" }
+    { "ten": "nan", "usable": "lot_canh", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max",
+      "muc_dich": "trang_tri" }
   ],
   "ket_qua_phu": [
     { "ten": "rong_canh", "nhan": "Rộng mỗi cánh", "don_vi": "mm" },

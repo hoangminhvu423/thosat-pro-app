@@ -191,11 +191,16 @@
                  cat_vat: ct.cat_vat || '', ghi_chu: ct.ghi_chu || '' };
       }).filter(function (r) { return r.sl > 0; });
 
-      // Khe chia khoảng: xuất kèm để phiếu ghi rõ (làm tròn 1mm)
+      // Khe chia khoảng: xuất kèm để phiếu ghi rõ (làm tròn 1mm) + mục đích + bề thanh
+      // muc_dich: 'an_toan' (mặc định — cảnh báo khi >100mm) | 'trang_tri' (khe đẹp theo tỉ lệ)
       var khe = {};
       Object.keys(dnChia).forEach(function (ten) {
         layBien(ten + '_n');
-        khe[ten] = { n: cache[ten + '_n'], khe: Math.round(cache[ten + '_khe']) };
+        khe[ten] = {
+          n: cache[ten + '_n'], khe: Math.round(cache[ten + '_khe']),
+          mucDich: dnChia[ten].muc_dich || 'an_toan',
+          wThanh: Math.round(tinhBieuThuc(dnChia[ten].be_rong_thanh, layBien))
+        };
       });
 
       // Kết quả phụ khai báo trong mẫu (số bậc, góc vát...) — hiện lên phiếu

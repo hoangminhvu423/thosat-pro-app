@@ -57,7 +57,9 @@
       "items": { "type": "object",
         "properties": {
           "ten": { "type": "string" }, "usable": { "type": "string" },
-          "be_rong_thanh": { "type": "string" }, "khe_toi_da": { "type": "string" } } }
+          "be_rong_thanh": { "type": "string" }, "khe_toi_da": { "type": "string" },
+          "muc_dich": { "enum": ["an_toan", "trang_tri"],
+            "description": "an_toan: cảnh báo khe >100mm (chống lọt); trang_tri: khe đẹp theo tỉ lệ thanh:khe" } } }
     },
     "ket_qua_phu": {
       "type": "array",

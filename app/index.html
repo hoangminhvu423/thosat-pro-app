@@ -474,12 +474,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=27"></script>
-<script src="dexe.js?v=27"></script>
-<script src="catalogue.js?v=27"></script>
-<script src="phieu-anh.js?v=27"></script>
-<script src="minh-hoa.js?v=27"></script>
-<script src="vat-tu.js?v=27"></script>
+<script src="engine.js?v=28"></script>
+<script src="dexe.js?v=28"></script>
+<script src="catalogue.js?v=28"></script>
+<script src="phieu-anh.js?v=28"></script>
+<script src="minh-hoa.js?v=28"></script>
+<script src="vat-tu.js?v=28"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -1185,14 +1185,24 @@ function tinhCatalogue(){
     canhBaoChuan.push('Soát: mốc cuối '+moc[moc.length-1]+' + thanh '+w+' + khe '+kq.khe.nan.khe+
       ' = '+(moc[moc.length-1]+w+kq.khe.nan.khe)+' ≈ '+Math.round(nhap.L)+'mm ✓');
   }
-  // Cảnh báo khe an toàn — áp cho MỌI mẫu chống-lọt: lan can, cửa/cổng, bông bảo vệ
-  // (chủ dự án 14/07: cổng/chuồng cọp khe to trẻ/trộm chui lọt cũng phải nhắc)
+  // Cảnh báo khe — phân biệt AN TOÀN (chống lọt) vs TRANG TRÍ (khe đẹp theo tỉ lệ)
   if(['lan_can','cua_sat','sen_hoa'].includes(mauDangChon.nhom)){
     Object.values(kq.khe).forEach(k=>{
-      if(k.khe > ENGINE.KHE_AN_TOAN_MAX) canhBaoChuan.push(
-        '<span class="cb-do">⛔ Khe '+k.khe+'mm > chuẩn an toàn '+ENGINE.KHE_AN_TOAN_MAX+
-        'mm (QCVN 05:2008 & IRC 4-inch) — trẻ nhỏ/trộm có thể chui lọt. '+
-        'Khuyến nghị: giảm khe tối đa hoặc tăng số thanh.</span>');
+      if(k.mucDich === 'trang_tri'){
+        // Trang trí: đẹp khi khe ≤ 2× bề thanh; thưa quá → thô kệch; dày quá → tốn
+        const nguongThua = 2 * (k.wThanh||14);
+        if(k.khe > nguongThua) canhBaoChuan.push(
+          '<span style="color:#B45309;font-weight:700">⚠ Khe trang trí '+k.khe+'mm > '+nguongThua+
+          'mm (2× bề thanh '+(k.wThanh||14)+') — nhìn THƯA, thô kệch. Nên tăng số thanh cho dày, đẹp hơn.</span>');
+        else if(k.khe < Math.round((k.wThanh||14)/2) && k.khe>0) canhBaoChuan.push(
+          '<span style="color:#5C6672">ℹ Khe '+k.khe+'mm khá dày (< ½ bề thanh) — chắc đẹp nhưng tốn thép, cân nhắc.</span>');
+      } else {
+        // An toàn: trần 100mm
+        if(k.khe > ENGINE.KHE_AN_TOAN_MAX) canhBaoChuan.push(
+          '<span class="cb-do">⛔ Khe '+k.khe+'mm > chuẩn an toàn '+ENGINE.KHE_AN_TOAN_MAX+
+          'mm (QCVN 05:2008 & IRC 4-inch) — trẻ nhỏ/trộm có thể chui lọt. '+
+          'Khuyến nghị: giảm khe tối đa hoặc tăng số thanh.</span>');
+      }
     });
     if(mauDangChon.nhom==='lan_can' && nhap.H && nhap.H*1000 < 1100) canhBaoChuan.push(
       '<span style="color:#B45309;font-weight:700">ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(nhap.H*1000)+'mm)</span>');
