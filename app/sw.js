@@ -3,7 +3,7 @@
    "cache trước, mạng sau cập nhật" (stale-while-revalidate) để
    thợ ngoài công trường không mạng vẫn tính được, có mạng thì tự cập nhật. */
 'use strict';
-const TEN_CACHE = 'thosat-pro-v23';
+const TEN_CACHE = 'thosat-pro-v24';
 const VO_APP = [
   './', 'index.html', 'engine.js', 'dexe.js', 'catalogue.js', 'phieu-anh.js',
   'minh-hoa.js', 'vat-tu.js', 'catalogue-all.json',
