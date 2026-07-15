@@ -1,0 +1,61 @@
+{
+  "ma": "C-03",
+  "ten": "Cửa cổng nhiều cánh CÓ Ô CHẾT trên (khe hở trên/dưới)",
+  "nhom": "cua_sat",
+  "phien_ban": 1,
+  "trang_thai": "nhap",
+  "dau_vao": [
+    { "ten": "W", "nhan": "Rộng phủ bì ô chờ", "don_vi": "mm", "mac_dinh": 2645 },
+    { "ten": "H", "nhan": "Cao phủ bì TỔNG (gồm ô chết)", "don_vi": "mm", "mac_dinh": 2875 },
+    { "ten": "cao_o_chet", "nhan": "Cao ô chết trên (phần cố định nằm ngang)", "don_vi": "mm", "mac_dinh": 555 },
+    { "ten": "so_canh", "nhan": "Số cánh cửa (2, 3 hoặc 4)", "don_vi": "so_luong", "mac_dinh": 4 },
+    { "ten": "so_bang", "nhan": "Số băng ngang trang trí mỗi cánh", "don_vi": "so_luong", "mac_dinh": 2 }
+  ],
+  "hang_so": {
+    "w_khung_bao":  { "gia_tri": 40, "don_vi": "mm", "cho_chot": false },
+    "w_khung_canh": { "gia_tri": 40, "don_vi": "mm", "cho_chot": false },
+    "khe_canh":     { "gia_tri": 5,  "don_vi": "mm", "cho_chot": true },
+    "khe_tren":     { "gia_tri": 10, "don_vi": "mm", "cho_chot": true },
+    "khe_duoi":     { "gia_tri": 25, "don_vi": "mm", "cho_chot": true },
+    "w_nan":        { "gia_tri": 20, "don_vi": "mm", "cho_chot": false },
+    "khe_nan_max":  { "gia_tri": 40, "don_vi": "mm", "cho_chot": true }
+  },
+  "bien": [
+    { "ten": "lot_ngang", "cong_thuc": "W - 2*w_khung_bao" },
+    { "ten": "rong_canh", "cong_thuc": "(lot_ngang - (so_canh-1)*khe_canh) / so_canh" },
+    { "ten": "lot_canh",  "cong_thuc": "rong_canh - 2*w_khung_canh" },
+    { "ten": "cao_cua",   "cong_thuc": "H - cao_o_chet" },
+    { "ten": "cao_canh",  "cong_thuc": "cao_cua - 2*w_khung_bao - khe_tren - khe_duoi" },
+    { "ten": "lot_cao",   "cong_thuc": "cao_canh - 2*w_khung_canh" },
+    { "ten": "cao_oc_lot","cong_thuc": "cao_o_chet - 2*w_khung_bao" }
+  ],
+  "chia_khoang": [
+    { "ten": "nan_cua", "usable": "lot_canh", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max", "muc_dich": "trang_tri" },
+    { "ten": "nan_oc",  "usable": "lot_ngang", "be_rong_thanh": "w_nan", "khe_toi_da": "khe_nan_max", "muc_dich": "trang_tri" }
+  ],
+  "ket_qua_phu": [
+    { "ten": "rong_canh", "nhan": "Rộng mỗi cánh", "don_vi": "mm" },
+    { "ten": "cao_canh",  "nhan": "Cao mỗi cánh (đã trừ khe trên+dưới)", "don_vi": "mm" },
+    { "ten": "khe_tren",  "nhan": "Khe hở trên", "don_vi": "mm" },
+    { "ten": "khe_duoi",  "nhan": "Khe hở dưới (quét nền)", "don_vi": "mm" }
+  ],
+  "chi_tiet": [
+    { "ten": "Khung bao đứng", "quy_cach": "hộp 40x80", "sl": "2", "dai": "H" },
+    { "ten": "Khung bao ngang (trên+dưới)", "quy_cach": "hộp 40x80", "sl": "2", "dai": "W" },
+    { "ten": "Thanh phân cách ngang (ô chết / cửa)", "quy_cach": "hộp 40x80", "sl": "1", "dai": "W",
+      "ghi_chu": "Thanh ngang chia ô chết trên và phần cửa dưới" },
+    { "ten": "Ô chết — nan đứng cố định", "quy_cach": "hộp 20x40",
+      "sl": "nan_oc_n", "dai": "cao_oc_lot",
+      "ghi_chu": "Phần cố định nằm ngang trên cửa — KHÔNG mở, nan chạy suốt bề ngang" },
+    { "ten": "Cửa — khung cánh đứng", "quy_cach": "hộp 40x80", "sl": "2*so_canh", "dai": "cao_canh" },
+    { "ten": "Cửa — khung cánh ngang", "quy_cach": "hộp 40x80", "sl": "2*so_canh", "dai": "rong_canh" },
+    { "ten": "Cửa — nan đứng trang trí", "quy_cach": "hộp 20x40",
+      "sl": "nan_cua_n * so_canh", "dai": "lot_cao",
+      "ghi_chu": "Cánh đã chừa khe hở trên + khe hở dưới để không kẹt/cọ nền" },
+    { "ten": "Băng ngang trang trí (đột lỗ xuyên nan)", "quy_cach": "hộp 20x40",
+      "sl": "so_bang * so_canh", "dai": "lot_canh",
+      "ghi_chu": "Gắn đinh tán trang trí — chưa gồm bản lề/khóa" }
+  ],
+  "audit": { "ngay": "14/07/2026", "nguoi": "Claude (agent)",
+    "ket_qua": "ĐẠT 3 bộ test khớp bản vẽ tay thợ: cửa đi 2645×2875, ô chết 555 → phần cửa 2320, cánh rộng 638, cao cánh 2205 (khe trên 10 + khe dưới 25). Quy cách thật 40×80/20×40 (chủ dự án chốt 14/07). Khe trên/dưới/giữa cánh + khe nan là TẠM chờ thợ xác nhận gu." }
+}

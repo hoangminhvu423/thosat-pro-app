@@ -101,6 +101,31 @@
     return s;
   }
 
+  // C-03: cửa cổng có Ô CHẾT trên + nhiều cánh dưới + khe hở trên/dưới
+  function veCuaOChet(mau, kq, v) {
+    var soCanh = Math.max(2, Math.min(Math.round(v.so_canh || 4), 6));
+    var nanCanh = (kq && kq.khe && kq.khe.nan_cua) ? Math.min(kq.khe.nan_cua.n, 8) : 6;
+    var H = v.H || 2875, cOc = v.cao_o_chet || 555;
+    var tyOc = cOc / H;                       // tỉ lệ ô chết trên tổng cao
+    var yPhan = Y + (H - 14) * tyOc;          // ranh giới ô chết / cửa
+    var x0 = X + 40, w0 = W - 80;
+    var s = khungRong(x0, Y, w0, H - 14, 6, THEP);
+    s += thanh(x0, yPhan - 2, w0, 5, THEP);   // thanh phân cách ngang
+    // Ô chết trên: nan đứng cố định chạy suốt
+    var nOc = Math.min(soCanh * nanCanh, 26);
+    for (var i = 1; i <= nOc; i++) s += thanh(x0 + i * w0 / (nOc + 1), Y + 5, 2.4, yPhan - Y - 8, CAM);
+    // Cửa dưới: n cánh, khe hở dưới (chừa đáy)
+    var yCua = yPhan + 4, hCua = (Y + H - 14) - yCua - 6; // -6 = khe dưới minh họa
+    var wc = w0 / soCanh;
+    for (var c = 0; c < soCanh; c++) {
+      var cx = x0 + c * wc;
+      s += khungRong(cx + 3, yCua, wc - 6, hCua, 4, THEP);
+      for (var j = 1; j <= nanCanh; j++) s += thanh(cx + j * (wc - 6) / (nanCanh + 1) + 1, yCua + 4, 2.4, hCua - 8, CAM);
+      s += thanh(cx + 6, yCua + hCua * 0.4, wc - 12, 4, THEP);
+    }
+    return s;
+  }
+
   function veCuaSat(mau, kq, v) {
     var s = khungRong(X + 60, Y, W - 120, H, 7, THEP);
     var giua = X + 60 + (W - 120) / 2;
@@ -231,6 +256,7 @@
     else if (mau.nhom === 'mai_ton') s = veMaiTon(mau, kq, v);
     else if (mau.nhom === 'sen_hoa') s = veSenHoa(mau, kq, v);
     else if (mau.nhom === 'mai_kinh') s = veMaiKinh(mau, kq, v);
+    else if (mau.ma === 'C-03') s = veCuaOChet(mau, kq, v);
     else if (mau.ma === 'C-02') s = veCuaNhieuCanh(mau, kq, v);
     else if (mau.nhom === 'cua_sat') s = veCuaSat(mau, kq, v);
     else s = veMacDinh(mau);

@@ -3,7 +3,7 @@
    "cache trước, mạng sau cập nhật" (stale-while-revalidate) để
    thợ ngoài công trường không mạng vẫn tính được, có mạng thì tự cập nhật. */
 'use strict';
-const TEN_CACHE = 'thosat-pro-v25';
+const TEN_CACHE = 'thosat-pro-v26';
 const VO_APP = [
   './', 'index.html', 'engine.js', 'dexe.js', 'catalogue.js', 'phieu-anh.js',
   'minh-hoa.js', 'vat-tu.js', 'catalogue-all.json',
@@ -11,7 +11,7 @@ const VO_APP = [
   '../catalogue/mau/danh-sach.json', '../catalogue/mau/CD-01.json',
   '../catalogue/mau/LC-01.json', '../catalogue/mau/LC-02.json', '../catalogue/mau/LC-03.json', '../catalogue/mau/LC-04.json', '../catalogue/mau/CT-01.json', '../catalogue/mau/CT-02.json', '../catalogue/mau/CT-03.json', '../catalogue/mau/CT-04.json',
   '../catalogue/mau/MT-01.json', '../catalogue/mau/MT-02.json',
-  '../catalogue/mau/C-01.json', '../catalogue/mau/LC-05.json', '../catalogue/mau/SH-01.json', '../catalogue/mau/SH-02.json', '../catalogue/mau/BV-01.json', '../catalogue/mau/BV-02.json', '../catalogue/mau/C-02.json', '../catalogue/mau/CG-01.json',
+  '../catalogue/mau/C-01.json', '../catalogue/mau/LC-05.json', '../catalogue/mau/SH-01.json', '../catalogue/mau/SH-02.json', '../catalogue/mau/BV-01.json', '../catalogue/mau/BV-02.json', '../catalogue/mau/C-02.json', '../catalogue/mau/C-03.json', '../catalogue/mau/CG-01.json',
   '../catalogue/mau/MK-01.json'
 ];
 
