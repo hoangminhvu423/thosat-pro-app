@@ -11,11 +11,11 @@
     { "ten": "so_bang", "nhan": "Số băng ngang trang trí mỗi cánh", "don_vi": "so_luong", "mac_dinh": 2 }
   ],
   "hang_so": {
-    "w_khung_bao":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": true },
-    "w_khung_canh": { "gia_tri": 30,  "don_vi": "mm", "cho_chot": true },
+    "w_khung_bao":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": false },
+    "w_khung_canh": { "gia_tri": 40,  "don_vi": "mm", "cho_chot": false },
     "khe_canh":     { "gia_tri": 8,   "don_vi": "mm", "cho_chot": true },
-    "w_nan":        { "gia_tri": 14,  "don_vi": "mm", "cho_chot": true },
-    "khe_nan_max":  { "gia_tri": 120, "don_vi": "mm", "cho_chot": true }
+    "w_nan":        { "gia_tri": 20,  "don_vi": "mm", "cho_chot": false },
+    "khe_nan_max":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": true }
   },
   "bien": [
     { "ten": "rong_canh", "cong_thuc": "(W - 2*w_khung_bao - (so_canh+1)*khe_canh) / so_canh" },
@@ -32,17 +32,17 @@
     { "ten": "cao_canh",  "nhan": "Cao mỗi cánh", "don_vi": "mm" }
   ],
   "chi_tiet": [
-    { "ten": "Khung bao đứng", "quy_cach": "hộp 40x80 // TẠM", "sl": "2", "dai": "H" },
-    { "ten": "Khung bao ngang (trên+dưới)", "quy_cach": "hộp 40x80 // TẠM", "sl": "2", "dai": "W" },
-    { "ten": "Khung cánh đứng", "quy_cach": "hộp 30x60 // TẠM", "sl": "2*so_canh", "dai": "cao_canh" },
-    { "ten": "Khung cánh ngang", "quy_cach": "hộp 30x60 // TẠM", "sl": "2*so_canh", "dai": "rong_canh" },
-    { "ten": "Nan đứng (chia đều mỗi cánh)", "quy_cach": "hộp 14x14 // TẠM",
+    { "ten": "Khung bao đứng", "quy_cach": "hộp 40x80", "sl": "2", "dai": "H" },
+    { "ten": "Khung bao ngang (trên+dưới)", "quy_cach": "hộp 40x80", "sl": "2", "dai": "W" },
+    { "ten": "Khung cánh đứng", "quy_cach": "hộp 40x80", "sl": "2*so_canh", "dai": "cao_canh" },
+    { "ten": "Khung cánh ngang", "quy_cach": "hộp 40x80", "sl": "2*so_canh", "dai": "rong_canh" },
+    { "ten": "Nan đứng (chia đều mỗi cánh)", "quy_cach": "hộp 20x40",
       "sl": "nan_n * so_canh", "dai": "lot_cao",
-      "ghi_chu": "Khe nan chia đều trong lọt lòng mỗi cánh — xem cảnh báo an toàn trên phiếu" },
-    { "ten": "Băng ngang trang trí (đột lỗ xuyên nan)", "quy_cach": "hộp 14x30 // TẠM",
+      "ghi_chu": "Nan trang trí bề nhìn 20mm, khe chia đều ≤40mm (≈2× bề nan) cho đầm đẹp" },
+    { "ten": "Băng ngang trang trí (đột lỗ xuyên nan)", "quy_cach": "hộp 20x40",
       "sl": "so_bang * so_canh", "dai": "lot_canh",
       "ghi_chu": "Băng ngang gắn đinh tán trang trí — chưa gồm bản lề/khóa (ngũ kim thợ tự cộng)" }
   ],
   "audit": { "ngay": "14/07/2026", "nguoi": "Claude (agent)",
-    "ket_qua": "ĐẠT 3 bộ test số tính tay (4 cánh 2645×2320 từ bản vẽ thợ, 3 cánh 1478×1765, biên báo lỗi). Nan chia đều mỗi cánh, tổng nan = nan/cánh × số cánh. Quy cách 40x80/30x60/14 + khe_nan_max 120 TẠM (cổng người lớn thưa hơn lan can). GIẢ ĐỊNH: các cánh đều nhau (thợ có cánh giữa to hơn thì chỉnh W từng cụm). Cảnh báo khe an toàn áp qua UI." }
+    "ket_qua": "ĐẠT 3 bộ test (4 cánh 2645×2320 từ bản vẽ thợ, 3 cánh 1478×1765, biên báo lỗi). QUY CÁCH THẬT chủ dự án cấp 14/07: khung cửa hộp 40×80, nan/băng 20×40 (2×4). Khe nan trang trí ≤40mm (~2× bề nan) — cho_chot khi thợ xác nhận gu. GIẢ ĐỊNH: các cánh đều nhau (cánh giữa to hơn thì chỉnh W từng cụm)." }
 }
