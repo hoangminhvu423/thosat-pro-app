@@ -448,12 +448,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=24"></script>
-<script src="dexe.js?v=24"></script>
-<script src="catalogue.js?v=24"></script>
-<script src="phieu-anh.js?v=24"></script>
-<script src="minh-hoa.js?v=24"></script>
-<script src="vat-tu.js?v=24"></script>
+<script src="engine.js?v=25"></script>
+<script src="dexe.js?v=25"></script>
+<script src="catalogue.js?v=25"></script>
+<script src="phieu-anh.js?v=25"></script>
+<script src="minh-hoa.js?v=25"></script>
+<script src="vat-tu.js?v=25"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -943,11 +943,17 @@ let mauDangChon = null, kqCatalogue = null, quyCachDoi = {};
 async function napDanhSachMau(){
   if(Object.keys(dsMau).length) return;
   try{
-    const ds = await (await fetch('../catalogue/mau/danh-sach.json')).json();
-    for(const ma of ds){
-      const json = await (await fetch('../catalogue/mau/'+ma+'.json')).json();
-      dsMau[ma] = CATALOGUE.napMau(json);
+    // Ưu tiên file gộp (1 request); nếu thiếu (vd dev sửa mẫu chưa build) → fetch lẻ
+    let thuTu, mauTho = {};
+    try{
+      const goi = await (await fetch('catalogue-all.json')).json();
+      thuTu = goi.thu_tu; mauTho = goi.mau;
+    }catch(_){
+      thuTu = await (await fetch('../catalogue/mau/danh-sach.json')).json();
+      for(const ma of thuTu)
+        mauTho[ma] = await (await fetch('../catalogue/mau/'+ma+'.json')).json();
     }
+    for(const ma of thuTu) dsMau[ma] = CATALOGUE.napMau(mauTho[ma]);
     $('cat_chon').innerHTML = Object.values(dsMau).map(m=>
       `<option value="${m.ma}">${m.ma} — ${m.ten}</option>`).join('');
     veLuoiMau();
@@ -1199,7 +1205,7 @@ function xuatAnh(k){
 }
 
 /* ============ THEO DÕI LỖI + GÓP Ý ============ */
-const APP_VER = 'v19';
+const APP_VER = 'v20';
 // Ghi lỗi runtime gần nhất vào localStorage để đính kèm khi góp ý (giúp sửa trúng)
 window.addEventListener('error', e=>{
   try{ localStorage.setItem('tsp_loi', (e.message||'')+' @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||'')); }catch(_){}
