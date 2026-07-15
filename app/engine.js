@@ -32,6 +32,79 @@
   const DAI_HUU_DUNG_CAY_M = 5.9;
   function cay6(met) { return Math.ceil(met / DAI_HUU_DUNG_CAY_M); }
 
+  // Ngưỡng khe an toàn chuẩn: khe lan can/bảo vệ ≤ 100mm — "quả cầu 4 inch"
+  // (QCVN 05:2008/BXD của VN & IRC quốc tế: cầu ∅101.6mm không lọt = khe ≤100).
+  const KHE_AN_TOAN_MAX = 100;
+
+  // Chia n thanh CỐ ĐỊNH vào khoang L (lọt lòng). Thanh biên (2 thanh đầu-cuối)
+  // bề rộng wBien, các thanh giữa wGiua → n+1 khe (2 mép + giữa).
+  // kieu 'khe_deu': mọi khe bằng nhau (an toàn/thẩm mỹ — khuyên dùng lan can).
+  // kieu 'tam_deu': tâm các thanh cách đều (thanh to → khe cạnh nó hẹp hơn).
+  // kheMax/kheMin: ngưỡng cảnh báo (mm). Trả về đủ để cảnh báo + vẽ + đánh dấu.
+  function chiaThanhCoDinh({ L, soThanh, wBien, wGiua, kieu = 'khe_deu',
+                             kheMax = KHE_AN_TOAN_MAX, kheMin = 0 }) {
+    batBuocDuong(L, 'chiều dài khoang');
+    batBuocDuong(wGiua, 'bề rộng thanh giữa');
+    var n = Math.round(soThanh);
+    if (!(n >= 1)) throw new Error('Số thanh phải ≥ 1');
+    if (n >= 2) batBuocDuong(wBien, 'bề rộng thanh biên');
+    var beRong = [];
+    for (var i = 0; i < n; i++)
+      beRong.push((n >= 2 && (i === 0 || i === n - 1)) ? wBien : wGiua);
+    var tongThanh = beRong.reduce(function (s, w) { return s + w; }, 0);
+    if (tongThanh >= L)
+      throw new Error('Tổng bề rộng ' + n + ' thanh (' + Math.round(tongThanh) +
+        'mm) ≥ khoang ' + Math.round(L) + 'mm — giảm số thanh hoặc bề rộng');
+
+    var khe = [], mocTrai = [], pos = 0, i;
+    if (kieu === 'tam_deu') {
+      var buoc = L / (n + 1);
+      for (i = 0; i < n; i++) {
+        var trai = (i + 1) * buoc - beRong[i] / 2;
+        khe.push(trai - pos); mocTrai.push(trai); pos = trai + beRong[i];
+      }
+      khe.push(L - pos);
+    } else { // khe_deu
+      var kd = (L - tongThanh) / (n + 1);
+      for (i = 0; i < n; i++) { pos += kd; mocTrai.push(pos); khe.push(kd); pos += beRong[i]; }
+      khe.push(kd);
+    }
+    var kMin = Math.min.apply(null, khe), kMax = Math.max.apply(null, khe);
+
+    // Cảnh báo nói rõ: KHÔNG đạt chuẩn gì + khuyến nghị làm gì
+    var canhBao = [];
+    if (kMax > kheMax + 0.5) {
+      var nGoiY = chiaDeu(L, wGiua, kheMax).n; // số thanh tối thiểu để khe đạt
+      canhBao.push({
+        muc: 'nguy_hiem',
+        tieuDe: 'KHÔNG đạt chuẩn an toàn',
+        chuan: 'QCVN 05:2008/BXD (VN) & IRC 4-inch (quốc tế)',
+        chiTiet: 'Khe rộng nhất ' + Math.round(kMax) + 'mm > mức cho phép ' + kheMax +
+          'mm — trẻ nhỏ có thể chui lọt / trộm luồn qua.',
+        khuyenNghi: 'Tăng lên tối thiểu ' + nGoiY + ' thanh để khe ≤ ' + kheMax + 'mm.'
+      });
+    }
+    if (kheMin > 0 && kMin < kheMin - 0.5) {
+      var nGoiY2 = Math.max(1, chiaDeu(L, wGiua, kheMin).n);
+      canhBao.push({
+        muc: 'luu_y',
+        tieuDe: 'Khe quá hẹp — tốn vật tư',
+        chuan: 'khuyến nghị kinh tế',
+        chiTiet: 'Khe hẹp nhất ' + Math.round(kMin) + 'mm < ' + kheMin +
+          'mm — dày thanh không cần thiết, nặng và tốn thép.',
+        khuyenNghi: 'Giảm còn khoảng ' + nGoiY2 + ' thanh cho tiết kiệm.'
+      });
+    }
+    return {
+      soThanh: n, soKhe: n + 1, kieu, beRong: beRong,
+      khe: khe.map(function (k) { return Math.round(k); }), kheRaw: khe,
+      mocTrai: mocTrai.map(function (m) { return Math.round(m); }),
+      kheDeuNhau: kieu === 'khe_deu',
+      kheMinTt: Math.round(kMin), kheMaxTt: Math.round(kMax),
+      canhBao: canhBao
+    };
+  }
+
   // Chia ô đều + sinh MỐC ĐÁNH DẤU thước (mép trái từng thanh, tính từ khe THÔ
   // để không dồn sai số làm tròn). Trả về đủ cho công cụ chia nhanh.
   function mocChia(usable, w, kheMax) {
@@ -458,7 +531,7 @@
 
   return {
     // tiện ích
-    chiaDeu, mocChia, cay6, DAI_HUU_DUNG_CAY_M,
+    chiaDeu, mocChia, chiaThanhCoDinh, KHE_AN_TOAN_MAX, cay6, DAI_HUU_DUNG_CAY_M,
     // cầu thang
     cauThang, cauThangXoan, cauThangChieuNghi, cungLoBan, chonSoBacLoBan,
     // lan can

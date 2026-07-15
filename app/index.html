@@ -143,12 +143,38 @@
 <!-- ============ TÍNH NHANH (công cụ thợ dùng hằng ngày) ============ -->
 <div class="man on" id="man_tinh">
   <div class="the">
-    <h2>Chia ô đều — ra khe lọt lòng + mốc đánh dấu thước</h2>
-    <div class="hang">
-      <div class="o"><label>Dài khoang lọt lòng (mm)</label><input type="number" id="tn_L" value="2000"></div>
-      <div class="o"><label>Bề rộng thanh (mm)</label><input type="number" id="tn_w" value="20"></div>
+    <h2>Chia ô — ra khe lọt lòng, mốc thước, cảnh báo an toàn</h2>
+    <div class="chip-loc">
+      <button class="chip on" id="cd_auto" onclick="doiCheDoChia('auto')">Tự chia (đặt khe tối đa)</button>
+      <button class="chip" id="cd_fix" onclick="doiCheDoChia('fix')">Cố định số thanh</button>
     </div>
-    <div class="o"><label>Khe hở lọt lòng tối đa (mm)</label><input type="number" id="tn_khe" value="100"></div>
+    <div class="o"><label>Dài khoang lọt lòng (mm)</label><input type="number" id="tn_L" value="2000"></div>
+
+    <div id="cd_khoi_auto">
+      <div class="hang">
+        <div class="o"><label>Bề rộng thanh (mm)</label><input type="number" id="tn_w" value="20"></div>
+        <div class="o"><label>Khe lọt lòng tối đa (mm)</label><input type="number" id="tn_khe" value="100"></div>
+      </div>
+    </div>
+
+    <div id="cd_khoi_fix" class="an">
+      <div class="hang">
+        <div class="o"><label>Số thanh muốn chia</label><input type="number" id="tn_n" value="13"></div>
+        <div class="o"><label>Kiểu chia</label><select id="tn_kieu">
+          <option value="khe_deu">Khe hở đều nhau</option>
+          <option value="tam_deu">Tâm–tâm đều nhau</option></select></div>
+      </div>
+      <div class="hang">
+        <div class="o"><label>Bề rộng 2 thanh biên (mm)</label><input type="number" id="tn_wbien" value="20"></div>
+        <div class="o"><label>Bề rộng thanh giữa (mm)</label><input type="number" id="tn_wgiua" value="15"></div>
+      </div>
+      <div class="hang">
+        <div class="o"><label>Khe an toàn tối đa (mm)</label><input type="number" id="tn_kmax" value="100"></div>
+        <div class="o"><label>Khe nên ≥ (mm, để trống nếu bỏ)</label><input type="number" id="tn_kmin" value=""></div>
+      </div>
+      <div class="ghichu" style="margin:0 0 8px">Chuẩn an toàn: khe lan can/bảo vệ ≤100mm (QCVN 05:2008 & IRC 4-inch).</div>
+    </div>
+
     <button class="nut" onclick="tinhChia()">Chia ô</button>
     <div class="phieu" id="tn_chia_kq" style="margin-top:12px"></div>
   </div>
@@ -448,12 +474,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=25"></script>
-<script src="dexe.js?v=25"></script>
-<script src="catalogue.js?v=25"></script>
-<script src="phieu-anh.js?v=25"></script>
-<script src="minh-hoa.js?v=25"></script>
-<script src="vat-tu.js?v=25"></script>
+<script src="engine.js?v=26"></script>
+<script src="dexe.js?v=26"></script>
+<script src="catalogue.js?v=26"></script>
+<script src="phieu-anh.js?v=26"></script>
+<script src="minh-hoa.js?v=26"></script>
+<script src="vat-tu.js?v=26"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -468,9 +494,33 @@ function chonTab(key){
 }
 
 /* ============ TÍNH NHANH ============ */
+let cheDoChia = 'auto';
+function doiCheDoChia(cd){
+  cheDoChia = cd;
+  $('cd_auto').classList.toggle('on', cd==='auto');
+  $('cd_fix').classList.toggle('on', cd==='fix');
+  $('cd_khoi_auto').classList.toggle('an', cd!=='auto');
+  $('cd_khoi_fix').classList.toggle('an', cd!=='fix');
+}
+// Vẽ khối cảnh báo chuẩn (nói rõ không đạt chuẩn gì + khuyến nghị)
+function veCanhBaoChia(dsCb){
+  return dsCb.map(c=>{
+    const do_ = c.muc==='nguy_hiem';
+    return `<div style="border-left:4px solid ${do_?'#C0392B':'#B45309'};background:${do_?'#FDECEA':'#FEF6E7'};`+
+      `padding:9px 11px;border-radius:6px;margin-top:8px">`+
+      `<b style="color:${do_?'#C0392B':'#B45309'}">${do_?'⛔':'⚠'} ${c.tieuDe}</b>`+
+      (c.chuan?` <small>(${c.chuan})</small>`:'')+`<br>${c.chiTiet}<br>`+
+      `<b>Khuyến nghị:</b> ${c.khuyenNghi}</div>`;
+  }).join('');
+}
 function tinhChia(){
+  const L = num('tn_L');
+  if(cheDoChia==='auto') return tinhChiaAuto(L);
+  return tinhChiaFix(L);
+}
+function tinhChiaAuto(L){
   let kq;
-  try{ kq = ENGINE.mocChia(num('tn_L'), num('tn_w'), num('tn_khe')); }
+  try{ kq = ENGINE.mocChia(L, num('tn_w'), num('tn_khe')); }
   catch(e){ $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML='<div class="ghichu cb-do">⚠ '+e.message+'</div>'; return; }
   const w = num('tn_w');
   let html = '<div class="kq-luoi">'+
@@ -479,11 +529,38 @@ function tinhChia(){
   if(kq.n>0){
     html += '<div class="ghichu"><b>MỐC ĐÁNH DẤU mép trái từng thanh</b> (kéo thước từ đầu khoang, bút dấu tại mốc; mép phải = mốc + '+w+'mm):<br>'+
       '<span style="font-family:\'JetBrains Mono\',monospace;font-weight:700;font-size:15px">'+kq.moc.join(' · ')+'</span><br>'+
-      '<small>Soát: mốc cuối '+kq.moc[kq.n-1]+' + thanh '+w+' + khe '+kq.khe+' ≈ '+num('tn_L')+'mm ✓</small></div>';
-    vanBanCopy.tn_chia = `CHIA Ô ĐỀU — khoang ${num('tn_L')}mm, thanh ${w}mm\n`+
-      `${kq.n} thanh, khe lọt lòng ${kq.khe}mm\nMốc đánh dấu: ${kq.moc.join(' · ')}`;
+      '<small>Soát: mốc cuối '+kq.moc[kq.n-1]+' + thanh '+w+' + khe '+kq.khe+' ≈ '+L+'mm ✓</small></div>';
+    vanBanCopy.tn_chia = `CHIA Ô — khoang ${L}mm, thanh ${w}mm\n${kq.n} thanh, khe ${kq.khe}mm\nMốc: ${kq.moc.join(' · ')}`;
     html += '<button class="copy" onclick="saoChep(\'tn_chia\')">Sao chép</button>';
   }
+  $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML = html;
+  cuonToi('tn_chia_kq');
+}
+function tinhChiaFix(L){
+  let kq;
+  try{ kq = ENGINE.chiaThanhCoDinh({ L, soThanh:num('tn_n'), wBien:num('tn_wbien'),
+    wGiua:num('tn_wgiua'), kieu:$('tn_kieu').value,
+    kheMax:num('tn_kmax')||100, kheMin:parseFloat($('tn_kmin').value)||0 }); }
+  catch(e){ $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML='<div class="ghichu cb-do">⚠ '+e.message+'</div>'; return; }
+  const kheO = kq.kheDeuNhau
+    ? '<div class="kq nb"><div class="nhan">Khe lọt lòng (đều)</div><div class="so">'+mm(kq.kheMaxTt)+'</div></div>'
+    : '<div class="kq nb"><div class="nhan">Khe nhỏ–lớn nhất</div><div class="so">'+kq.kheMinTt+'–'+kq.kheMaxTt+' <em>mm</em></div></div>';
+  let html = '<div class="kq-luoi">'+
+    '<div class="kq"><div class="nhan">Số thanh</div><div class="so">'+kq.soThanh+' <em>thanh</em></div></div>'+kheO+'</div>';
+  // cảnh báo chuẩn (điểm tinh tế nhắc thợ)
+  if(kq.canhBao.length) html += veCanhBaoChia(kq.canhBao);
+  else html += '<div style="border-left:4px solid #2E7D32;background:#EAF6EA;padding:9px 11px;border-radius:6px;margin-top:8px">'+
+    '<b style="color:#2E7D32">✅ Đạt chuẩn an toàn</b> — khe '+kq.kheMaxTt+'mm ≤ '+(num('tn_kmax')||100)+'mm (QCVN 05:2008 & IRC 4-inch).</div>';
+  // mốc + danh sách khe
+  html += '<div class="ghichu"><b>MỐC ĐÁNH DẤU mép trái từng thanh:</b><br>'+
+    '<span style="font-family:\'JetBrains Mono\',monospace;font-weight:700;font-size:15px">'+kq.mocTrai.join(' · ')+'</span>';
+  if(!kq.kheDeuNhau) html += '<br><small>Khe từng khoảng (trái→phải): '+kq.khe.join(' · ')+' mm</small>';
+  html += '</div>';
+  const cbText = kq.canhBao.map(c=>`[${c.tieuDe}] ${c.chiTiet} → ${c.khuyenNghi}`).join('\n');
+  vanBanCopy.tn_chia = `CHIA Ô — khoang ${L}mm, ${kq.soThanh} thanh (biên ${num('tn_wbien')}, giữa ${num('tn_wgiua')}), ${kq.kieu==='khe_deu'?'khe đều':'tâm đều'}\n`+
+    (kq.kheDeuNhau?`Khe lọt lòng ${kq.kheMaxTt}mm`:`Khe ${kq.kheMinTt}–${kq.kheMaxTt}mm`)+
+    `\nMốc: ${kq.mocTrai.join(' · ')}`+(cbText?`\n⚠ ${cbText}`:'\n✅ Đạt chuẩn an toàn');
+  html += '<button class="copy" onclick="saoChep(\'tn_chia\')">Sao chép</button>';
   $('tn_chia_kq').className='phieu hien'; $('tn_chia_kq').innerHTML = html;
   cuonToi('tn_chia_kq');
 }
@@ -1205,7 +1282,7 @@ function xuatAnh(k){
 }
 
 /* ============ THEO DÕI LỖI + GÓP Ý ============ */
-const APP_VER = 'v20';
+const APP_VER = 'v21';
 // Ghi lỗi runtime gần nhất vào localStorage để đính kèm khi góp ý (giúp sửa trúng)
 window.addEventListener('error', e=>{
   try{ localStorage.setItem('tsp_loi', (e.message||'')+' @ '+(e.filename||'').split('/').pop()+':'+(e.lineno||'')); }catch(_){}
