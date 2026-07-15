@@ -474,12 +474,12 @@
   </div>
 </div>
 
-<script src="engine.js?v=26"></script>
-<script src="dexe.js?v=26"></script>
-<script src="catalogue.js?v=26"></script>
-<script src="phieu-anh.js?v=26"></script>
-<script src="minh-hoa.js?v=26"></script>
-<script src="vat-tu.js?v=26"></script>
+<script src="engine.js?v=27"></script>
+<script src="dexe.js?v=27"></script>
+<script src="catalogue.js?v=27"></script>
+<script src="phieu-anh.js?v=27"></script>
+<script src="minh-hoa.js?v=27"></script>
+<script src="vat-tu.js?v=27"></script>
 <script>
 /* UI thuần: đọc ô nhập → gọi ENGINE (engine.js) → đổ kết quả ra phiếu.
    KHÔNG đặt công thức ở đây — mọi logic tính nằm trong engine.js để test được. */
@@ -1185,12 +1185,16 @@ function tinhCatalogue(){
     canhBaoChuan.push('Soát: mốc cuối '+moc[moc.length-1]+' + thanh '+w+' + khe '+kq.khe.nan.khe+
       ' = '+(moc[moc.length-1]+w+kq.khe.nan.khe)+' ≈ '+Math.round(nhap.L)+'mm ✓');
   }
-  if(mauDangChon.nhom === 'lan_can'){
+  // Cảnh báo khe an toàn — áp cho MỌI mẫu chống-lọt: lan can, cửa/cổng, bông bảo vệ
+  // (chủ dự án 14/07: cổng/chuồng cọp khe to trẻ/trộm chui lọt cũng phải nhắc)
+  if(['lan_can','cua_sat','sen_hoa'].includes(mauDangChon.nhom)){
     Object.values(kq.khe).forEach(k=>{
-      if(k.khe > 100) canhBaoChuan.push(
-        '<span class="cb-do">⚠ Khe '+k.khe+'mm VƯỢT chuẩn an toàn 100mm (QCXDVN 05:2008) — trẻ em chui lọt</span>');
+      if(k.khe > ENGINE.KHE_AN_TOAN_MAX) canhBaoChuan.push(
+        '<span class="cb-do">⛔ Khe '+k.khe+'mm > chuẩn an toàn '+ENGINE.KHE_AN_TOAN_MAX+
+        'mm (QCVN 05:2008 & IRC 4-inch) — trẻ nhỏ/trộm có thể chui lọt. '+
+        'Khuyến nghị: giảm khe tối đa hoặc tăng số thanh.</span>');
     });
-    if(nhap.H && nhap.H*1000 < 1100) canhBaoChuan.push(
+    if(mauDangChon.nhom==='lan_can' && nhap.H && nhap.H*1000 < 1100) canhBaoChuan.push(
       '<span style="color:#B45309;font-weight:700">ℹ Nhà từ tầng 9 trở lên: chuẩn yêu cầu lan can ≥1100mm (đang '+Math.round(nhap.H*1000)+'mm)</span>');
   }
   $('cat_bang').innerHTML = kq.chiTiet.map((c,i)=>

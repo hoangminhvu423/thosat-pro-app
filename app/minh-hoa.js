@@ -83,6 +83,24 @@
     return s;
   }
 
+  // Cửa/cổng nhiều cánh nan đứng (C-02): vẽ n cánh, mỗi cánh khung + nan + băng ngang
+  function veCuaNhieuCanh(mau, kq, v) {
+    var soCanh = Math.max(2, Math.min(Math.round(v.so_canh || 4), 6));
+    var nanCanh = (kq && kq.khe && kq.khe.nan) ? Math.min(kq.khe.nan.n, 8) : 4;
+    var x0 = X + 40, w0 = W - 80, s = khungRong(x0, Y, w0, H, 6, THEP);
+    var wCanh = w0 / soCanh;
+    for (var c = 0; c < soCanh; c++) {
+      var cx = x0 + c * wCanh;
+      s += khungRong(cx + 3, Y + 5, wCanh - 6, H - 10, 4, THEP); // khung cánh
+      for (var i = 1; i <= nanCanh; i++)
+        s += thanh(cx + i * (wCanh - 6) / (nanCanh + 1) + 1, Y + 9, 3, H - 18, CAM); // nan
+      // 2 băng ngang trang trí
+      s += thanh(cx + 6, Y + H * 0.34, wCanh - 12, 5, THEP) +
+           thanh(cx + 6, Y + H * 0.64, wCanh - 12, 5, THEP);
+    }
+    return s;
+  }
+
   function veCuaSat(mau, kq, v) {
     var s = khungRong(X + 60, Y, W - 120, H, 7, THEP);
     var giua = X + 60 + (W - 120) / 2;
@@ -213,6 +231,7 @@
     else if (mau.nhom === 'mai_ton') s = veMaiTon(mau, kq, v);
     else if (mau.nhom === 'sen_hoa') s = veSenHoa(mau, kq, v);
     else if (mau.nhom === 'mai_kinh') s = veMaiKinh(mau, kq, v);
+    else if (mau.ma === 'C-02') s = veCuaNhieuCanh(mau, kq, v);
     else if (mau.nhom === 'cua_sat') s = veCuaSat(mau, kq, v);
     else s = veMacDinh(mau);
     svg.setAttribute('viewBox', anChuThich ? '0 0 340 140' : '0 0 340 150');
