@@ -13,12 +13,13 @@
   "hang_so": {
     "w_khung_bao":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": false },
     "w_khung_canh": { "gia_tri": 40,  "don_vi": "mm", "cho_chot": false },
-    "khe_canh":     { "gia_tri": 8,   "don_vi": "mm", "cho_chot": true },
+    "khe_canh":     { "gia_tri": 5,   "don_vi": "mm", "cho_chot": true },
     "w_nan":        { "gia_tri": 20,  "don_vi": "mm", "cho_chot": false },
     "khe_nan_max":  { "gia_tri": 40,  "don_vi": "mm", "cho_chot": true }
   },
   "bien": [
-    { "ten": "rong_canh", "cong_thuc": "(W - 2*w_khung_bao - (so_canh+1)*khe_canh) / so_canh" },
+    { "ten": "lot_ngang", "cong_thuc": "W - 2*w_khung_bao" },
+    { "ten": "rong_canh", "cong_thuc": "(lot_ngang - (so_canh-1)*khe_canh) / so_canh" },
     { "ten": "lot_canh",  "cong_thuc": "rong_canh - 2*w_khung_canh" },
     { "ten": "cao_canh",  "cong_thuc": "H - 2*w_khung_bao - 2*khe_canh" },
     { "ten": "lot_cao",   "cong_thuc": "cao_canh - 2*w_khung_canh" }
