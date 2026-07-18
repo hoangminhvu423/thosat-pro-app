@@ -4,9 +4,10 @@
 > trừ khi thiếu data hoặc gặp mâu thuẫn. Ngữ cảnh đầy đủ: `docs/quant-handoff.md` (ĐỌC TRƯỚC TIÊN).
 
 ## Đọc trước (bắt buộc, theo thứ tự)
-1. `docs/quant-handoff.md` — toàn bộ ngữ cảnh + giao thức 7 bước.
-2. `quant/backtest_vote.py` — harness đã chứng thực (selftest random-walk → EV≈0).
-3. `.claude/rules/quant-trading.md` — quy tắc dự án quant (MT5/MQL5, no look-ahead...).
+1. `docs/boi-canh-tu-duy.md` — **người dùng là ai + thế giới quan + toàn bộ dòng suy luận** (đọc ĐẦU TIÊN).
+2. `docs/quant-handoff.md` — ngữ cảnh kỹ thuật + giao thức 7 bước.
+3. `quant/backtest_vote.py` — harness đã chứng thực (selftest random-walk → EV≈0).
+4. `.claude/rules/quant-trading.md` — quy tắc dự án quant (MT5/MQL5, no look-ahead...).
 
 ## Bối cảnh 1 đoạn
 Người dùng: builder-first quant (~2 năm EA/MQL5, đã phá hàng nghìn EA), trade forex + BTC + chỉ số
