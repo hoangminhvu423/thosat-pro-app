@@ -1,0 +1,7 @@
+# Data cục bộ — không commit (symlink + file lớn), trừ file ghi chú
+data/*
+!data/GHI-CHU.md
+
+__pycache__/
+*.pyc
+.DS_Store
