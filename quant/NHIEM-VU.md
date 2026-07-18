@@ -29,7 +29,8 @@ Mỗi phương pháp = 1 hàm `score(bars, i) -> [-1, +1]` (CHỈ dùng `bars[<=
 (Có thể thêm: divergence RSI/momentum thô, breakout kênh — làm nhóm đối chứng "chỉ báo cổ điển".)
 
 ### 2. Viết `quant/run_all.py` — bộ quét tự động
-- Đầu vào: mọi file CSV trong `data/` (M1). **Resample M1 → M5/M15/H1/H4** rồi test từng khung.
+- Đầu vào: mọi file `data/*_m1.parquet` (18 mã, ~145,8 triệu nến M1 — ĐỌC `data/GHI-CHU.md`
+  trước: kiểm kê, bẫy múi giờ, mã cụt). **Resample M1 → M5/M15/H1/H4** rồi test từng khung.
 - Với mỗi (phương pháp × symbol × khung): chạy backtest theo ĐÚNG giao thức:
   1. Tín hiệu tại nến ĐÃ ĐÓNG index i → vào lệnh OPEN nến i+1. KHÔNG look-ahead.
   2. Walk-forward: calibrate/chọn ngưỡng CHỈ trên in-sample (60% đầu), đóng băng cho OOS.
