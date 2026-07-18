@@ -17,7 +17,17 @@ CFD trên MT5/Exness, đang thi FTMO 100k. Luận đề đã chốt: *logic tĩn
 Nhiệm vụ này là **kiểm chứng luận đề đó bằng số liệu thật** — số hoá "bản đồ nghĩa địa" các phương pháp
 phổ biến, và xem có con nào sống sót thật không.
 
-## Việc cần làm
+## TRẠNG THÁI CODE (phiên cloud đã dựng + selftest xong — ĐỪNG viết lại từ đầu)
+- ✅ `quant/logics.py` — 12 logic session-agnostic đã có (PA/SMC/heuristic/đối chứng).
+- ✅ `quant/run_all.py` — bộ quét walk-forward (IS60/OOS25/VALID15), phí, bootstrap, ledger, bảng xếp hạng.
+- ✅ Đã selftest stdlib: random-walk → EV≈0 (không look-ahead); momentum → lộ edge (pipeline sống).
+- **Việc của phiên Mac**: (1) `git pull`; (2) đối chiếu `python3 quant/run_all.py --selftest` — số phải KHỚP
+  với phiên cloud; (3) chạy thật `python3 quant/run_all.py --data data --khung H1 H4` (thêm M5 M15 sau);
+  (4) tinh chỉnh từng logic trong `logics.py` NẾU muốn (giữ 2 luật: chỉ dùng bars[<=i], trả [-1,1]);
+  (5) commit + push `quant/results/ledger.csv` + `BAO-CAO.md`.
+- Bổ sung sau (không chặn): logic ICT theo giờ (cần dò tz trước), thêm data BTC M1.
+
+## Việc cần làm (chi tiết tham chiếu — phần lớn ĐÃ có trong code trên)
 
 ### 1. Code hoá các phương pháp phổ biến thành hàm score
 Mỗi phương pháp = 1 hàm `score(bars, i) -> [-1, +1]` (CHỈ dùng `bars[<=i]`), cắm vào
