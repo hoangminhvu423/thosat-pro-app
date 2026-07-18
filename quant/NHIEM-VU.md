@@ -6,8 +6,10 @@
 ## Đọc trước (bắt buộc, theo thứ tự)
 1. `docs/boi-canh-tu-duy.md` — **người dùng là ai + thế giới quan + toàn bộ dòng suy luận** (đọc ĐẦU TIÊN).
 2. `docs/quant-handoff.md` — ngữ cảnh kỹ thuật + giao thức 7 bước.
-3. `quant/backtest_vote.py` — harness đã chứng thực (selftest random-walk → EV≈0).
-4. `.claude/rules/quant-trading.md` — quy tắc dự án quant (MT5/MQL5, no look-ahead...).
+3. `quant/REVIEW-cloud.md` — **4 cảnh báo data từ giám khảo cloud — XỬ LÝ TRƯỚC KHI SWEEP.**
+4. `data/GHI-CHU.md` — kiểm kê data thật (18 mã parquet, bẫy tz/khe/mã cụt).
+5. `quant/backtest_vote.py` — harness đã chứng thực (selftest random-walk → EV≈0).
+6. `.claude/rules/quant-trading.md` — quy tắc dự án quant (MT5/MQL5, no look-ahead...).
 
 ## Bối cảnh 1 đoạn
 Người dùng: builder-first quant (~2 năm EA/MQL5, đã phá hàng nghìn EA), trade forex + BTC + chỉ số
