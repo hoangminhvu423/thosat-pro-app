@@ -5,4 +5,9 @@ data/*
 __pycache__/
 *.pyc
 .DS_Store
-quant/results/ledger.csv
+
+# log chạy (path tuyệt đối local) + parquet tạm của selftest
+quant/results/run.log
+quant/results/_*.parquet
+quant/xcheck_cloud/results/run.log
+# ledger + báo cáo CÓ commit (NHIEM-VU bước 4/5) — không ignore

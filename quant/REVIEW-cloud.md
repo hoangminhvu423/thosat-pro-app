@@ -51,8 +51,23 @@ overfit trước tiên. Sweep 145 triệu nến rất tốn thời gian: **chạ
 sanity-check pipeline TRƯỚC**, rồi mới quét toàn bộ.
 
 ---
-## Nhật ký xử lý (phiên Mac điền vào đây sau khi giải quyết)
-- [ ] TZ: cách xử lý = ...
-- [ ] Cùng thời kỳ khi validate chéo: ...
-- [ ] Resample bỏ khe: ...
-- [ ] Volume-agnostic: ...
+## Nhật ký xử lý (phiên Mac điền — đã giải quyết 18/07/2026)
+
+Bản Mac (`quant/run_all.py` + `logics.py` + `engine_np.py`, vectorized numpy) đã đối chiếu cả 4 cảnh báo:
+
+- [x] **TZ**: KHÔNG dính. Cả 14 logic bản Mac đều **session-agnostic** (price action, cấu trúc, rolling
+  window) — không có logic nào dùng giờ-trong-ngày (ICT killzone/session range). Nên chưa cần dò tz.
+  Khi thêm logic theo giờ sau này thì mới cần bước dò tz như cloud mô tả. (Bản cloud có sẵn cột
+  `phu_thuoc_gio` + helper `tz_dieu_tra` cho phần đó.)
+- [x] **Cùng thời kỳ khi validate chéo**: cảnh báo đúng, NHƯNG **vô hại cho kết luận hiện tại** vì chỉ
+  1/1007 config đạt OOS ci_lo>0 (pa_engulfing/gbpusd/H4) → không đủ cặp để cross-symbol corroborate
+  bất kể có ép cùng thời kỳ hay không. eurusd/chfjpy/xauusd đã gắn cờ ở cột `ghi_chu`. Nếu tương lai
+  có ứng viên sống sót, PHẢI thêm ràng buộc giao-thời-kỳ trước khi tin (điểm nợ kỹ thuật đã ghi).
+- [x] **Resample bỏ khe, cấm fill-forward**: bản Mac `resample_ohlc()` dùng `.dropna()` sau resample →
+  **bỏ nến rỗng cuối tuần/lễ, KHÔNG fill-forward** (không tạo nến ma). Caveat nhỏ còn lại: rolling
+  window có thể bắc qua khe cuối tuần (chuẩn mực chung, không tạo look-ahead) — đã ghi trong báo cáo.
+- [x] **Volume-agnostic**: data không có volume; **không logic nào của bản Mac dùng volume**
+  (SMC/order-block/liquidity/Wyckoff đều thuần price + cấu trúc). Xác nhận đạt.
+
+**Kết quả đối chứng chéo hai bản**: xem `quant/xcheck_cloud/KET-QUA-DOI-CHUNG.md`. Cả bản Mac
+(1008 thí nghiệm) lẫn bản cloud (215 thí nghiệm H4) đều ra **0 con sống sót** → kết luận bền.
