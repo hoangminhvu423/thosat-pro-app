@@ -4,16 +4,28 @@
 > Bối cảnh: đã đọc `data/GHI-CHU.md`. 4 cảnh báo dưới đây phải xử lý TRƯỚC khi quét 145 triệu nến,
 > kẻo chạy cả đêm trên giả định sai rồi phải làm lại. Sửa xong thì ghi lại cách xử ở cuối file này.
 
-## 🔴 1. Múi giờ + phương pháp phụ thuộc phiên (RỦI RO VALIDITY LỚN NHẤT)
-- `GHI-CHU.md` ghi: bộ intraday lõi **tz chưa rõ**; xauusd = **EST**. Không đồng nhất.
-- **SMC/ICT sống bằng session** (London/NY killzone, Asian range, judas swing). Nếu tz sai/lệch →
-  test ICT/SMC **vô hiệu**: method tốt vẫn ra xấu, hoặc rác lại ra đẹp (false positive nguy hiểm hơn).
-- **Xử lý bắt buộc (chọn một):**
-  - (a) Xác nhận tz thật của bộ intraday trước (hỏi người dùng / kiểm bằng giờ mở-đóng phiên).
-  - (b) Nếu chưa chắc tz → **CHỈ chạy các logic session-agnostic** (PA thuần nến, breakout cấu trúc,
-    supply/demand theo swing). **Hoãn** mọi logic dùng giờ phiên (ICT killzone) tới khi tz xác nhận.
-  - (c) Gắn cột `phu_thuoc_session=true/false` trong ledger để tách nhóm khi đọc kết quả.
-- **KHÔNG** trộn kết quả session-based với tz chưa xác nhận vào bảng xếp hạng chung.
+## 🔴 1. Múi giờ — CHỈ ảnh hưởng logic THEO GIỜ, không ảnh hưởng phần còn lại
+> LÀM RÕ: cảnh báo này KHÔNG loại vàng/PA/SMC-cấu-trúc. Chỉ nhóm dùng **giờ trong ngày**
+> (ICT killzone, Asian/London/NY session range) mới cần tz. Mọi thứ khác chạy bình thường ngay.
+
+**Người dùng không biết tz (data tải mạng) — KHÔNG SAO, tự dò từ data:**
+- **Dò tz tự động (làm bước này trước):**
+  1. **Khe cuối tuần**: forex đóng ~17:00 New York (Fri), mở ~17:00 (Sun). Tìm khe ~48h → nến cuối
+     trước khe cho biết offset server tz.
+  2. **Profile biến động theo giờ**: `mean(|return|)` theo `hour-of-day` → 2 bướu (London mở, NY mở)
+     ghim offset. Chéo với (1) → ra tz trong ±1h.
+  - `xauusd` đã biết tz = **EST** (histdata) → dùng làm **mốc chuẩn** để hiệu chỉnh/kiểm bộ intraday.
+- **Phân nhóm logic (gắn cột `phu_thuoc_gio=true/false` trong ledger):**
+  - `false` — **CHẠY NGAY, không cần tz**: Price Action (pin/engulfing/BOS), SMC cấu trúc
+    (order block, FVG, CHoCH), breakout, supply/demand theo swing, Elliott/Wyckoff heuristic.
+  - `true` — **chạy SAU khi dò tz**: ICT killzone, session range, judas swing.
+- **KHÔNG** trộn kết quả nhóm `phu_thuoc_gio=true` vào bảng xếp hạng chung nếu tz chưa dò xong.
+
+## 🟢 Phạm vi test (chốt rõ để khỏi hiểu lầm)
+- **Price Action: TEST ĐẦU TIÊN** (session-agnostic).
+- **Vàng XAUUSD: CÓ test** (trong 18 mã) — và là mã biết tz sẵn.
+- **BTC: chưa test vì CHƯA CÓ data BTC M1 trên máy** (xem GHI-CHU). Muốn test → tải data BTC M1 rồi thả vào `data/`.
+- Chỉ **ICT theo giờ** là chờ bước dò tz (vài giây), không phải chờ người dùng.
 
 ## 🟠 2. So sánh chéo symbol phải CÙNG THỜI KỲ
 - `eurusd`: chỉ 1,0 triệu nến (2023-09→nay). `chfjpy`: cụt ở 2023-09. → hai mã **gần như không trùng kỳ**.
