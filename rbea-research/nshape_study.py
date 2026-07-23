@@ -11,7 +11,6 @@ Chay: python3 nshape_study.py <csv> [cost_R] [IMP] [RRTP]
 """
 import sys, csv
 from datetime import datetime
-IMP=float(sys.argv[3]) if len(sys.argv)>3 else 1.5   # leg1 impulse toi thieu (xATR)
 def load(p):
     rows=[]
     with open(p,newline='') as f:
@@ -73,7 +72,7 @@ def walk(m30,j0,d,ep,sl,tp):
         if (h>=tp) if d>0 else (l<=tp): return d*(tp-ep)/risk,j
     return d*(m30[-1][4]-ep)/risk,len(m30)-1
 
-def study(m30,h4,atr,ph,pl,tp_mode='MM',cost=0.0):
+def study(m30,h4,atr,ph,pl,tp_mode='MM',cost=0.0,imp=1.5,rlo=0.2,rhi=0.7):
     trades=[]  # (dt,R,volflag,fresh)
     N=len(h4)
     # duyet cac bo pivot lien tiep tao chu N
@@ -86,18 +85,18 @@ def study(m30,h4,atr,ph,pl,tp_mode='MM',cost=0.0):
         if t0=='L' and t1=='H' and t2=='L':
             L0=h4[i0][3]; H1=h4[i1][2]; L1=h4[i2][3]
             leg1=H1-L0
-            if leg1 < IMP*atr[i1]: continue
+            if leg1 < imp*atr[i1]: continue
             if not (L1>L0): continue
             rt=(H1-L1)/leg1
-            if not (0.2<=rt<=0.7): continue
+            if not (rlo<=rt<=rhi): continue
             d=1; trig=H1; sl=L1-0.2*atr[i1]
         elif t0=='H' and t1=='L' and t2=='H':
             H0=h4[i0][2]; L1v=h4[i1][3]; H1h=h4[i2][2]
             leg1=H0-L1v
-            if leg1<IMP*atr[i1]: continue
+            if leg1<imp*atr[i1]: continue
             if not (H1h<H0): continue
             rt=(H1h-L1v)/leg1
-            if not (0.2<=rt<=0.7): continue
+            if not (rlo<=rt<=rhi): continue
             d=-1; trig=L1v; sl=H1h+0.2*atr[i1]
         else: continue
         # tim bar pha trigger sau pivot cuoi (i2), trong <=12 nen H4
