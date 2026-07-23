@@ -45,3 +45,28 @@ P4 SAI một nửa: pattern thô lặp lại (dương mọi đoạn) nhưng CỔ
 1. **Nâng cấp N-shape thô**: giờ có bằng chứng 2 thị trường (XAU: trend-ăn/chop-chết; BTC: dương mọi đoạn ~+0.04..+0.27).
 2. **Hạ cấp cổng ER**: không phải cơ chế phổ quát; nếu dùng chỉ được coi là tham số riêng cho XAU, cần forward XAU xác nhận.
 3. Việc còn lại: XAU holdout 2025-07→nay (chờ export MT5 của Sếp) — mảnh phân xử cuối.
+
+## KẾT QUẢ VÒNG 2 — XAU HOLDOUT THẬT (M15 MT5 export của Sếp, chạy 2026-07-23)
+Data: XAU M15 2004-06→2026-01-30, CÙNG FEED data chuẩn (kiểm chéo đoạn trùng: chênh 0.000–0.0096% — PASS).
+Hội tụ engine: đoạn 2022→2025.5 ra ĐÚNG +0.473/n=76 như canonical → cùng data cùng engine, xác nhận pipeline.
+⚠️ Data holdout có 2 LỖ HỔNG: 2025-09-12→10-15 (32 ngày!) và 2026-01-13→01-22 (9 ngày) — giới hạn lịch sử M15 server.
+
+### Holdout 2025-07-15→2026-01-30 (vàng parabol 3,327→4,889):
+- 10 lệnh thô: avgR −1.43 — NHƯNG 1 lệnh −13.53R là ARTIFACT của hố 32 ngày (short kẹt trong hố, fill giả).
+- **9 lệnh sạch: avgR ≈ −0.08R (tổng −0.7R, WR 3/9) — quanh hòa vốn, hơi âm.**
+- Cổng ER≥0.35: ON 3 lệnh −0.17 vs OFF-sạch −0.04 → **tách ON>OFF BIẾN MẤT sau khi loại artifact** (tách "đẹp"
+  trước đó do artifact nằm bên OFF).
+
+### CHẤM DỰ ĐOÁN CUỐI
+- P1 (N-gated-ER dương trên XAU holdout): **SAI** (−0.17, n=3).
+- P2 (n nhỏ, chỉ chỉ-hướng): ĐÚNG (9 lệnh hợp lệ / 6.5 tháng).
+- P3 (ON>OFF lặp lại): **KHÔNG xác nhận trên XAU holdout** sau khi làm sạch artifact.
+- Ghi chú cơ chế: vàng parabol nhưng N-shape chỉ tìm được ~10 setup và ~hòa — pullback trong parabol quá nông
+  (<20% retrace → rớt filter), setup qualify được thường là short ngược trend → bị cán.
+
+### VERDICT R7d CUỐI CÙNG
+**N-shape + cổng ER: GIỮ NGUYÊN TRẠNG THÁI XẾP KHO. EA giữ v0.21, KHÔNG thêm gì.**
+Tổng bằng chứng 3 vòng: (XAU 21y: regime-dependent, fail prereg) + (BTC 14y: pattern thô dương mọi đoạn, cổng không lặp)
++ (XAU holdout 6.5 tháng: ~hòa vốn, cổng không tách). Điều DUY NHẤT bền: pattern thô có xương sống yếu-nhưng-thật
+cross-market; mọi lớp tinh chỉnh (cổng, TP, entry) đều không qua nổi kiểm chứng độc lập. Đường duy nhất còn lại
+cho N-shape: theo dõi FORWARD dài hơi (journal/demo), không phải backtest thêm.
