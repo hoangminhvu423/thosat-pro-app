@@ -1,3 +1,6 @@
+> ⚠️ **ĐÍNH CHÍNH 2026-07-23:** kết luận trong file này đã bị SỬA sau cross-validation Fable-B.
+> Đọc **CROSSVAL_CORRECTION_20260723.md** — N-shape = regime-dependent (không phải all-OOS robust); E1 = KHÔNG cải thiện (đã gỡ khỏi EA, v0.21 dùng market-ngay-tại-xác-nhận).
+
 # RB_EA — PROJECT STATE & HANDOFF (cho agent nối tiếp nếu gián đoạn/hết context)
 Cập nhật: 2026-07-23 · Chủ dự án: Sep · Data chuẩn: XAU_30m_data.csv (243,821 M30, 2004-06→2025-07, delim ';', fmt Y.m.d H:M)
 

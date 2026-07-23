@@ -1,3 +1,6 @@
+> ⚠️ **ĐÍNH CHÍNH 2026-07-23:** kết luận trong file này đã bị SỬA sau cross-validation Fable-B.
+> Đọc **CROSSVAL_CORRECTION_20260723.md** — N-shape = regime-dependent (không phải all-OOS robust); E1 = KHÔNG cải thiện (đã gỡ khỏi EA, v0.21 dùng market-ngay-tại-xác-nhận).
+
 # KẾT QUẢ hoàn thiện logic → v0.2 (2026-07-23, data chuẩn XAU_30m 2004-2025)
 
 ## 1. TRUNG THỰC TRƯỚC: replica full-system KHÔNG tái tạo PHASE1

@@ -1,10 +1,12 @@
 //+------------------------------------------------------------------+
 //| RB_EA.mq5 — Range/Break Semi-Auto EA v0.2                        |
-//| Spec: RB_EA_Master_Spec + PREREG_ENTRY_TP_STUDY (E1 validated)   |
-//| THAY DOI v0.2 (chi logic DA CHUNG MINH + va loi audit):         |
-//|  [E1] BREAK entry = STOP tai dinh/day nen break (continuation)   |
-//|       thay vi market nen sau. Net+ ca 3 doan OOS (A/B sach).     |
-//|       -> dong thoi VA loi C4 (vao market tre 4h).                |
+//| Spec: RB_EA_Master_Spec. v0.21 sau cross-val Fable-B 2026-07-23  |
+//| THAY DOI v0.21 (chi logic DA CHUNG MINH + va loi audit):        |
+//|  [C4-fix] BREAK entry = MARKET NGAY tai nen xac nhan (khop      |
+//|       backtest PHASE1 da validate) — khong cho them 1 nen H4.   |
+//|       [E1 pending-stop DA RUT: Fable-B doc lap cho thay E1      |
+//|       KHONG cai thien baseline -> theo luat "khong so lieu      |
+//|       chac chan thi khong them", quay ve entry dung spec.]      |
 //|  [F1] time-stop 192h (48 nen H4) qua POSITION_TIME.              |
 //|  [F4] clamp SL/TP ngoai STOPS_LEVEL; bo lenh neu qua sat.        |
 //|  [F2] budget chi tru khi lenh THAT vao (OnTradeTransaction).     |
@@ -16,16 +18,14 @@
 //| CHUA COMPILE / CHUA AUDIT Phase-4 / CHUA DEMO — bat buoc 3 buoc  |
 //|   nay truoc tien that. Range absolute chua verify (replica loi). |
 //+------------------------------------------------------------------+
-#property copyright "RB_EA v0.2 - QTQ project"
-#property version   "0.20"
+#property copyright "RB_EA v0.21 - QTQ project"
+#property version   "0.21"
 #property strict
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
-#include <Trade\OrderInfo.mqh>
 
 CTrade        g_trade;
 CPositionInfo g_pos;
-COrderInfo    g_ord;
 
 //=== INPUTS =========================================================
 input group "=== ZONE (nguoi ve) ==="
@@ -71,8 +71,6 @@ double   g_frozen_hi=0, g_frozen_lo=0;
 int      g_bud_rb=1, g_bud_rs=1, g_bud_bk=1;
 int      g_blocked_dir=0;
 datetime g_last_trade_t=0;
-ulong    g_break_ticket=0;             // [E1] ticket pending stop dang cho
-datetime g_break_bar=0;                // [E1] nen dat pending (de het han sau 1 nen)
 long     g_last_day=-1, g_last_week=-1;
 double   g_day_eq0=0, g_week_eq0=0;
 int      g_atr_handle=INVALID_HANDLE, g_sma_handle=INVALID_HANDLE;
@@ -91,7 +89,6 @@ void SaveState(){
    GlobalVariableSet(GV("zhi"),g_zone_hi); GlobalVariableSet(GV("zlo"),g_zone_lo);
    GlobalVariableSet(GV("fhi"),g_frozen_hi); GlobalVariableSet(GV("flo"),g_frozen_lo);
    GlobalVariableSet(GV("tgoff"),(double)g_tg_offset);
-   GlobalVariableSet(GV("bkt"),(double)g_break_ticket);
 }
 void LoadState(){
    if(!GlobalVariableCheck(GV("mode"))) return;
@@ -104,7 +101,6 @@ void LoadState(){
    g_zone_hi=GlobalVariableGet(GV("zhi")); g_zone_lo=GlobalVariableGet(GV("zlo"));
    g_frozen_hi=GlobalVariableGet(GV("fhi")); g_frozen_lo=GlobalVariableGet(GV("flo"));
    g_tg_offset=(long)GlobalVariableGet(GV("tgoff"));
-   g_break_ticket=(ulong)GlobalVariableGet(GV("bkt"));
 }
 
 //=== FILL MODE AUTO =================================================
@@ -188,8 +184,7 @@ void CloseAllOurs(){
          ClosePositionVerified(g_pos.Ticket()); }
 void CancelAllPending(){
    for(int i=OrdersTotal()-1;i>=0;i--){ ulong t=OrderGetTicket(i);
-      if(OrderGetString(ORDER_SYMBOL)==g_sym&&OrderGetInteger(ORDER_MAGIC)==I_Magic) g_trade.OrderDelete(t); }
-   g_break_ticket=0; }
+      if(OrderGetString(ORDER_SYMBOL)==g_sym&&OrderGetInteger(ORDER_MAGIC)==I_Magic) g_trade.OrderDelete(t); } }
 
 // [F4] khoang cach dung toi thieu (stops level + spread)
 double MinStopDist(){
@@ -227,24 +222,6 @@ bool MarketIn(int dir,double sl,double tp,string tag){
       TG(StringFormat("ENTRY %s %s %s|lot %.2f|SL %.2f|TP %.2f",g_sym,tag,dir>0?"BUY":"SELL",lot,sl,tp)); }
    else PrintFormat("[RBEA-FAIL] %s rc=%d",tag,g_trade.ResultRetcode());
    return ok; }
-
-// [E1] dat pending STOP tai dinh/day nen break (continuation). F2: bk tru khi FILL (OnTradeTransaction).
-void PlaceBreakStop(int dir,double ext,double atr){
-   double sl = ext - dir*I_BreakSL_ATR*atr;
-   double tp = ext + dir*I_BreakTP_ATR*atr;
-   if(!StopsOK(ext,sl,tp)) return;                      // [F4]
-   double lot=CalcLot(ext,sl); if(lot<=0) return;
-   g_trade.SetTypeFillingBySymbol(g_sym);
-   datetime exp=TimeCurrent()+PeriodSeconds(PERIOD_H4); // het han sau 1 nen H4
-   // LUU Y audit Phase-4: neu gia HIEN TAI da vuot ext thi BuyStop/SellStop se bi tu choi
-   // (stop phai o ngoai gia). Continuation da xay ra -> can quyet: vao market hay bo. v0.2 tam BO (bao thu).
-   bool ok = dir>0 ? g_trade.BuyStop(lot,ext,g_sym,sl,tp,ORDER_TIME_SPECIFIED,exp,I_Comment+"_BREAK")
-                   : g_trade.SellStop(lot,ext,g_sym,sl,tp,ORDER_TIME_SPECIFIED,exp,I_Comment+"_BREAK");
-   if(ok){ g_break_ticket=g_trade.ResultOrder(); g_break_bar=iTime(g_sym,PERIOD_H4,0);
-      g_bud_bk--;                        // [F2] tru khi DA DAT thanh cong; HOAN neu het han chua fill (OnNewH4)
-      TG(StringFormat("BREAK-STOP %s @ %.2f (cho continuation)",dir>0?"BUY":"SELL",ext)); }
-   else PrintFormat("[RBEA-FAIL] BreakStop rc=%d",g_trade.ResultRetcode());
-   SaveState(); }
 
 // [F1] time-stop: dong vi the giu qua I_MaxHoldBars nen H4
 void CheckTimeStop(){
@@ -316,13 +293,6 @@ void OnNewH4(){
    double c1=iClose(g_sym,PERIOD_H4,1), h1=iHigh(g_sym,PERIOD_H4,1), l1=iLow(g_sym,PERIOD_H4,1);
    bool gap_ok=(TimeCurrent()-g_last_trade_t)>=I_MinGapMin*60;
 
-   // [E1] don dep pending break het han (neu con treo tu nen truoc va chua fill)
-   if(g_break_ticket>0){
-      if(!g_ord.Select(g_break_ticket)){ g_break_ticket=0; }   // da fill (thanh position) hoac da bi xoa -> KHONG hoan budget
-      else if(iTime(g_sym,PERIOD_H4,0)!=g_break_bar){          // qua 1 nen, VAN pending -> huy + [F2] HOAN budget
-         g_trade.OrderDelete(g_break_ticket); g_break_ticket=0; g_bud_bk++; SaveState(); }
-   }
-
    if(g_mode==MODE_RANGE){
       if(!ReadZone(false)){ Print("[RBEA] Mat hline vung"); return; }
       double bh=g_zone_hi, bl=g_zone_lo;
@@ -331,10 +301,12 @@ void OnNewH4(){
          int d = c1>bh ? 1 : -1;
          g_frozen_hi=bh; g_frozen_lo=bl; g_mode=MODE_BREAK;
          TG(StringFormat("BREAK %s xac nhan @ %.2f",d>0?"UP":"DOWN",c1));
-         // [E1] dat STOP tai DINH/DAY nen break -> chi vao khi continuation
-         if(g_bud_bk>0 && gap_ok && !OursOpen() && g_break_ticket==0){
-            double ext = d>0 ? h1 : l1;
-            PlaceBreakStop(d,ext,atr);
+         // [C4-fix] vao MARKET NGAY tai nen xac nhan (khop backtest PHASE1).
+         // v0.1 cho them 1 nen (tre 4h) = lech backtest. E1 pending-stop da rut (Fable-B).
+         if(g_bud_bk>0 && gap_ok && !OursOpen()){
+            double px = d>0?SymbolInfoDouble(g_sym,SYMBOL_ASK):SymbolInfoDouble(g_sym,SYMBOL_BID);
+            double sl = px - d*I_BreakSL_ATR*atr, tp = px + d*I_BreakTP_ATR*atr;
+            if(MarketIn(d,sl,tp,"BREAK")){ g_bud_bk--; }        // [F2] tru khi THAT vao
          }
          SaveState(); return;
       }
@@ -358,7 +330,6 @@ void OnNewH4(){
       //-- False break: dong nguoc vao trong box -> NEUTRAL
       if(c1<g_frozen_hi && c1>g_frozen_lo){
          g_mode=MODE_NEUTRAL;
-         if(g_break_ticket>0){ g_trade.OrderDelete(g_break_ticket); g_break_ticket=0; g_bud_bk++; } // [F2] hoan
          SaveState(); TG("FALSE BREAK - NEUTRAL, ve lai vung ngay mai"); }
    }
 }
@@ -372,7 +343,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    if(HistoryDealGetString(trans.deal,DEAL_SYMBOL)!=g_sym) return;
    ENUM_DEAL_ENTRY de=(ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal,DEAL_ENTRY);
    // lenh vao (gom BREAK-stop fill): cap nhat gap-timer. Budget bk da tru luc DAT pending (F2, khong phu thuoc comment).
-   if(de==DEAL_ENTRY_IN){ g_last_trade_t=TimeCurrent(); g_break_ticket=0; SaveState(); }
+   if(de==DEAL_ENTRY_IN){ g_last_trade_t=TimeCurrent(); SaveState(); }
    if(de!=DEAL_ENTRY_OUT) return;
    double profit=HistoryDealGetDouble(trans.deal,DEAL_PROFIT);
    ENUM_DEAL_REASON rs=(ENUM_DEAL_REASON)HistoryDealGetInteger(trans.deal,DEAL_REASON);

@@ -1,3 +1,6 @@
+> ⚠️ **ĐÍNH CHÍNH 2026-07-23:** kết luận trong file này đã bị SỬA sau cross-validation Fable-B.
+> Đọc **CROSSVAL_CORRECTION_20260723.md** — N-shape = regime-dependent (không phải all-OOS robust); E1 = KHÔNG cải thiện (đã gỡ khỏi EA, v0.21 dùng market-ngay-tại-xác-nhận).
+
 # N-SHAPE ROBUSTNESS SWEEP (2026-07-23) — chống overfit
 Quét IMP{1.0,1.5,2.0,2.5} × pivot-k{1,2,3} × retrace-band{(0.2,0.7),(0.3,0.6),(0.15,0.8)} = 36 cấu hình.
 TP=MM, net phí 0.04R, data chuẩn, OOS 3 đoạn.

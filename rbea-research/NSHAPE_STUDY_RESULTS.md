@@ -1,3 +1,6 @@
+> ⚠️ **ĐÍNH CHÍNH 2026-07-23:** kết luận trong file này đã bị SỬA sau cross-validation Fable-B.
+> Đọc **CROSSVAL_CORRECTION_20260723.md** — N-shape = regime-dependent (không phải all-OOS robust); E1 = KHÔNG cải thiện (đã gỡ khỏi EA, v0.21 dùng market-ngay-tại-xác-nhận).
+
 # N-SHAPE STUDY — Phân tách chính xác hình thái chữ N + kết quả (2026-07-23)
 Data: XAU_30m_data.csv chuẩn (243,821 M30 → 32,290 H4, 2004-2025). Net phí 0.04R. Path M30. Look-ahead ĐÃ VÁ.
 Nguồn cảm hứng: bài X của 1 trader TQ (N-model) — CHỈ tham khảo; mọi thứ dưới đây là ĐO ĐƯỢC, không tin theo.
