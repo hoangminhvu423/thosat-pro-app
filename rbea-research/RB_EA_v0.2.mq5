@@ -12,6 +12,9 @@
 //|  [F2] budget chi tru khi lenh THAT vao (OnTradeTransaction).     |
 //|  [C6] tuy chon Friday-flat (dong vi the truoc weekend).          |
 //|  [C7] moc reset tuan theo Monday server (khong lech thu 5 UTC).  |
+//|  [R7e/FTMO] breaker TONG I_MaxTotalDD neo BALANCE BAN DAU        |
+//|       (permHalt truoc nguong Max Loss 10% cua FTMO) + risk       |
+//|       default 0.25% theo MC-survival (P breach 2y ~4% vs 26%).   |
 //|  Trend filter DEFAULT OFF (PHASE1: robust hon).                  |
 //| BAC (khong dua vao): trailing/partial TP, pinbar/engulfing,      |
 //|   retest-limit, wick-structure -> deu fail OOS.                  |
@@ -19,7 +22,7 @@
 //|   nay truoc tien that. Range absolute chua verify (replica loi). |
 //+------------------------------------------------------------------+
 #property copyright "RB_EA v0.21 - QTQ project"
-#property version   "0.21"
+#property version   "0.22"
 #property strict
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
@@ -44,9 +47,10 @@ input int    I_MinGapMin   = 60;
 input int    I_MaxHoldBars = 48;       // [F1] time-stop 48 nen H4 = 192h
 
 input group "=== RISK ==="
-input double I_RiskPct        = 0.5;
+input double I_RiskPct        = 0.25;   // [R7e] keep-profile: MC P(breach 2y) 4% @0.25 vs 26% @0.5
 input double I_MaxDailyDD     = 3.0;
 input double I_MaxWeeklyDD    = 8.0;
+input double I_MaxTotalDD     = 9.0;    // [R7e/FTMO] % tu BALANCE BAN DAU -> permHalt (0=tat). FTMO max loss 10%
 input bool   I_CloseOnBreaker = false;
 input bool   I_FridayCleanup  = true;
 input int    I_FridayHour     = 21;
@@ -76,6 +80,8 @@ double   g_day_eq0=0, g_week_eq0=0;
 int      g_atr_handle=INVALID_HANDLE, g_sma_handle=INVALID_HANDLE;
 datetime g_last_h4_bar=0;
 long     g_tg_offset=0;
+double   g_init_bal=0;                  // [R7e] balance ban dau (neo breaker tong)
+bool     g_perm_halt=false;             // [R7e] halt vinh vien sau breaker tong
 string   g_sym;
 
 string GV(string k){ return "RBEA2_"+g_sym+"_"+(string)I_Magic+"_"+k; }
@@ -89,6 +95,7 @@ void SaveState(){
    GlobalVariableSet(GV("zhi"),g_zone_hi); GlobalVariableSet(GV("zlo"),g_zone_lo);
    GlobalVariableSet(GV("fhi"),g_frozen_hi); GlobalVariableSet(GV("flo"),g_frozen_lo);
    GlobalVariableSet(GV("tgoff"),(double)g_tg_offset);
+   GlobalVariableSet(GV("ibal"),g_init_bal); GlobalVariableSet(GV("phalt"),g_perm_halt?1:0);
 }
 void LoadState(){
    if(!GlobalVariableCheck(GV("mode"))) return;
@@ -101,6 +108,7 @@ void LoadState(){
    g_zone_hi=GlobalVariableGet(GV("zhi")); g_zone_lo=GlobalVariableGet(GV("zlo"));
    g_frozen_hi=GlobalVariableGet(GV("fhi")); g_frozen_lo=GlobalVariableGet(GV("flo"));
    g_tg_offset=(long)GlobalVariableGet(GV("tgoff"));
+   g_init_bal=GlobalVariableGet(GV("ibal")); g_perm_halt=GlobalVariableGet(GV("phalt"))>0.5;
 }
 
 //=== FILL MODE AUTO =================================================
@@ -240,7 +248,9 @@ int OnInit(){
    g_atr_handle=iATR(g_sym,PERIOD_H4,20);
    g_sma_handle=iMA(g_sym,PERIOD_H4,200,0,MODE_SMA,PRICE_CLOSE);
    if(g_atr_handle==INVALID_HANDLE||g_sma_handle==INVALID_HANDLE) return INIT_FAILED;
-   LoadState(); EventSetTimer(I_TGPollSec);
+   LoadState();
+   if(g_init_bal<=0){ g_init_bal=AccountInfoDouble(ACCOUNT_BALANCE); SaveState(); }  // [R7e] neo 1 lan
+   EventSetTimer(I_TGPollSec);
    g_last_h4_bar=iTime(g_sym,PERIOD_H4,0);
    TG("RB_EA v0.2 online\n"+StatusText());
    return INIT_SUCCEEDED; }
@@ -252,6 +262,15 @@ void OnTimer(){ TGPoll(); }
 
 //=== CORE ==========================================================
 void OnTick(){
+   //-- [R7e] breaker TONG: -I_MaxTotalDD% tu balance ban dau -> dong het + halt VINH VIEN
+   if(!g_perm_halt && I_MaxTotalDD>0 && g_init_bal>0){
+      if(AccountInfoDouble(ACCOUNT_EQUITY) <= g_init_bal*(1.0-I_MaxTotalDD/100.0)){
+         g_perm_halt=true; g_armed=false; g_mode=MODE_NEUTRAL;
+         CancelAllPending(); CloseAllOurs(); SaveState();
+         TG(StringFormat("TOTAL BREAKER -%.1f%% tu initial %.2f — PERM HALT. Can nguoi reset GlobalVariable.",I_MaxTotalDD,g_init_bal));
+      }
+   }
+   if(g_perm_halt) return;
    CheckTimeStop();                                     // [F1] moi tick
    //-- Friday cleanup
    if(I_FridayCleanup){
