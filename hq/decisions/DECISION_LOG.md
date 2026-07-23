@@ -1,4 +1,5 @@
 # DECISION LOG (mới nhất trên cùng)
+- 2026-07-23 **BTC Shadow-Run đêm bật** — forward paper-log tự tích lũy (rbea-research/forward/). Nguyên tắc đêm: chỉ việc tạo bằng-chứng-bền/bảo trì, cấm tạo giả-thuyết không giám sát.
 - 2026-07-23 **HQ thành lập** — hq/ trong thosat-pro-app; migrate sang repo riêng khi Sếp tạo (xem MIGRATE.md).
 - 2026-07-23 **Master Spec v1.0 chốt**: 2-sleeve XAU-SEMI+BTC-AUTO, risk 0.15/0.15, FTMO SWING bắt buộc, 5 gates.
 - 2026-07-23 R7g: FX majors (EUR/GBP/JPY) BÁC cho break-sleeve; BTC PASS mạnh (+0.119 PF1.19, fee-stress OK).
