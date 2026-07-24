@@ -1,5 +1,11 @@
 # STATE — RB_EA (cập nhật 2026-07-24 chiều — cửa sổ deploy)
-## Vị trí hiện tại: G1 ĐẠT (phê duyệt) → chờ Sếp chạy G2 theo G2_KIT.md (~15 phút)
+## Vị trí hiện tại: ⛔ G2 FAIL — TRẢ VỀ R&D. KHÔNG deploy.
+- G2 (2026-07-24): BTC AUTO headless 0 lệnh cả cửa sổ 3 tháng LẪN 18 tháng (tham số đúng, history 100%).
+  NGUYÊN NHÂN: file halt Common `RBEA2_BTCUSD_20260724_halt.bin` perm_halt=1 → EA halt ngay OnInit → 0 lệnh.
+  Sharp-edge re-audit đã cảnh báo (halt-file chung symbol+magic, tester+live+2acc đè nhau). Hồ sơ:
+  `G2_FINDINGS_20260724.md` (+ Drive INBOX_FINDINGS). Đề xuất vá cho v0.4 (thêm login vào tên file + log lý do halt).
+- ⚠️ RB_EA đang gắn 2 chart LIVE nhưng perm_halt=1 → bật Algo cũng KHÔNG trade. CHƯA gỡ (chờ Sếp quyết).
+- CẤM xoá file halt để chữa rồi deploy khi chưa hiểu vì sao perm_halt=1 (Guardian).
 - G1: compile VPS 0 error / 1 warning (warning 68 — format chuỗi version, metadata thuần).
   **Sếp PHÊ DUYỆT chấp nhận warning 24/07** → G1 đạt. Hồ sơ: G1_ERRORS.md. Nhắc R&D: v0.4 sửa
   `#property version "0.310"` cho sạch 0/0 (1 dòng, gộp vào P2 module hóa).
