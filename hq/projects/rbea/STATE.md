@@ -14,3 +14,11 @@
 1. Sếp: compile v0.31 (G1) + Strategy Tester visual 3 tháng 2 profile (G2).
 2. Claude: P2 — v0.4 module hóa + Panel/Logger/Notifier/Watchdog (diff logic = 0), sau khi G1/G2 sạch.
 3. Version sau nhớ 2 ghi chú vàng của re-audit: halt-file thêm login; note /arm khi đè GV cũ.
+
+## QUYẾT ĐỊNH MỚI (Sếp, 2026-07-24 sáng): deploy sớm lên account CÁ NHÂN ~4,600 USD
+- Sếp chấp nhận rút gọn: KHÔNG chờ G4 demo 4 tuần cho account cá nhân này (tiền cá nhân, không phải quỹ).
+- **G1 + G2 vẫn BẮT BUỘC** trước khi cắm (đã thống nhất — 2 gate này gần như miễn phí, ~1 giờ).
+- Chốt an toàn khi cắm: I_InitBalance=4600 · I_RiskPct=0.15 · Telegram alert verify trước khi rời máy ·
+  tuần đầu checklist HẰNG NGÀY · mọi số liệu 4 tuần đầu coi như G4-trả-phí-thật, đối chiếu shadow như thường.
+- Nếu G1 ra lỗi compile: KHÔNG tự sửa logic ở cửa sổ deploy — báo lỗi về repo (commit message hoặc file
+  hq/projects/rbea/G1_ERRORS.md) để phiên R&D vá theo vòng audit.
