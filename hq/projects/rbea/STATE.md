@@ -6,7 +6,12 @@
 - G2: mọi thứ đã dựng sẵn — `.ex5` ở staging + 2 set-file trong Presets terminal Exness.
   **Sếp làm theo `G2_KIT.md`** (RDP 15': 2 run visual + checklist mắt người).
 - Sau G2 đạt: cửa sổ deploy soạn checklist cắm live; bước attach chart + AutoTrading do Sếp bấm.
-  CÒN THIẾU: account 4,600 USD nằm ở terminal nào (Exness tree hay cài mới?) — Sếp cho biết khi G2 xong.
+  Account 4,600 USD ĐÃ XÁC ĐỊNH: Exness REAL #265921030 "botea" (terminal Program Files) —
+  Sếp đã gỡ HM0.4 khỏi chart 24/07 09:07, account phẳng 0 vị thế, eq 4,673.28 → sẵn sàng nhận RB_EA sau G2.
+- PANEL v0.4: Sếp PHÊ DUYỆT mockup 24/07 → spec bắt buộc cho P2: `PANEL_SPEC_v04.md`.
+- Audit HM0.4 (panel "vượt breaker"): breaker ĐÚNG, chỉ 2 finding hiển thị (V-A day-baseline đóng băng
+  khi halt, V-B emoji ⛔ render thành □) — hồ sơ Drive INBOX_FINDINGS/AUDIT_HM04_PANEL_20260724.md.
+- Terminal FTMO trên VPS: Authorization failed + 0 EA gắn — chạy rỗng, chờ Sếp xử lý account.
 - **File chuẩn: `rbea-research/RB_EA_v0.31.mq5`** (v0.3 đã deprecated — có banner, KHÔNG dùng).
 - Audit G3: v0.3 có 4 lỗi đỏ (nặng nhất: Donchian shift làm BTC auto 0 lệnh) → vá hết trong v0.31 →
   re-audit độc lập PASS. Hồ sơ: `AUDIT_G3_v03_20260724.md`.
