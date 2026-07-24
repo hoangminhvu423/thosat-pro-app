@@ -30,3 +30,11 @@
 - **RANH GIỚI (LESSON-04):** XAUT/PAXG là vàng token-hóa 24/7 ≠ XAUUSD CFD (weekend, spread, thanh khoản).
   Log XAUT chỉ là PROXY THAM CHIẾU ĐỘC LẬP với MT5; KHÔNG dùng làm bằng chứng gate G4. Việc đầu tiên khi
   Sếp export MT5 lần tới: đo tracking-error XAUT vs XAUUSD đoạn trùng để định giá trị proxy.
+
+## [PENDING] Gộp XAUT vào routine đêm (chặn bởi approval gate 2026-07-24)
+- Trạng thái: feed data-gold ĐÃ CHẠY (workflow run #1 OK, 2000 nến XAUT + 1000 nến PAXG, 0 gap).
+  Log backfill 13 lệnh đã push. Routine đêm hiện CHỈ chạy BTC.
+- Việc cần làm (phiên có quyền MCP trigger): update_trigger trig_012ufpG48hzGLgcCTB82LLY3, thêm bước:
+  curl https://raw.githubusercontent.com/hoangminhvu423/thosat-pro-app/data-gold/xaut_30m.csv
+  → python3 rbea-research/forward/xaut_shadow.py <file> → commit/push nếu log đổi.
+- Trong lúc chờ: chạy tay lệnh trên trong phiên bất kỳ (idempotent, không sợ trùng).
