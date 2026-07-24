@@ -1,11 +1,16 @@
-# RB_EA — STATE (2026-07-23, sau R7a-g)
-## ĐANG Ở ĐÂU
-- Thiết kế production CHỐT: rbea-research/RB_EA_MASTER_SPEC_v1.0.md (2 sleeve: XAU-SEMI + BTC-AUTO, risk 0.15/0.15, FTMO Swing).
-- Code: RB_EA_v0.3.mq5 (auto-mode + range-toggle + total-breaker permHalt). CHƯA compile/audit/demo.
-- Số đã validate: portfolio XAU+BTC payout 2.3-3.5%/năm @ P(chết 2y) 2-6% (R7g, corr 0.024).
-## VIỆC TIẾP THEO (thứ tự)
-1. [SẾP] G1 compile MetaEditor + G2 Strategy Tester visual.
-2. [PHIÊN MỚI] G3 ea-code-audit v0.3 — 3 flag chờ soi: buy-khi-giá-vượt-trigger · lệch 1-vị-thế-vs-overlap · công thức daily FTMO.
-3. [VPS] G4 demo ≥4 tuần/≥40 lệnh (kỳ vọng 10-13 lệnh/tháng ±40%) + journal R1 song song (JOURNAL_R1_schema.md).
-4. G5 go/no-go → FTMO Swing.
-## ĐÃ CHỐT / ĐÃ BÁC: xem rbea-research/PROJECT_STATE_HANDOFF.md + CROSSVAL_CORRECTION + các PREREG R7c/d/g.
+# STATE — RB_EA (cập nhật 2026-07-24 đêm)
+## Vị trí hiện tại: P1 XONG → chờ P3 (G1/G2 của Sếp)
+- **File chuẩn: `rbea-research/RB_EA_v0.31.mq5`** (v0.3 đã deprecated — có banner, KHÔNG dùng).
+- Audit G3: v0.3 có 4 lỗi đỏ (nặng nhất: Donchian shift làm BTC auto 0 lệnh) → vá hết trong v0.31 →
+  re-audit độc lập PASS. Hồ sơ: `AUDIT_G3_v03_20260724.md`.
+- Phương án kỹ thuật đã duyệt: `EA_ENGINEERING_PLAN_v1.0.md` (P1✓ → P2 v0.4 module hóa → P3 G1/G2 Sếp
+  → P4 verify_ea_log → P5 demo → P6 go/no-go).
+- FTMO set-file cần nhớ: I_InitBalance BẮT BUỘC set ($ account); XAU semi magic 20260723 risk 0.15;
+  BTC auto magic 20260724, I_AutoZone=true, I_RangeEnabled=false, I_FridayCleanup vô hiệu với AUTO.
+## Forward monitoring đang chạy
+- BTC shadow: routine đêm 20:00 UTC. XAUT proxy: feed GitHub Actions 4h/lần (nhánh data-gold) +
+  xaut_shadow.py chạy trong phiên bất kỳ. XAU CFD: chờ Sếp export MT5 (~2 tuần/lần) → đo tracking-error.
+## Việc kế tiếp
+1. Sếp: compile v0.31 (G1) + Strategy Tester visual 3 tháng 2 profile (G2).
+2. Claude: P2 — v0.4 module hóa + Panel/Logger/Notifier/Watchdog (diff logic = 0), sau khi G1/G2 sạch.
+3. Version sau nhớ 2 ghi chú vàng của re-audit: halt-file thêm login; note /arm khi đè GV cũ.
