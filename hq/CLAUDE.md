@@ -24,3 +24,12 @@ Cập nhật: 2026-07-23 · Chủ tịch: Sếp (donald.walker@ / yz.hoangmaison
 ## DANH SÁCH CẤM VĨNH VIỄN (đã fail kiểm chứng — không thử lại trên data cũ)
 DCA/grid/hedge/martingale · trailing/partial TP · pinbar/engulfing filter · retest-entry ·
 wick-count filter · volume filter (tick-vol) · cổng ER phổ-quát · session-block/time-stop-ngắn cho auto XAU.
+
+## LUẬT ĐỒNG BỘ (thêm 2026-07-24 — chống "skill đá nhau" giữa môi trường)
+- **NGUỒN CHUẨN DUY NHẤT của mọi skill nghiệp vụ = repo này** (`.claude/skills/` cho skill tự nạp,
+  `hq/skills/` cho runbook thao tác). Bản nằm ở account cloud hay ~/.claude máy local chỉ là CACHE.
+- **Khi hai bản lệch nhau: bản trong repo THẮNG.** Muốn sửa skill → sửa trong repo, commit, push;
+  rồi mới chép ra các cache nếu cần. Cấm sửa cache rồi bỏ quên repo.
+- Môi trường mới (cửa sổ MacBook, phiên cloud mới): làm việc TRONG thư mục clone repo để skill
+  repo tự nạp; hoặc chạy 1 lần: `cp -r <repo>/.claude/skills/* ~/.claude/skills/`.
+- Janitor thứ Hai kiểm drift: diff `~/.claude/skills` vs `<repo>/.claude/skills` — lệch thì báo.

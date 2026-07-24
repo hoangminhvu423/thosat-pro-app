@@ -10,3 +10,7 @@ description: Janitor tuần — quét dọn, cập nhật INDEX/STATE, báo cáo
 5. Drive (nếu connector có): liệt kê file mới folder RB_EA, thêm link vào INDEX nếu thiếu. KHÔNG xóa gì trên Drive.
 6. Commit "hq: don dep tuan YYYY-MM-DD" + push. Báo cáo ≤10 dòng: đã chuyển gì, cờ gì, INDEX đổi gì.
 CẤM: xóa file, sửa nội dung STATE/LOG (chỉ gắn cờ), đụng vào code EA/app.
+
+## BƯỚC THÊM (2026-07-24): kiểm drift skill
+So sánh `~/.claude/skills/{ea-code-audit,guardian-rules}/SKILL.md` với `<repo>/.claude/skills/...`
+(diff từng file). Nếu lệch: báo trong báo cáo, KHÔNG tự ghi đè (repo là nguồn chuẩn, người quyết).
