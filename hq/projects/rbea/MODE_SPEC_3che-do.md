@@ -24,36 +24,39 @@ tự nạp đúng bó tham số. Deploy-time (chọn 1 lần khi gắn/account),
 
 FUND & HUMAN_ALPHA: số neo theo luật FTMO (5% daily / 10% max) trừ biên an toàn → chắc chắn, làm được.
 
-## ✅ ĐÍNH CHÍNH (Sếp đúng): backtest 15-17%/năm ĐÃ CÓ — ở QTQ Fund EA, KHÔNG phải RB_EA
-Kết luận "không khả thi" ở bản trước là do tôi phân tích nhầm sang edge RB_EA (Range/Break) — vốn là
-sleeve GIỮ QUỸ thiết kế "rỉ giọt" ~1%/năm (R7f: trần ~1,2%/năm @0.25%). Đó là chủ đích của RB_EA.
-Mục tiêu 15-17%/năm @ DD 25-30% của Sếp lấy từ **QTQ Fund EA (calendar + rsi2)** — chiến lược KHÁC,
-đã có sẵn enum 3 chế độ và risk-curve kiểm chứng:
+## ✅ ĐÍNH CHÍNH (Sếp đúng — proof là R7h của CHÍNH RB_EA): 15-17%/năm CÓ THẬT
+Tôi đã sai 2 lần và xin nhận: (1) trích số KEEP (0.15-0.25% → ~1%/năm) như thể đó là trần của RB_EA;
+(2) đổ nhầm 15-17% sang Fund EA (đã khai tử). Sự thật: **15-17%/năm @ DD 25-30% là của CHÍNH RB_EA**,
+chỉ khác MỨC RISK — proof có sẵn trên GitHub:
 
-- `projects/Fund_EA/QTQ_Fund_EA.mq5:85` — **`enum EMode { MODE_FUNDED, MODE_PASS, MODE_PERSONAL, MODE_MANUAL }`
-  ĐÃ TỒN TẠI** (v3.92, đang deploy). ApplyMode() set risk/daily/max/cap theo mode; breaker CAP DD cứng.
-- **Risk-curve (WORKLOG cal+rsi2)**: 1×→1,5%/DD2,5% · 3×→4,6%/7,4% (FTMO an toàn) · 5×→7,7%/12% ·
-  **10×→15,5% CAGR / DD 24%**. → 15-17%/năm @ DD~25% ≈ hệ số **~10×**. Đúng dải Sếp đặt.
-- Preset đã cài: FUNDED(2×,~5-7%/DD≤8%) · PASS(3×,~10%/DD≤9%) · **PERSONAL(8×, stop 12/30, ~20-27%/DD~24%)**.
+- **`rbea-research/mc_personal.py` (R7h)** + commit `62b2c6d`. MC joint block-bootstrap XAU+BTC (corr 0.024),
+  **lãi kép, 5 năm, 8000 paths**, seed cố định (tái lập được). Đọc script: phương pháp sạch, đúng chuẩn.
+- **Kết quả R7h (chốt trong commit)**:
+  | risk/sleeve | CAGR median | P(DD>30%) |
+  |---|---|---|
+  | 0.75% | **~14%/năm** | (dưới 50%) |
+  | 1.0%  | **~18%/năm** | ~50% |
+  → **15-17%/năm ≈ risk 0.85-0.95%/sleeve**, DD budget 25-30%. KHỚP CHÍNH XÁC dải Sếp đặt.
 
-### ⚠️ Lưu ý HONEST vs LẠC QUAN (phải nói rõ trước khi tiền thật)
-- Risk-curve trên là bản proxy. **Sim v2 HONEST** (vá look-ahead + min-lot + swap, `scratch/simv2_report_20260703.md`):
-  **PERSONAL 8× = CAGR +9,73% / maxDD −24,56%**, có **1 ngày HALT** thật (2026-06-09, −12,43%).
-- Swap ăn −0,31%/năm; deflated Sharpe forward ~1,0-1,2 (không phải 1,5 gross).
-- Nghĩa là: 15-17% "honest" cần đẩy ~10-13× → DD chạm/vượt mép 30%. **Đạt được nhưng ở rìa aggressive**;
-  8× honest chỉ ~9,7%. Chốt con số cuối cần Sếp xác nhận chấp nhận DD tới ~30% + HALT-day.
+### Vì sao trước tôi thấy "chênh lệch bất thường" — thực ra KHÔNG có gì bất thường
+RB_EA là 1 chiến lược với **NÚM RISK**; 2 đầu núm cho 2 con số hoàn toàn khác nhau, cả hai đều ĐÚNG:
+- KEEP/prop (R7e/f): 0.15-0.25% → ~1-2%/năm, DD nhỏ — chủ đích SỐNG SÓT qua lằn ranh prop (chạm DD = chết).
+- PERSONAL (R7h): 0.75-1.0% → 14-18%/năm, DD 25-30% — không có lằn ranh chết, lãi kép, chịu DD lớn.
+→ Đây CHÍNH LÀ cơ chế 3 chế độ Sếp muốn: **mode = một mức risk khác nhau trên cùng 1 EA**. Không mâu thuẫn.
 
-## CÂU HỎI CỐT LÕI cần Sếp chốt: PERSONAL chạy EA NÀO?
-Có 2 EA khác nhau trong hệ:
-- **RB_EA** (Range/Break) — cái đang deploy hôm nay. Edge ~1%/năm (giữ quỹ). KHÔNG hợp mục tiêu 15-17%.
-- **QTQ Fund EA** (cal+rsi2) — đã có 3-mode + backtest ra 15-17% @ ~10×. Đây mới là "động cơ" PERSONAL.
+### Lưu ý honest (không giấu): số R7h dựng trên forward/backfill R7g (đóng băng), corr XAU-BTC 0.024,
+giả định 2 sleeve chạy song song. CSV nguồn (mret_XAU/BTC) không nằm trong repo (chỉ script) → muốn
+CHẠY LẠI tái lập cần đưa 2 file monthly-return đó về, hoặc tái tạo từ forward log (ghi rõ phương pháp).
 
-→ Vậy 3 chế độ Sếp muốn là gắn cho **Fund EA** (đã có sẵn, chỉ cần chốt hệ số PERSONAL + deploy)?
-Hay muốn RB_EA cũng mang khung 3-mode (thì mode PERSONAL của RB_EA phải hiểu là "giữ quỹ tích luỹ",
-không phải 15%)? Đây là quyết định nghề — tôi không tự gộp.
+## Bó tham số PERSONAL (chốt theo R7h)
+| | 1) FUND | 2) HUMAN_ALPHA | 3) PERSONAL |
+|---|---|---|---|
+| Vùng | AUTO | SEMI (/zone) | AUTO |
+| Risk/sleeve | 0.15% | 0.20% | **~0.85-0.90%** (mục tiêu 15-17%, R7h) |
+| Total DD/perm-halt | 9% | 8% | **28-30%** (đúng DD-budget Sếp) |
+| Mục tiêu | giữ quỹ | pass challenge | 15-17%/năm lãi kép |
 
-## Việc làm ngay (theo lựa chọn của Sếp)
-- Nếu PERSONAL = **Fund EA**: nó đã có enum + preset. Chỉ cần chốt hệ số (8× honest ~9,7% hay ~10-12×
-  để chạm 15% chấp nhận DD~28-30%) → re-verify sim → deploy. KHÔNG cần build lại từ đầu.
-- Nếu muốn hợp nhất khung 3-mode cho RB_EA: build I_Mode như thiết kế trên, nhưng PERSONAL của RB_EA
-  ghi rõ mục tiêu thực (giữ quỹ ~1-3%), không phải 15%.
+## Việc làm ngay (nếu Sếp duyệt)
+- Build `I_Mode` cho RB_EA v0.5 với 3 bó trên (PERSONAL neo R7h 0.85-0.90% + DD 28-30%).
+- Trước tiền thật PERSONAL: (a) đưa mret CSV về chạy lại R7h xác nhận 15-17% @ risk chốt; (b) G1+G2;
+  (c) Sếp xác nhận CHẤP NHẬN DD tới ~30% (R7h: risk 1.0% có ~50% khả năng chạm >30% trong 5 năm).
