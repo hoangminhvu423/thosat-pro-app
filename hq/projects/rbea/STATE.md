@@ -1,5 +1,17 @@
-# STATE — RB_EA (cập nhật 2026-07-24 chiều — cửa sổ deploy)
-## Vị trí hiện tại: v0.32 vá xong — G2 BTC AUTO ĐẠT ✅, còn XAU SEMI visual (Sếp)
+# STATE — RB_EA (cập nhật 2026-07-24 tối — phiên R&D cloud)
+## Vị trí hiện tại: v0.33 chờ G1+G2-BTC lại (15'), XAU SEMI visual (Sếp), rồi mới cắm
+- **File chuẩn MỚI: `rbea-research/RB_EA_v0.33.mq5`** — vá finding CAM của re-audit v0.32 (race login=0
+  khi VPS reboot: deferred init) + version 0.330 (hết warning 68) + log halt từ GV. Hồ sơ đầy đủ:
+  `rbea-research/AUDIT_v032_20260724.md` (re-audit v0.32 PASS có điều kiện + điều tra perm_halt).
+- **Bí ẩn perm_halt=1 ĐÃ GIẢI**: breaker bắn ĐÚNG THIẾT KẾ khi equity tụt dưới neo 4,600 do Sếp rút
+  tiền/lệnh tay −763 (EA không phân biệt rút tiền với thua lỗ). "Âm thầm" vì TG token trống.
+  → R3 ÁP NGAY: mọi lần rút tiền phải theo quy trình trong AUDIT_v032 (disarm→rút→chỉnh neo→dọn halt
+  có chủ đích→re-arm). R1/R2 (tự nhận cash-flow, I_PropMode) vào backlog v0.4/P2.
+- Cửa sổ deploy: việc kế tiếp = pull → compile v0.33 (kỳ vọng 0 error 0 warning) → G2 BTC AUTO headless
+  lại → cập nhật profile RBEA sang v0.33 → chờ XAU SEMI visual (Sếp, theo G2_KIT trỏ v0.33) → checklist
+  điều kiện 1-5 trong AUDIT_v032 mục cuối → mới attach + bật algo.
+
+## [Lịch sử chiều 24/07 — cửa sổ deploy]
 - **File chuẩn MỚI: `rbea-research/RB_EA_v0.32.mq5`** (vá H1/H2/H3 halt-file; G1 0-error; BTC AUTO
   3 tháng 7 lệnh / 18 tháng 13 lệnh PF 2.24, risk cap đúng 0.15%). Chi tiết: G2_FINDINGS_20260724.md.
 - Còn: (1) Sếp chạy XAU SEMI visual theo G2_KIT (đã trỏ v0.32); (2) sau đó mới bàn cắm live.
