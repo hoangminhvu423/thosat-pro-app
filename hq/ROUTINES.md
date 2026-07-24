@@ -1,4 +1,14 @@
 # ROUTINES — lịch tự động
+## XAU M30 rolling 45 ngày → Drive INBOX_FINDINGS (tạo 2026-07-24)
+- Lịch: hằng ngày 08:00 giờ Mac (launchd `com.qtq.xau-rolling45` — Mac ngủ thì chạy bù khi thức).
+- Việc: `python3 rbea-research/forward/xau_m30_rolling45.py` — SSH VPS (password Keychain) →
+  MT5 python attach terminal Exness (READ-ONLY copy_rates) → CSV chuẩn MT5
+  `Date;Open;High;Low;Close;Volume` (datetime `2026.07.24 08:00`, digits theo symbol) →
+  ghi đè nguyên tử CÙNG file `QTQ_FABLE_BRIDGE/INBOX_FINDINGS/XAU_M30_rolling45d.csv`.
+- Chốt an toàn: CHỈ cửa sổ trượt 45 ngày (~85KB/1500 nến, không bao giờ full history);
+  <500 nến = bất thường → giữ nguyên file cũ, không ghi đè. Log: `~/Library/Logs/qtq_xau_rolling45.log`.
+- Chạy tay bất kỳ lúc nào (idempotent): lệnh python3 ở trên, hoặc kèm sau mỗi lần /dong-bo-skills.
+
 ## Janitor tuần (đã tạo 2026-07-23 qua create_trigger)
 - Lịch: thứ Hai 02:00 UTC (= 09:00 VN). Phiên MỚI, model rẻ.
 - Prompt: "Clone/pull repo thosat-pro-app nhánh claude/du-an-air-drop-y3ifan, đọc hq/skills/don-dep/SKILL.md và thực hiện đúng quy trình đó. Báo cáo ≤10 dòng."
