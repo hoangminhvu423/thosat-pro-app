@@ -1,3 +1,13 @@
+# STATE — RB_EA (cập nhật 2026-07-24 đêm — R&D cloud) ⛔ ĐỌC TRƯỚC KHI CẮM
+## KHẨN: min-lot làm hệ CÂM trên account nhỏ — profile RBEA hiện tại (risk 0.15%) CẤM cắm lên 3,909
+- Điều tra "chênh lệch bất thường" xong: tester 13 lệnh/18thg KHÔNG phải do flag(b) (chỉ cắt 15%) mà do
+  **min-lot 0.01 nuốt ~90% tín hiệu** ở bal 4,600 risk 0.15% (lot cần 0.006 < 0.01). PF 2.24 = artifact
+  chọn mẫu. XAU cũng nghẹn (min-lot risk $24/lệnh > $5.9). Hồ sơ: `rbea-research/FINDING_MINLOT_20260724.md`.
+- Account 3,909 muốn chạy có ý nghĩa: risk 1.0%/sleeve (profile PERSONAL R7h, DD-budget 25-30% Sếp đã
+  duyệt trước đó) hoặc XAU-only @1%, hoặc đợi FTMO 200k. **Chờ Sếp chọn A/B/C** — deploy window KHÔNG
+  tự cắm với set-file 0.15 cũ.
+- v0.4 thêm R4 (cảnh báo min-lot trong OnInit + đếm SKIP qua TG) và R&D thêm R5 (lot-quantization trong MC).
+
 # STATE — RB_EA (cập nhật 2026-07-24 tối — phiên R&D cloud)
 ## Vị trí hiện tại: v0.33 chờ G1+G2-BTC lại (15'), XAU SEMI visual (Sếp), rồi mới cắm
 - **File chuẩn MỚI: `rbea-research/RB_EA_v0.33.mq5`** — vá finding CAM của re-audit v0.32 (race login=0
