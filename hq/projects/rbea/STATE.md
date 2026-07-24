@@ -1,5 +1,11 @@
 # STATE — RB_EA (cập nhật 2026-07-24 chiều — cửa sổ deploy)
-## Vị trí hiện tại: ⛔ G2 FAIL — TRẢ VỀ R&D. KHÔNG deploy.
+## Vị trí hiện tại: v0.32 vá xong — G2 BTC AUTO ĐẠT ✅, còn XAU SEMI visual (Sếp)
+- **File chuẩn MỚI: `rbea-research/RB_EA_v0.32.mq5`** (vá H1/H2/H3 halt-file; G1 0-error; BTC AUTO
+  3 tháng 7 lệnh / 18 tháng 13 lệnh PF 2.24, risk cap đúng 0.15%). Chi tiết: G2_FINDINGS_20260724.md.
+- Còn: (1) Sếp chạy XAU SEMI visual theo G2_KIT (đã trỏ v0.32); (2) sau đó mới bàn cắm live.
+- ⚠️ Ghi nhận 24/07 chiều: bal account 265921030 = 3,909 (sáng 4,673; -763 trong ngày, toàn lệnh tay
+  magic=0, không nạp/rút). Nếu cắm RB_EA: I_InitBalance nên chốt lại theo số dư tại ngày cắm.
+- Cũ (đã xử lý): ⛔ G2 FAIL sáng 24/07 do halt-file dùng chung — gốc đã vá trong v0.32:
 - G2 (2026-07-24): BTC AUTO headless 0 lệnh cả cửa sổ 3 tháng LẪN 18 tháng (tham số đúng, history 100%).
   NGUYÊN NHÂN: file halt Common `RBEA2_BTCUSD_20260724_halt.bin` perm_halt=1 → EA halt ngay OnInit → 0 lệnh.
   Sharp-edge re-audit đã cảnh báo (halt-file chung symbol+magic, tester+live+2acc đè nhau). Hồ sơ:

@@ -1,15 +1,15 @@
 # G2 KIT — Strategy Tester visual cho Sếp (~15 phút, 2 profile)
-Chuẩn bị bởi cửa sổ deploy 2026-07-24. G1 ĐÃ ĐẠT (0 error; warning 68 metadata — Sếp phê duyệt).
+Cập nhật chiều 24/07: dùng **v0.32** (vá halt-file). BTC AUTO đã ĐẠT qua headless — chỉ còn RUN XAU SEMI.
 
 ## Đã chuẩn bị sẵn trên VPS (không phải làm gì thêm)
-- EA đã compile: `Experts\QTQ_MultiTF_DEMO\RB_EA_v0.31.ex5` (terminal Exness).
+- EA đã compile: `Experts\QTQ_MultiTF_DEMO\RB_EA_v0.32.ex5` (terminal Exness).
 - 2 set-file đã nằm trong `MQL5\Presets\` của terminal Exness:
   `RB_EA_v031_XAU_SEMI_G2.set` · `RB_EA_v031_BTC_AUTO_G2.set` (I_InitBalance=4600, risk 0.15, magic đúng bảng).
 - Tester chạy NGAY TRÊN terminal Exness live vẫn an toàn (tester là sandbox, không đụng chart/lệnh live).
 
 ## RUN 1 — BTC AUTO (soi kỹ nhất — sleeve tự động 100%)
 1. RDP vào VPS → terminal Exness → View → Strategy Tester (Ctrl+R).
-2. Settings: Expert = `QTQ_MultiTF_DEMO\RB_EA_v0.31` · Symbol = **BTCUSD** · Timeframe **H4**
+2. Settings: Expert = `QTQ_MultiTF_DEMO\RB_EA_v0.32` · Symbol = **BTCUSD** · Timeframe **H4**
    · Dates: **2026.04.24 → 2026.07.24** · Deposit **4600 USD** · Model "Every tick based on real ticks"
    · Visual mode ✅.
 3. Inputs → Load → `RB_EA_v031_BTC_AUTO_G2.set` → Start.
