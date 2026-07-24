@@ -43,11 +43,13 @@ Bất biến: agent CHỈ 1 chiều an toàn (`/halt`, cảnh báo); KHÔNG tự
 | Tối ưu tham số | [AGENT] chạy sweep/MC trên data mới → ĐỀ XUẤT → [NGƯỜI] duyệt. Cấm auto-nạp-live. |
 | Rollback | [NGƯỜI] hoặc [AGENT-nếu-red-line] về bản last-known-good. |
 
-## RED-LINES agent được tự `/halt` (CHỜ SẾP CHỐT SỐ)
-- DD tổng ≥ __%  (đề xuất 28)
-- Mất kết nối > __ phút khi có vị thế hở (đề xuất 15)
-- EA rụng + còn vị thế hở > __ phút (đề xuất 10)
-- (hoặc: "CHỈ báo, không tự halt gì" nếu Sếp muốn giữ mọi hành động ở tay người)
+## RED-LINES — SẾP PHÊ DUYỆT 24/07/2026 (guard tự flatten+halt, 1 chiều an toàn)
+- DD tổng ≥ **28%**
+- Mất kết nối > **15 phút** khi có vị thế hở (flatten khi nối lại)
+- EA rụng + còn vị thế hở > **10 phút**
+THỰC THI: `rbea_guard` chạy NGAY TRÊN VPS (schtasks RBEA_Guard, 5 phút/lần, 24/7 — KHÔNG phụ thuộc
+MacBook). Cảnh báo + heartbeat 6h qua Telegram (C:\qtq\tg_secret.txt). Halt = flatten qua MT5 python
++ ghi halt-file; EA v0.51 đọc lại file mỗi 60s (kill-switch [K1]) nên perm-halt cả EA đang chạy.
 
 ## POSTMORTEM (bắt buộc như quỹ)
 Mỗi lần chạm red-line / sự cố lớn → ghi 1 mục DECISION_LOG + finding Drive: chuyện gì, vì sao,
