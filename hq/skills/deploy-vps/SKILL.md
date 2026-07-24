@@ -1,3 +1,8 @@
+---
+name: deploy-vps
+description: Lấy EA chuẩn từ GitHub (nhánh air-drop, file chuẩn xem hq/projects/rbea/STATE.md) và deploy lên VPS qua các cổng Guardian G1-G5. Dùng khi Sếp yêu cầu deploy EA từ bất kỳ cửa sổ MacBook nào. CẤM cắm thẳng account thật.
+---
+
 # SKILL: deploy-vps — lấy EA chuẩn từ GitHub và deploy lên VPS (cho cửa sổ local MacBook)
 Dùng khi: Sếp yêu cầu "deploy EA lên VPS" từ bất kỳ cửa sổ Claude nào trên MacBook
 (nơi đã có sẵn cầu nối VPS: quản lý file, risk, audit MQL5).

@@ -1,4 +1,5 @@
 # DECISION LOG (mới nhất trên cùng)
+- 2026-07-24 **Gộp skill dùng chung về .claude/skills/ repo này** (6 skill: ea-code-audit, guardian-rules, catalogue-audit, phat-hanh, them-mau, dong-bo-skills) + script sync.sh (repo → ~/.claude/skills → backup MacBook + Drive CLAUDE_SKILLS_BACKUP). Repo = nguồn chuẩn, mọi cửa sổ/phiên dùng chung qua ~/.claude/skills.
 - 2026-07-23 **BTC Shadow-Run đêm bật** — forward paper-log tự tích lũy (rbea-research/forward/). Nguyên tắc đêm: chỉ việc tạo bằng-chứng-bền/bảo trì, cấm tạo giả-thuyết không giám sát.
 - 2026-07-23 **HQ thành lập** — hq/ trong thosat-pro-app; migrate sang repo riêng khi Sếp tạo (xem MIGRATE.md).
 - 2026-07-23 **Master Spec v1.0 chốt**: 2-sleeve XAU-SEMI+BTC-AUTO, risk 0.15/0.15, FTMO SWING bắt buộc, 5 gates.

@@ -12,5 +12,7 @@ description: Janitor tuần — quét dọn, cập nhật INDEX/STATE, báo cáo
 CẤM: xóa file, sửa nội dung STATE/LOG (chỉ gắn cờ), đụng vào code EA/app.
 
 ## BƯỚC THÊM (2026-07-24): kiểm drift skill
-So sánh `~/.claude/skills/{ea-code-audit,guardian-rules}/SKILL.md` với `<repo>/.claude/skills/...`
-(diff từng file). Nếu lệch: báo trong báo cáo, KHÔNG tự ghi đè (repo là nguồn chuẩn, người quyết).
+Chạy `diff -rq ~/.claude/skills <repo>/.claude/skills` — so TOÀN BỘ thư mục, mọi skill.
+Nếu lệch: báo trong báo cáo, KHÔNG tự ghi đè (repo là nguồn chuẩn, người quyết).
+Kiểm luôn backup: `~/.claude/backups/skills/` và Drive `CLAUDE_SKILLS_BACKUP/` có bản ≤7 ngày chưa —
+chưa có thì chạy `.claude/skills/dong-bo-skills/sync.sh`.
