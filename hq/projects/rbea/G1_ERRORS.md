@@ -25,3 +25,8 @@ RB_EA_v0.31.mq5(30,11) : warning 68: version '0.31' is incompatible with MQL5 Ma
   không đụng EA live). `.ex5` đã sinh, nằm cùng chỗ, chưa attach vào bất kỳ chart nào.
 - Pipeline: `quant_lab/safe_compile.py` (backup 3 .ex5 live trước tại `EA_backups/20260724_143906`).
 - MetaEditor tree Exness, log đọc qua PowerShell Unicode. 2 terminal live không bị đụng.
+
+---
+## CẬP NHẬT 2026-07-24 chiều — SẾP PHÊ DUYỆT
+Sếp phê duyệt chấp nhận warning 68 (metadata thuần) → **G1 ĐẠT**. Ghi chú cho R&D: v0.4 đổi
+`#property version "0.310"` để sạch 0/0 vĩnh viễn (gộp vào P2, không cần vòng audit riêng).

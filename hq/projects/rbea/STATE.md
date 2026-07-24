@@ -1,5 +1,12 @@
-# STATE — RB_EA (cập nhật 2026-07-24 đêm)
-## Vị trí hiện tại: P1 XONG → chờ P3 (G1/G2 của Sếp)
+# STATE — RB_EA (cập nhật 2026-07-24 chiều — cửa sổ deploy)
+## Vị trí hiện tại: G1 ĐẠT (phê duyệt) → chờ Sếp chạy G2 theo G2_KIT.md (~15 phút)
+- G1: compile VPS 0 error / 1 warning (warning 68 — format chuỗi version, metadata thuần).
+  **Sếp PHÊ DUYỆT chấp nhận warning 24/07** → G1 đạt. Hồ sơ: G1_ERRORS.md. Nhắc R&D: v0.4 sửa
+  `#property version "0.310"` cho sạch 0/0 (1 dòng, gộp vào P2 module hóa).
+- G2: mọi thứ đã dựng sẵn — `.ex5` ở staging + 2 set-file trong Presets terminal Exness.
+  **Sếp làm theo `G2_KIT.md`** (RDP 15': 2 run visual + checklist mắt người).
+- Sau G2 đạt: cửa sổ deploy soạn checklist cắm live; bước attach chart + AutoTrading do Sếp bấm.
+  CÒN THIẾU: account 4,600 USD nằm ở terminal nào (Exness tree hay cài mới?) — Sếp cho biết khi G2 xong.
 - **File chuẩn: `rbea-research/RB_EA_v0.31.mq5`** (v0.3 đã deprecated — có banner, KHÔNG dùng).
 - Audit G3: v0.3 có 4 lỗi đỏ (nặng nhất: Donchian shift làm BTC auto 0 lệnh) → vá hết trong v0.31 →
   re-audit độc lập PASS. Hồ sơ: `AUDIT_G3_v03_20260724.md`.

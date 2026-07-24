@@ -1,4 +1,5 @@
 # DECISION LOG (mới nhất trên cùng)
+- 2026-07-24 **Sếp PHÊ DUYỆT warning 68 → G1 v0.31 ĐẠT.** G2 kit + 2 set-file (I_InitBalance=4600, risk 0.15) đã dựng sẵn trên VPS (Presets terminal Exness) — Sếp chạy theo hq/projects/rbea/G2_KIT.md. Dọn xong 100% password cũ hardcode trong VPS_LIVE_EA (75+ file → Keychain/redact).
 - 2026-07-24 **G1 v0.31: 0 error / 1 warning (warning 68 — format version string, metadata thuần)** → chưa đạt chuẩn 0/0, DỪNG trước G2 theo STATE. Hồ sơ hq/projects/rbea/G1_ERRORS.md. Chờ Sếp: vá 1 dòng qua vòng R&D hoặc phán chấp nhận warning.
 - 2026-07-24 **Gộp skill dùng chung về .claude/skills/ repo này** (6 skill: ea-code-audit, guardian-rules, catalogue-audit, phat-hanh, them-mau, dong-bo-skills) + script sync.sh (repo → ~/.claude/skills → backup MacBook + Drive CLAUDE_SKILLS_BACKUP). Repo = nguồn chuẩn, mọi cửa sổ/phiên dùng chung qua ~/.claude/skills.
 - 2026-07-23 **BTC Shadow-Run đêm bật** — forward paper-log tự tích lũy (rbea-research/forward/). Nguyên tắc đêm: chỉ việc tạo bằng-chứng-bền/bảo trì, cấm tạo giả-thuyết không giám sát.

@@ -1,0 +1,30 @@
+; RB_EA v0.31 — Profile XAU SEMI (G2 tester + deploy account cá nhân 4600)
+; Nguồn: hq/skills/deploy-vps SKILL + STATE.md chốt an toàn 2026-07-24
+I_AutoZone=false
+I_RangeEnabled=true
+I_HiLine=RB_HI
+I_LoLine=RB_LO
+I_MinZoneATR=1.5
+I_TouchBufATR=0.15
+I_BreakBufATR=0.25
+I_RangeSLBuf=0.50
+I_BreakSL_ATR=1.0
+I_BreakTP_ATR=2.0
+I_TrendFilter=false
+I_MinGapMin=60
+I_MaxHoldBars=48
+I_RiskPct=0.15
+I_InitBalance=4600
+I_MaxDailyDD=3.0
+I_MaxWeeklyDD=8.0
+I_MaxTotalDD=9.0
+I_CloseOnBreaker=false
+I_FridayCleanup=true
+I_FridayHour=21
+I_FridayFlat=false
+I_TGToken=
+I_TGChatID=
+I_TGPollSec=5
+I_Magic=20260723
+I_Deviation=30
+I_Comment=RB_EA_v031
