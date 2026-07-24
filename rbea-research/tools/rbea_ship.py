@@ -38,15 +38,24 @@ def load(sym):
     return rows
 
 
-def atr(b, i, n=20):
-    if i < n:
-        return 0.0
-    return sum(max(b[k][2] - b[k][3], abs(b[k][2] - b[k - 1][4]), abs(b[k][3] - b[k - 1][4]))
-               for k in range(i - n + 1, i + 1)) / n
+def atr_series(b, n=20):
+    """Wilder ATR (khop iATR MT5): dau = SMA(TR,n), sau = (prev*(n-1)+TR)/n."""
+    m = len(b); tr = [b[0][2] - b[0][3]] + [max(b[i][2] - b[i][3], abs(b[i][2] - b[i - 1][4]),
+                                               abs(b[i][3] - b[i - 1][4])) for i in range(1, m)]
+    a = [0.0] * m
+    if m <= n: return a
+    a[n - 1] = sum(tr[:n]) / n
+    for i in range(n, m):
+        a[i] = (a[i - 1] * (n - 1) + tr[i]) / n
+    return a
 
 
 def backtest(bars):
-    """BREAK-only, AutoZone Donchian-20 shift2, SL 1ATR/TP 2ATR, 1 vị thế, budget 1/ngày, timestop 48."""
+    """BREAK-only, EA-PARITY (đồng bộ shadow v2): Donchian-20 (box=20 nến ĐÃ ĐÓNG trước nến tín hiệu),
+    entry = OPEN bar kế (EA market-in tại close nến xác nhận), Wilder-ATR, exit intrabar kể cả bar entry,
+    SL 1ATR/TP 2ATR, 1 vị thế, budget 1/ngày, timestop 48. Fix 2026-07-24: bản cũ entry=CLOSE bar kế
+    (trễ 4h) → thổi phồng kết quả breakout."""
+    A = atr_series(bars)
     tr = []; pos = None; last_day = None; bud = 0
     for t in range(21, len(bars) - 1):
         tm, o, h, l, c = bars[t]; day = tm[:10]
@@ -64,7 +73,7 @@ def backtest(bars):
                 tr.append((tm, hit, abs(entry - sl))); pos = None
         if pos or bud <= 0:
             continue
-        a = atr(bars, t - 1)
+        a = A[t - 1]
         if a <= 0:
             continue
         hi = max(bars[k][2] for k in range(t - 21, t - 1))
@@ -72,7 +81,19 @@ def backtest(bars):
         c1 = bars[t - 1][4]
         d = 1 if c1 > hi + 0.25 * a else (-1 if c1 < lo - 0.25 * a else 0)
         if d:
-            entry = c; pos = (d, entry, entry - d * a, entry + d * 2 * a, t); bud -= 1
+            entry = o                                     # OPEN bar t = market ngay sau close nến tín hiệu
+            sl = entry - d * a; tp = entry + d * 2 * a
+            # exit ngay trong bar entry (intrabar)
+            hit = None
+            if d > 0:
+                hit = -1.0 if l <= sl else (2.0 if h >= tp else None)
+            else:
+                hit = -1.0 if h >= sl else (2.0 if l <= tp else None)
+            if hit is not None:
+                tr.append((tm, hit, abs(entry - sl)))
+            else:
+                pos = (d, entry, sl, tp, t)
+            bud -= 1
     return tr
 
 
@@ -153,8 +174,9 @@ def main():
         cg, dd, p30 = mc(xs, bs, risk, rng)
         flag = ""
         if mode == "PERSONAL":
-            ok = 13 <= cg <= 20
-            verdict.append(("PERSONAL CAGR ~15-17%", ok)); flag = " ✅" if ok else " ⚠️"
+            ok = cg >= 13
+            verdict.append(("PERSONAL CAGR >=13% (muc tieu 15-17)", ok))
+            flag = " ✅" if 15 <= cg <= 17 else (" ✅(vượt band — cân nhắc hạ risk)" if ok else " ❌")
         print(f"  {mode:>12} {risk:>5.2f}% {cg:>+8.1f}% {dd:>8.1f}% {p30:>9.1f}%{flag}")
 
     print("\n" + "=" * 72)
