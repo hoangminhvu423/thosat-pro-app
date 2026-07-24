@@ -1,40 +1,33 @@
 //+------------------------------------------------------------------+
-//| !!! DA THAY THE boi RB_EA_v0.31.mq5 (2026-07-24) !!!              |
-//| Audit G3 phat hien 4 loi DO trong ban nay — nghiem trong nhat:   |
-//| AutoZone shift=1 lam sleeve BTC auto KHONG BAO GIO vao lenh.     |
-//| KHONG compile/dung ban nay. Xem AUDIT_G3_v03_20260724.md.        |
+//| RB_EA.mq5 — Range/Break Semi-Auto EA v0.31                       |
+//| Spec: RB_EA_MASTER_SPEC_v1.0 + EA_ENGINEERING_PLAN_v1.0          |
+//| THAY DOI v0.31 (va 4 finding DO cua audit G3 ngay 2026-07-24):   |
+//|  [D1] AutoZone Donchian doi shift 1->2: box = 20 nen DA DONG     |
+//|       LIEN TRUOC nen xac nhan (index 2..21). Ban v0.3 tinh ca    |
+//|       nen tin hieu (1..20) -> break bat kha thi, BTC auto 0 lenh.|
+//|  [D2] Profile AUTO (I_AutoZone=true): KHONG Friday-disarm (24/7  |
+//|       nhu backtest R7g); arm san lan cai dau. /disarm tay van    |
+//|       giu nguyen y nguoi (khong tu re-arm de len quyet dinh).    |
+//|  [D3] Breaker TUAN latch rieng g_week_halt (persist GV), chi xoa |
+//|       tai Monday-reset — day-reset khong con "chua lanh" nua.    |
+//|  [D4] Neo breaker tong: input I_InitBalance ($ co dinh, BAT BUOC |
+//|       set voi FTMO); perm-halt + init_bal persist ra FILE_COMMON |
+//|       (song sot redeploy/doi VPS/GV tu xoa sau 4 tuan).          |
+//|  [V1] Daily breaker doi sang dang FTMO-dong-nhat:                |
+//|       floor = max(balance0,equity0) - I_MaxDailyDD% x initial    |
+//|       -> nghiem hon FTMO(-5%) VO DIEU KIEN ke ca floating loss.  |
+//|  [V4] I_RiskPct default 0.25 -> 0.15 (spec muc 2: khoi dau       |
+//|       survival-first 0.15/0.15).                                 |
+//|  [V5] PERM-HALT van retry dong vi the (moi 5') neu lan dau fail. |
+//| GIU NGUYEN tu v0.21/v0.3: C4-fix market entry, F1 time-stop,     |
+//|   F2 budget-on-fill, F4 stops clamp, C6 FridayFlat(semi),        |
+//|   C7 Monday week reset, AutoZone/RangeEnabled profile BTC.       |
+//| FLAG G4 con theo doi: lech tan suat 1-vi-the vs backtest overlap |
+//|   (audit flag b — do o demo, khong va code).                     |
+//| CHUA COMPILE (G1) / CHUA TESTER (G2) — bat buoc truoc demo.      |
 //+------------------------------------------------------------------+
-//| RB_EA.mq5 — Range/Break Semi-Auto EA v0.2                        |
-//| Spec: RB_EA_Master_Spec. v0.21 sau cross-val Fable-B 2026-07-23  |
-//| THAY DOI v0.21 (chi logic DA CHUNG MINH + va loi audit):        |
-//|  [C4-fix] BREAK entry = MARKET NGAY tai nen xac nhan (khop      |
-//|       backtest PHASE1 da validate) — khong cho them 1 nen H4.   |
-//|       [E1 pending-stop DA RUT: Fable-B doc lap cho thay E1      |
-//|       KHONG cai thien baseline -> theo luat "khong so lieu      |
-//|       chac chan thi khong them", quay ve entry dung spec.]      |
-//|  [F1] time-stop 192h (48 nen H4) qua POSITION_TIME.              |
-//|  [F4] clamp SL/TP ngoai STOPS_LEVEL; bo lenh neu qua sat.        |
-//|  [F2] budget chi tru khi lenh THAT vao (OnTradeTransaction).     |
-//|  [C6] tuy chon Friday-flat (dong vi the truoc weekend).          |
-//|  [C7] moc reset tuan theo Monday server (khong lech thu 5 UTC).  |
-//|  [R7g/v0.3] MODE FULL-AUTO: I_AutoZone=true -> box rolling       |
-//|       Donchian-20 H4 thay hline nguoi ve (sleeve BTC validated:  |
-//|       +0.119R PF1.19 n=1693, fee-stress PASS). I_RangeEnabled=   |
-//|       false cho profile BTC (break-only nhu da validate).        |
-//|       LUU Y AUDIT: backtest cho phep lenh chong (overlap) &      |
-//|       khong budget — EA 1-vi-the/gap60 se it lenh hon -> demo    |
-//|       phai doi chieu do lech nay.                                 |
-//|  [R7e/FTMO] breaker TONG I_MaxTotalDD neo BALANCE BAN DAU        |
-//|       (permHalt truoc nguong Max Loss 10% cua FTMO) + risk       |
-//|       default 0.25% theo MC-survival (P breach 2y ~4% vs 26%).   |
-//|  Trend filter DEFAULT OFF (PHASE1: robust hon).                  |
-//| BAC (khong dua vao): trailing/partial TP, pinbar/engulfing,      |
-//|   retest-limit, wick-structure -> deu fail OOS.                  |
-//| CHUA COMPILE / CHUA AUDIT Phase-4 / CHUA DEMO — bat buoc 3 buoc  |
-//|   nay truoc tien that. Range absolute chua verify (replica loi). |
-//+------------------------------------------------------------------+
-#property copyright "RB_EA v0.21 - QTQ project"
-#property version   "0.30"
+#property copyright "RB_EA v0.31 - QTQ project"
+#property version   "0.31"
 #property strict
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
@@ -61,12 +54,13 @@ input int    I_MinGapMin   = 60;
 input int    I_MaxHoldBars = 48;       // [F1] time-stop 48 nen H4 = 192h
 
 input group "=== RISK ==="
-input double I_RiskPct        = 0.25;   // [R7e] keep-profile: MC P(breach 2y) 4% @0.25 vs 26% @0.5
-input double I_MaxDailyDD     = 3.0;
+input double I_RiskPct        = 0.15;   // [V4] spec muc 2: khoi dau 0.15 (nang 0.20 sau quy dau sach)
+input double I_InitBalance    = 0;      // [D4] $ ban dau account (FTMO: BAT BUOC set, vd 200000). 0 = tu neo balance
+input double I_MaxDailyDD     = 3.0;    // [V1] % cua initial, floor = max(bal0,eq0) - 3%xinitial (FTMO-dong-nhat)
 input double I_MaxWeeklyDD    = 8.0;
-input double I_MaxTotalDD     = 9.0;    // [R7e/FTMO] % tu BALANCE BAN DAU -> permHalt (0=tat). FTMO max loss 10%
+input double I_MaxTotalDD     = 9.0;    // [R7e/FTMO] % tu balance ban dau -> permHalt (0=tat). FTMO max loss 10%
 input bool   I_CloseOnBreaker = false;
-input bool   I_FridayCleanup  = true;
+input bool   I_FridayCleanup  = true;   // [D2] chi ap dung profile SEMI (I_AutoZone=false)
 input int    I_FridayHour     = 21;
 input bool   I_FridayFlat     = false; // [C6] true = dong het vi the truoc weekend (khong chi disarm)
 
@@ -76,9 +70,9 @@ input string I_TGChatID  = "";
 input int    I_TGPollSec = 5;
 
 input group "=== EXEC ==="
-input int    I_Magic     = 20260723;   // [v0.2] magic moi
+input int    I_Magic     = 20260723;   // XAU semi 20260723 | BTC auto 20260724 (spec muc 2)
 input int    I_Deviation = 30;
-input string I_Comment   = "RB_EA_v02";
+input string I_Comment   = "RB_EA_v031";
 
 //=== STATE ==========================================================
 enum EMode { MODE_RANGE=0, MODE_BREAK=1, MODE_NEUTRAL=2 };
@@ -90,7 +84,9 @@ int      g_bud_rb=1, g_bud_rs=1, g_bud_bk=1;
 int      g_blocked_dir=0;
 datetime g_last_trade_t=0;
 long     g_last_day=-1, g_last_week=-1;
-double   g_day_eq0=0, g_week_eq0=0;
+double   g_day_eq0=0, g_day_bal0=0;     // [V1] equity + balance dau ngay (floor FTMO-dong-nhat)
+double   g_week_eq0=0;
+bool     g_week_halt=false;             // [D3] latch breaker tuan, chi xoa tai Monday-reset
 int      g_atr_handle=INVALID_HANDLE, g_sma_handle=INVALID_HANDLE;
 datetime g_last_h4_bar=0;
 long     g_tg_offset=0;
@@ -105,7 +101,9 @@ void SaveState(){
    GlobalVariableSet(GV("bk"),g_bud_bk);   GlobalVariableSet(GV("blk"),g_blocked_dir);
    GlobalVariableSet(GV("lastt"),(double)g_last_trade_t);
    GlobalVariableSet(GV("day"),(double)g_last_day); GlobalVariableSet(GV("deq"),g_day_eq0);
+   GlobalVariableSet(GV("dbal"),g_day_bal0);                                     // [V1]
    GlobalVariableSet(GV("week"),(double)g_last_week); GlobalVariableSet(GV("weq"),g_week_eq0);
+   GlobalVariableSet(GV("whalt"),g_week_halt?1:0);                               // [D3]
    GlobalVariableSet(GV("zhi"),g_zone_hi); GlobalVariableSet(GV("zlo"),g_zone_lo);
    GlobalVariableSet(GV("fhi"),g_frozen_hi); GlobalVariableSet(GV("flo"),g_frozen_lo);
    GlobalVariableSet(GV("tgoff"),(double)g_tg_offset);
@@ -118,12 +116,28 @@ void LoadState(){
    g_bud_bk=(int)GlobalVariableGet(GV("bk")); g_blocked_dir=(int)GlobalVariableGet(GV("blk"));
    g_last_trade_t=(datetime)GlobalVariableGet(GV("lastt"));
    g_last_day=(long)GlobalVariableGet(GV("day")); g_day_eq0=GlobalVariableGet(GV("deq"));
+   g_day_bal0=GlobalVariableGet(GV("dbal"));                                     // [V1]
    g_last_week=(long)GlobalVariableGet(GV("week")); g_week_eq0=GlobalVariableGet(GV("weq"));
+   g_week_halt=GlobalVariableGet(GV("whalt"))>0.5;                               // [D3]
    g_zone_hi=GlobalVariableGet(GV("zhi")); g_zone_lo=GlobalVariableGet(GV("zlo"));
    g_frozen_hi=GlobalVariableGet(GV("fhi")); g_frozen_lo=GlobalVariableGet(GV("flo"));
    g_tg_offset=(long)GlobalVariableGet(GV("tgoff"));
    g_init_bal=GlobalVariableGet(GV("ibal")); g_perm_halt=GlobalVariableGet(GV("phalt"))>0.5;
 }
+
+// [D4] perm-halt + init_bal persist ra file COMMON — song sot redeploy/doi VPS/GV tu xoa sau 4 tuan.
+string HaltFile(){ return "RBEA2_"+g_sym+"_"+(string)I_Magic+"_halt.bin"; }
+void SaveHalt(){
+   int h=FileOpen(HaltFile(),FILE_WRITE|FILE_BIN|FILE_COMMON);
+   if(h==INVALID_HANDLE){ PrintFormat("[RBEA-ERR] SaveHalt fail err=%d",GetLastError()); return; }
+   FileWriteDouble(h,g_init_bal); FileWriteInteger(h,g_perm_halt?1:0); FileClose(h); }
+void LoadHalt(){
+   if(!FileIsExist(HaltFile(),FILE_COMMON)) return;
+   int h=FileOpen(HaltFile(),FILE_READ|FILE_BIN|FILE_COMMON);
+   if(h==INVALID_HANDLE) return;
+   double ib=FileReadDouble(h); int ph=FileReadInteger(h); FileClose(h);
+   if(ib>0 && g_init_bal<=0) g_init_bal=ib;
+   if(ph==1) g_perm_halt=true; }
 
 //=== FILL MODE AUTO =================================================
 ENUM_ORDER_TYPE_FILLING AutoFill(string sym){
@@ -156,8 +170,8 @@ void TG(string msg){
    char post[],res[]; string hdr; WebRequest("GET",url,"",3000,post,res,hdr); }
 string StatusText(){
    string m = g_mode==MODE_RANGE?"RANGE":(g_mode==MODE_BREAK?"BREAK":"NEUTRAL");
-   return StringFormat("RB_EA v0.2 %s\nARMED:%s|MODE:%s\nZone:%.2f-%.2f\nBudget RB/RS/BK:%d/%d/%d\nRisk:%.2f%%|Eq:%.2f",
-      g_sym,g_armed?"YES":"no",m,g_zone_lo,g_zone_hi,g_bud_rb,g_bud_rs,g_bud_bk,I_RiskPct,AccountInfoDouble(ACCOUNT_EQUITY)); }
+   return StringFormat("RB_EA v0.31 %s\nARMED:%s|MODE:%s%s\nZone:%.2f-%.2f\nBudget RB/RS/BK:%d/%d/%d\nRisk:%.2f%%|Eq:%.2f",
+      g_sym,g_armed?"YES":"no",m,g_week_halt?"|WEEK-HALT":"",g_zone_lo,g_zone_hi,g_bud_rb,g_bud_rs,g_bud_bk,I_RiskPct,AccountInfoDouble(ACCOUNT_EQUITY)); }
 void TGPoll(){
    if(I_TGToken=="") return;
    string url="https://api.telegram.org/bot"+I_TGToken+"/getUpdates?timeout=0&offset="+(string)(g_tg_offset+1);
@@ -186,9 +200,12 @@ void HandleCmd(string cmd){
 
 //=== ZONE / INDICATORS =============================================
 bool ReadZone(bool announce){
-   if(I_AutoZone){                                     // [v0.3] rolling Donchian-20: 20 nen H4 DA DONG (1..20)
-      int ih=iHighest(g_sym,PERIOD_H4,MODE_HIGH,20,1);
-      int il=iLowest (g_sym,PERIOD_H4,MODE_LOW ,20,1);
+   if(I_AutoZone){
+      // [D1] box = 20 nen DA DONG LIEN TRUOC nen xac nhan (index 2..21).
+      // v0.3 dung start=1 (1..20) tinh ca nen tin hieu -> close khong the vuot high chinh no
+      // + buffer -> break bat kha thi -> sleeve auto 0 lenh. Backtest R7g: box = h[i-20..i-1], tin hieu = h[i].
+      int ih=iHighest(g_sym,PERIOD_H4,MODE_HIGH,20,2);
+      int il=iLowest (g_sym,PERIOD_H4,MODE_LOW ,20,2);
       if(ih<0||il<0) return false;
       g_zone_hi=iHigh(g_sym,PERIOD_H4,ih); g_zone_lo=iLow(g_sym,PERIOD_H4,il);
       return (g_zone_hi>g_zone_lo);                    // khong ap MinZone (fidelity voi sleeve validated)
@@ -269,11 +286,18 @@ int OnInit(){
    g_atr_handle=iATR(g_sym,PERIOD_H4,20);
    g_sma_handle=iMA(g_sym,PERIOD_H4,200,0,MODE_SMA,PRICE_CLOSE);
    if(g_atr_handle==INVALID_HANDLE||g_sma_handle==INVALID_HANDLE) return INIT_FAILED;
+   bool fresh=!GlobalVariableCheck(GV("mode"));         // [D2] truoc khi LoadState/SaveState
    LoadState();
-   if(g_init_bal<=0){ g_init_bal=AccountInfoDouble(ACCOUNT_BALANCE); SaveState(); }  // [R7e] neo 1 lan
+   LoadHalt();                                          // [D4] file COMMON ghi de/gop voi GV
+   if(I_InitBalance>0) g_init_bal=I_InitBalance;        // [D4] input la neo TOI CAO (FTMO: bat buoc set)
+   else if(g_init_bal<=0){
+      g_init_bal=AccountInfoDouble(ACCOUNT_BALANCE);
+      PrintFormat("[RBEA-WARN] I_InitBalance=0 -> tu neo %.2f. Voi FTMO PHAI set I_InitBalance de neo khong troi khi redeploy.",g_init_bal); }
+   if(I_AutoZone && fresh) g_armed=true;                // [D2] full-auto: arm ngay lan cai dau (/disarm tay van sticky)
+   SaveHalt(); SaveState();
    EventSetTimer(I_TGPollSec);
    g_last_h4_bar=iTime(g_sym,PERIOD_H4,0);
-   TG("RB_EA v0.2 online\n"+StatusText());
+   TG("RB_EA v0.31 online\n"+StatusText());
    return INIT_SUCCEEDED; }
 void OnDeinit(const int r){
    SaveState(); EventKillTimer();
@@ -287,14 +311,19 @@ void OnTick(){
    if(!g_perm_halt && I_MaxTotalDD>0 && g_init_bal>0){
       if(AccountInfoDouble(ACCOUNT_EQUITY) <= g_init_bal*(1.0-I_MaxTotalDD/100.0)){
          g_perm_halt=true; g_armed=false; g_mode=MODE_NEUTRAL;
-         CancelAllPending(); CloseAllOurs(); SaveState();
-         TG(StringFormat("TOTAL BREAKER -%.1f%% tu initial %.2f — PERM HALT. Can nguoi reset GlobalVariable.",I_MaxTotalDD,g_init_bal));
+         CancelAllPending(); CloseAllOurs(); SaveHalt(); SaveState();   // [D4] persist file truoc
+         TG(StringFormat("TOTAL BREAKER -%.1f%% tu initial %.2f — PERM HALT. Can nguoi xoa file halt + GV de reset.",I_MaxTotalDD,g_init_bal));
       }
    }
-   if(g_perm_halt) return;
+   if(g_perm_halt){
+      // [V5] neu lan dau dong fail (vd market closed) -> van retry moi 5 phut, khong bo mac vi the
+      static datetime s_last_try=0;
+      if(OursOpen() && TimeCurrent()-s_last_try>=300){
+         s_last_try=TimeCurrent(); CancelAllPending(); CloseAllOurs(); }
+      return; }
    CheckTimeStop();                                     // [F1] moi tick
-   //-- Friday cleanup
-   if(I_FridayCleanup){
+   //-- Friday cleanup — [D2] CHI profile SEMI: profile AUTO chay 24/7 nhu backtest R7g, khong disarm weekend
+   if(I_FridayCleanup && !I_AutoZone){
       MqlDateTime dt; TimeToStruct(TimeCurrent(),dt);
       if(dt.day_of_week==5&&dt.hour>=I_FridayHour&&g_armed){
          g_armed=false; CancelAllPending();
@@ -304,25 +333,35 @@ void OnTick(){
    MqlDateTime now; TimeToStruct(TimeCurrent(),now);
    long daykey=now.year*10000+now.mon*100+now.day;
    if(daykey!=g_last_day){
-      g_last_day=daykey; g_day_eq0=AccountInfoDouble(ACCOUNT_EQUITY);
+      g_last_day=daykey;
+      g_day_eq0=AccountInfoDouble(ACCOUNT_EQUITY);
+      g_day_bal0=AccountInfoDouble(ACCOUNT_BALANCE);    // [V1] floor can ca balance dau ngay
       g_bud_rb=1; g_bud_rs=1; g_bud_bk=1; g_blocked_dir=0;
       if(g_mode==MODE_NEUTRAL||g_mode==MODE_BREAK) g_mode=MODE_RANGE;
       SaveState(); }
    //-- [C7] Week reset theo Monday server (khong con lech thu 5 UTC nhu v0.1)
    if(now.day_of_week==1){                              // Monday = moc tuan chuan prop-firm
       long mon_key=now.year*10000+now.mon*100+now.day;
-      if(mon_key!=g_last_week){ g_last_week=mon_key; g_week_eq0=AccountInfoDouble(ACCOUNT_EQUITY); SaveState(); } }
+      if(mon_key!=g_last_week){
+         g_last_week=mon_key; g_week_eq0=AccountInfoDouble(ACCOUNT_EQUITY);
+         g_week_halt=false;                             // [D3] latch tuan CHI xoa o day
+         SaveState(); } }
    if(g_week_eq0<=0) g_week_eq0=AccountInfoDouble(ACCOUNT_EQUITY);  // khoi tao lan dau
 
    //-- DD breakers
-   double eq=AccountInfoDouble(ACCOUNT_EQUITY); bool breaker=false;
-   if(I_MaxDailyDD>0 && g_day_eq0>0 && (eq/g_day_eq0-1)*100 < -I_MaxDailyDD) breaker=true;
-   if(I_MaxWeeklyDD>0 && g_week_eq0>0 && (eq/g_week_eq0-1)*100 < -I_MaxWeeklyDD) breaker=true;
-   if(breaker && g_mode!=MODE_NEUTRAL){
+   double eq=AccountInfoDouble(ACCOUNT_EQUITY); bool brk_d=false, brk_w=false;
+   // [V1] daily FTMO-dong-nhat: floor = max(balance0,equity0) - I_MaxDailyDD% x initial ($ co dinh)
+   //      -> nghiem hon FTMO (-5% x initial) vo dieu kien, ke ca khi qua dem om floating loss.
+   if(I_MaxDailyDD>0 && g_init_bal>0 && (g_day_eq0>0||g_day_bal0>0)){
+      double floorD=MathMax(g_day_bal0,g_day_eq0) - I_MaxDailyDD/100.0*g_init_bal;
+      if(eq<=floorD) brk_d=true; }
+   if(I_MaxWeeklyDD>0 && g_week_eq0>0 && (eq/g_week_eq0-1)*100 < -I_MaxWeeklyDD) brk_w=true;
+   if(brk_w && !g_week_halt){ g_week_halt=true; SaveState(); }       // [D3] latch den het tuan
+   if((brk_d||brk_w) && g_mode!=MODE_NEUTRAL){
       g_mode=MODE_NEUTRAL; CancelAllPending();
       if(I_CloseOnBreaker) CloseAllOurs();
-      SaveState(); TG("DD BREAKER - NEUTRAL"); }
-   if(!g_armed || g_mode==MODE_NEUTRAL) return;
+      SaveState(); TG(brk_w?"WEEKLY BREAKER - NEUTRAL het tuan":"DAILY BREAKER - NEUTRAL het ngay"); }
+   if(!g_armed || g_mode==MODE_NEUTRAL || g_week_halt) return;       // [D3] tuan halt chan ca khi day-reset
 
    datetime cur=iTime(g_sym,PERIOD_H4,0);
    if(cur==g_last_h4_bar) return;
@@ -342,7 +381,6 @@ void OnNewH4(){
          g_frozen_hi=bh; g_frozen_lo=bl; g_mode=MODE_BREAK;
          TG(StringFormat("BREAK %s xac nhan @ %.2f",d>0?"UP":"DOWN",c1));
          // [C4-fix] vao MARKET NGAY tai nen xac nhan (khop backtest PHASE1).
-         // v0.1 cho them 1 nen (tre 4h) = lech backtest. E1 pending-stop da rut (Fable-B).
          if(g_bud_bk>0 && gap_ok && !OursOpen()){
             double px = d>0?SymbolInfoDouble(g_sym,SYMBOL_ASK):SymbolInfoDouble(g_sym,SYMBOL_BID);
             double sl = px - d*I_BreakSL_ATR*atr, tp = px + d*I_BreakTP_ATR*atr;
@@ -382,7 +420,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    if(HistoryDealGetInteger(trans.deal,DEAL_MAGIC)!=I_Magic) return;
    if(HistoryDealGetString(trans.deal,DEAL_SYMBOL)!=g_sym) return;
    ENUM_DEAL_ENTRY de=(ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal,DEAL_ENTRY);
-   // lenh vao (gom BREAK-stop fill): cap nhat gap-timer. Budget bk da tru luc DAT pending (F2, khong phu thuoc comment).
+   // lenh vao: cap nhat gap-timer. Budget da tru tai noi goi MarketIn (F2). [v0.31: xoa di tich E1 pending]
    if(de==DEAL_ENTRY_IN){ g_last_trade_t=TimeCurrent(); SaveState(); }
    if(de!=DEAL_ENTRY_OUT) return;
    double profit=HistoryDealGetDouble(trans.deal,DEAL_PROFIT);
