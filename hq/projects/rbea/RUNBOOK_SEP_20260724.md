@@ -25,8 +25,13 @@ Agent thử đóng nhẹ nhưng MT5 treo ở hộp thoại "Are you sure you wan
 - Trên RDP: click terminal FTMO (`C:\MT5_FTMO`) → File → Exit → OK.
 - Hoặc để nguyên cũng được (không giữ tiền, chỉ tốn RAM). Nếu muốn dùng lại FTMO thì sửa login trước.
 
-## D. (agent làm) GẮN LẠI RB_EA v0.32 — chỉ cần Sếp đóng terminal Exness 1 lần
-Đã chuẩn bị sẵn: 2 chart v0.32 (XAUUSD SEMI magic 20260723 + BTCUSD AUTO magic 20260724),
-đủ 28 tham số, **I_InitBalance=3909** (theo số dư hiện tại), AlgoTrading để **OFF**, Telegram trống.
-→ Sếp đóng MT5 Exness (File→Exit) → nhắn "đã đóng" → agent gắn + mở lại (algo vẫn off) → Sếp rà input,
-điền Telegram (mục B), tự bật Algo khi muốn chạy thật.
+## D. GẮN RB_EA v0.32 — KHÔNG cần đóng terminal (dùng profile RBEA)
+Agent đã tạo profile **RBEA** sẵn 2 chart v0.32 (XAUUSD SEMI magic 20260723 + BTCUSD AUTO magic
+20260724), đủ 28 tham số, **I_InitBalance=3909**, Telegram trống. Sếp làm 3 bước:
+1. **TẮT AlgoTrading trước** (bấm nút "Algo Trading" cho về xám/đỏ) — vì BTC AUTO sẽ vào lệnh THẬT
+   ngay khi profile nạp nếu algo còn bật. (Đang ON tại 24/07 10:22.)
+2. **File → Profiles → RBEA** (hoặc menu profile góc dưới) → 2 chart hiện ra, RB_EA v0.32 gắn sẵn đủ số.
+3. Rà input (double-click EA → Inputs), điền Telegram (mục B) khi có bot. Bật Algo lại CHỈ KHI muốn
+   chạy thật — và tốt nhất sau khi đã chạy nốt XAU SEMI visual (G2).
+> Vì sao dùng profile thay vì đóng terminal: MT5 chỉ ghi đè profile ĐANG mở lúc thoát; profile RBEA
+> là folder riêng nên nạp được ngay khi chuyển, không mất view hiện tại của Sếp.
