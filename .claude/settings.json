@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== RBEA WATCH (bản mới nhất từ launchd, chạy lại: python3 rbea-research/tools/rbea_watch.py) ==='; tail -n 14 ~/Library/Logs/qtq_rbea_watch.log 2>/dev/null || echo '(chưa có log watch — Mac vừa bật? đợi launchd hoặc chạy tay)'; echo; echo '=== STATE RBEA (5 dòng đầu) ==='; head -n 5 hq/projects/rbea/STATE.md 2>/dev/null; echo '>>> Phòng Ops tự động: guard VPS 5 phút/lần (red-line DD28%/conn15p/EA-rụng10p) · watch Mac 30 phút/lần · đánh giá 1 lệnh: rbea_ship.py'"
+          }
+        ]
+      }
+    ]
+  }
+}
