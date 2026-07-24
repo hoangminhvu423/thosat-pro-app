@@ -3,8 +3,10 @@
 - **File chuẩn MỚI: `rbea-research/RB_EA_v0.32.mq5`** (vá H1/H2/H3 halt-file; G1 0-error; BTC AUTO
   3 tháng 7 lệnh / 18 tháng 13 lệnh PF 2.24, risk cap đúng 0.15%). Chi tiết: G2_FINDINGS_20260724.md.
 - Còn: (1) Sếp chạy XAU SEMI visual theo G2_KIT (đã trỏ v0.32); (2) sau đó mới bàn cắm live.
-- ⚠️ Ghi nhận 24/07 chiều: bal account 265921030 = 3,909 (sáng 4,673; -763 trong ngày, toàn lệnh tay
-  magic=0, không nạp/rút). Nếu cắm RB_EA: I_InitBalance nên chốt lại theo số dư tại ngày cắm.
+- Bal account 265921030 = 3,909: Sếp XÁC NHẬN là RÚT TIỀN (không phải lỗ). Khi cắm RB_EA:
+  I_InitBalance chốt theo số dư tại ngày cắm (~3,900).
+- Hạ tầng VPS đã rà + fix 24/07 (watchdog vá + 5 task mồ côi/mìn disable + cờ bảo trì): hq/VPS_HATANG_20260724.md.
+  Chờ Sếp quyết: autologon sau reboot (lỗ hổng EA chết im lặng), bot Telegram riêng cho RB_EA, terminal FTMO.
 - Cũ (đã xử lý): ⛔ G2 FAIL sáng 24/07 do halt-file dùng chung — gốc đã vá trong v0.32:
 - G2 (2026-07-24): BTC AUTO headless 0 lệnh cả cửa sổ 3 tháng LẪN 18 tháng (tham số đúng, history 100%).
   NGUYÊN NHÂN: file halt Common `RBEA2_BTCUSD_20260724_halt.bin` perm_halt=1 → EA halt ngay OnInit → 0 lệnh.

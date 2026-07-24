@@ -46,3 +46,9 @@ git clone --depth 1 -b claude/du-an-air-drop-y3ifan https://github.com/hoangminh
 - Sửa bất kỳ dòng code nào trong lúc deploy ("tiện tay fix") — mọi sửa đổi phải quay về vòng
   audit → re-audit trên repo trước.
 - Deploy bản chưa qua G1/G2 lên bất kỳ terminal nào có kết nối account thật.
+
+## CỜ BẢO TRÌ (thêm 2026-07-24 — bắt buộc)
+Trên VPS có `MT5_Watchdog` (5 phút/lần) tự mở lại terminal Exness nếu thấy chết. TRƯỚC khi đóng
+terminal để deploy/test: `echo bao tri > C:\Temp\mt5_maintenance.flag` (watchdog sẽ đứng im, flag tự
+vô hiệu sau 4h). XONG việc: mở lại terminal rồi `del C:\Temp\mt5_maintenance.flag`.
+Toàn cảnh hạ tầng + các task đã disable: xem `hq/VPS_HATANG_20260724.md`.
