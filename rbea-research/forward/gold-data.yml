@@ -1,0 +1,44 @@
+# GOLD PROXY FEED — keo nen 30m XAUT/PAXG moi 4h, commit vao nhanh data-gold.
+# FILE NAY PHAI NAM O .github/workflows/gold-data.yml TREN NHANH main MOI CHAY THEO LICH
+# (luat GitHub Actions: schedule chi chay tu default branch). Ban o day la ban staging.
+name: gold-data-feed
+on:
+  schedule:
+    - cron: "23 */4 * * *"   # moi 4h, phut 23 (tranh gio cao diem cua GitHub)
+  workflow_dispatch: {}       # cho phep bam chay tay tren tab Actions
+permissions:
+  contents: write
+concurrency:
+  group: gold-data-feed
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Lay script fetch (tu nhanh R&D)
+        run: |
+          git fetch origin claude/du-an-air-drop-y3ifan --depth 1
+          git show origin/claude/du-an-air-drop-y3ifan:rbea-research/forward/fetch_gold_30m.py > /tmp/fetch_gold_30m.py
+      - name: Chuyen sang nhanh data-gold (tao neu chua co)
+        run: |
+          git config user.name "gold-feed-bot"
+          git config user.email "actions@github.com"
+          if git fetch origin data-gold --depth 1 2>/dev/null; then
+            git checkout -B data-gold origin/data-gold
+          else
+            git checkout --orphan data-gold
+            git rm -rf --cached . >/dev/null 2>&1 || true
+            git clean -fdx >/dev/null 2>&1 || true
+            echo "# data-gold — CSV nen 30m XAUT/PAXG, bot tu cap nhat moi 4h" > README.md
+          fi
+      - name: Fetch + append
+        run: python3 /tmp/fetch_gold_30m.py .
+      - name: Commit + push
+        run: |
+          git add -A
+          git diff --cached --quiet && { echo "khong co nen moi"; exit 0; }
+          git commit -m "gold-feed: cap nhat $(date -u +'%Y-%m-%d %H:%M') UTC [skip ci]"
+          git push -u origin data-gold
