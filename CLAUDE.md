@@ -12,9 +12,18 @@
 
 Subagent **kế thừa model của phiên cha**. Nếu không chỉ định gì thì mọi agent đều chạy Opus.
 
-Đo lại 22/09/2026 trên **27.626 request thật** (1,12 tỷ token quy đổi, ~3 tháng): fan-out chiếm
-**17,5%**, trong đó **86% đang chạy Opus** → vẫn phải hạ bậc, nhưng trần tiết kiệm chỉ **14,1%**.
-Con số "85% fan-out" đo 31/07 đã lỗi thời (sai ~5 lần) — **đây là đòn bẩy thứ BA, không phải thứ nhất.**
+Đo lại 22/09/2026 trên **27.626 request thật** (1,12 tỷ token quy đổi, ~3 tháng), phân loại đầy đủ:
+
+| Loại | Request | Quy đổi | % |
+|---|---|---|---|
+| Subagent (`isSidechain`, gồm cả Workflow) | 11.261 | 196,3 tr | 17,5% |
+| **Worktree** (phiên riêng, dễ bỏ sót) | 4.341 | 248,0 tr | 22,1% |
+| **TỔNG FAN-OUT** | | **444,3 tr** | **39,5%** |
+| Việc chính (main thread) | 12.103 | 679,3 tr | 60,5% |
+
+**86% fan-out đang chạy Opus.** Con số "85%" đo 31/07 vẫn quá cao, nhưng 17,5% đo lần đầu thì quá
+thấp — nó **bỏ sót Worktree**, vì worktree chạy thành phiên riêng ở thư mục riêng, không mang cờ
+`isSidechain`. Số đúng là **39,5%**. Đây là đòn bẩy **thứ hai**, không phải thứ nhất cũng không phải thứ ba.
 
 | Dùng cho | `subagent_type` | Model |
 |---|---|---|
