@@ -8,66 +8,62 @@
 > ⚠️ Repo này **PUBLIC**. Không ghi vào đây: IP máy chủ, số tài khoản, token, đường dẫn hạ tầng.
 > Hạ tầng và vận hành nằm ở repo private `qtq-rbea`.
 
-## 1. Phân tầng model — fan-out KHÔNG được kế thừa Opus
+## 0. Token KHÔNG phải ràng buộc — đừng tối ưu nhầm
 
-Subagent **kế thừa model của phiên cha**. Nếu không chỉ định gì thì mọi agent đều chạy Opus.
+Gói **Max 5x**. Đo 23/09/2026: tuần **12%**, Fable tuần **5%**, credit **$0,00**, **chưa bao giờ
+bị chặn hạn mức**. Token không quy ra tiền, và hạn mức còn thừa rất nhiều.
 
-Đo lại 22/09/2026 trên **27.626 request thật** (1,12 tỷ token quy đổi, ~3 tháng), phân loại đầy đủ:
+Mọi tính toán kiểu "tiết kiệm 30% token" là tối ưu một hàm mục tiêu Sếp **không** chịu. Chỉ có
+**hai** ràng buộc thật, cả hai đều không phải tiền:
 
-| Loại | Request | Quy đổi | % |
-|---|---|---|---|
-| Subagent (`isSidechain`, gồm cả Workflow) | 11.261 | 196,3 tr | 17,5% |
-| **Worktree** (phiên riêng, dễ bỏ sót) | 4.341 | 248,0 tr | 22,1% |
-| **TỔNG FAN-OUT** | | **444,3 tr** | **39,5%** |
-| Việc chính (main thread) | 12.103 | 679,3 tr | 60,5% |
+1. **Trần context 1.000.000** — đâm vào là mất việc (luật 1).
+2. **Hạn mức riêng của Fable** — pool chật nhất (luật 2).
 
-**86% fan-out đang chạy Opus.** Con số "85%" đo 31/07 vẫn quá cao, nhưng 17,5% đo lần đầu thì quá
-thấp — nó **bỏ sót Worktree**, vì worktree chạy thành phiên riêng ở thư mục riêng, không mang cờ
-`isSidechain`. Số đúng là **39,5%**. Đây là đòn bẩy **thứ hai**, không phải thứ nhất cũng không phải thứ ba.
+## 1. Đừng đâm vào trần 1M
 
-| Dùng cho | `subagent_type` | Model |
+Context tối đa **1.000.000 token**. Phiên `5a4a5833` từng chạy tới **997.910** — cách trần đúng
+2.090 token. Ở mức đó **`/compact` KHÔNG chạy được**: nén cần chỗ trống để chứa bản tóm tắt, mà
+không còn chỗ nào. Phiên chạm trần = không nén được, không làm tiếp được; chưa chốt trạng thái
+thì **mất việc thật**.
+
+**Ngưỡng: 🟢 dưới 400k · 🟡 400–700k tính chuyện nén · 🔴 trên 700k nén trước khi quá muộn.**
+
+Đây **không** phải ngưỡng tiết kiệm tiền. Ngưỡng 150k ở bản trước là sai — nó bắt nén 20–50 lần
+mỗi phiên để đổi lấy khoản tiết kiệm không tồn tại. 400k/700k vẫn chừa 300k đệm trước tường mà
+chỉ phải nén 4–10 lần.
+
+Nén tại chỗ bằng `/compact`, **không cần mở cửa sổ mới** (`claude -c`, `--resume`, `--fork-session`).
+Chốt trạng thái ra file TRƯỚC khi nén — tự-nén là *lossy*.
+
+Phiên đã quá trần thì `/compact` vô dụng: dùng `~/.claude/cong-cu/trich-trang-thai.py`, nó đọc
+transcript thẳng từ đĩa nên không vướng trần.
+
+Kiểm tra: `python3 ~/.claude/cong-cu/dang-chay.py`
+
+## 2. Fable là pool chật — ĐỪNG đẩy fan-out sang đó theo phản xạ
+
+Subagent **kế thừa model của phiên cha**. Không chỉ định thì chạy Opus hết. Fan-out chiếm 39,5%
+lượng token (17,5% subagent + 22,1% **worktree** — worktree chạy thành phiên riêng, không mang cờ
+`isSidechain` nên rất dễ đếm sót).
+
+Nhưng **Opus 5 ở mức high/max chưa bao giờ chạm trần, còn Fable 5.1 thì chớp mắt là chạm** —
+Fable có hạn mức tuần RIÊNG và chật hơn nhiều. Hạ bậc fan-out sang Fable là **chuyển tải từ pool
+rộng sang pool chật**: tối ưu ngược.
+
+| Dùng cho | Model | Vì sao |
 |---|---|---|
-| Quét / kiểm kê / đo đếm / tìm file | **`scout`** | haiku |
-| Phản biện / verify / red-team / panel | **`judge`** | fable |
-| Tổng hợp, phán quyết cuối | mặc định | opus |
+| Quét / kiểm kê / tìm file | `scout` (haiku) | rẻ, tính vào pool chung |
+| Phản biện / verify | **cân nhắc** — `judge` (fable) ăn vào pool chật nhất |
+| Việc chính, tổng hợp, fan-out nặng | opus | pool rộng, chưa từng chạm trần |
 
-Trong Workflow: `agent(prompt, {agentType:'scout'})` hoặc `{model:'fable'}`.
-Preamble dùng chung **≤300 token** — để agent tự đọc file, đừng nhồi tài liệu vào prompt từng
-agent (nhồi 2.000 token × 58 agent là nguyên nhân cache-ghi nổ 6,2×).
+Preamble dùng chung **≤300 token** — để agent tự đọc file, đừng nhồi tài liệu vào prompt từng agent.
 
-Workflow là thứ đắt nhất. Cân nhắc trước khi chạy; **không chạy 3 lần một ngày**.
+## 2b. Vỡ cache — chuyện nhỏ, nhưng tránh được thì tránh
 
-## 2. Phiên khổng lồ — ĐÒN BẨY SỐ 1 — và KHÔNG BAO GIỜ đề nghị Sếp mở cửa sổ mới
-
-Đo 22/09/2026: **8 phiên trên tổng 1.138 (0,7% số phiên) ngốn 74,3% toàn bộ chi phí.**
-Phiên lớn nhất một mình chiếm **31%** — 6.216 request, context trung bình ~575k. Cả 8 phiên đều
-chạy 500–730k. Tiền chảy ở đây, không phải ở fan-out.
-
-Sếp rất ngại mở cửa sổ mới, và **không cần**: `/compact` nén tại chỗ, cùng cửa sổ, giữ nguyên
-mạch việc. Phiên cũ không mất (`claude -c`, `--resume`, `--fork-session`).
-
-**Ngưỡng cứng: context vượt ~150k thì chốt trạng thái vào file TRƯỚC, rồi `/compact` ngay.**
-Mạch việc phải nằm ở file, không nằm ở lịch sử chat — trí tuệ model không phải ràng buộc; context
-có trần và **mỗi request đọc lại toàn bộ**. Phiên 940k đắt ~9× phiên 100k cho cùng câu hỏi, và
-tự-nén là **lossy** nên phiên vô hạn còn *nhớ tệ dần*.
-
-## 2b. Không làm vỡ cache — đòn bẩy số 2 (12,5%)
-
-Cache tự động trúng **97,3%**, đã cắt sẵn ~87% chi phí đầu vào — harness lo phần này rất tốt,
-không cần cấu hình gì. Nhưng **352 lần vỡ cache** đã ghi lại 111,7 triệu token = **12,5% tổng**;
-cú lớn nhất ghi lại **926.955 token trong MỘT request**.
-
-Vỡ cache = sửa phần ĐẦU prompt (system prompt + danh sách tool). Đo trong phiên thật 22/09:
-
-- ⛔ **Đổi model giữa phiên** — thủ phạm đã xác nhận: một lần `/model` ghi lại 69k. Ở phiên
-  nặng 500k thì mất ~500k. **Chọn model từ đầu phiên.**
-- ⛔ **Bật/tắt MCP server hoặc skill giữa chừng** — danh sách tool nằm ở đầu prompt, đụng là vỡ.
-- ✅ **Sửa nội dung `CLAUDE.md` hay file `.md` khi phiên đang chạy — KHÔNG vỡ.** Đo 2 lần đổi
-  file trong cùng một phiên: request kế tiếp chỉ ghi 82–732 token. Nội dung đổi được nhét vào
-  CUỐI hội thoại chứ không phải đầu prompt. Cứ sửa thoải mái, không cần đợi task chạy xong.
-
-Luật 2 và 2b nhân nhau: vỡ ở phiên 100k mất 100k, vỡ ở phiên 926k mất 926k. Cắt phiên nhỏ lại
-thì vỡ cache cũng tự rẻ đi.
+⛔ `/model` giữa phiên và bật/tắt MCP làm ghi lại toàn bộ context (đo được 69k ở phiên nhỏ; ở
+phiên 900k sẽ là ~900k). **Chọn model từ đầu phiên.**
+✅ Sửa file `.md` khi phiên đang chạy thì **KHÔNG vỡ** — đã đo 2 lần, request kế tiếp chỉ ghi
+82–732 token. Cứ sửa thoải mái, không cần đợi task xong.
 
 ## 3. Không đẩy việc lên Sếp
 
