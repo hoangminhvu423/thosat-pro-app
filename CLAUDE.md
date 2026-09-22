@@ -48,11 +48,14 @@ Cache tự động trúng **97,3%**, đã cắt sẵn ~87% chi phí đầu vào 
 không cần cấu hình gì. Nhưng **352 lần vỡ cache** đã ghi lại 111,7 triệu token = **12,5% tổng**;
 cú lớn nhất ghi lại **926.955 token trong MỘT request**.
 
-Vỡ cache = sửa phần ĐẦU prompt. Ba nguyên nhân, đều tránh được:
+Vỡ cache = sửa phần ĐẦU prompt (system prompt + danh sách tool). Đo trong phiên thật 22/09:
 
-- **Đổi model giữa phiên** → chọn model từ đầu, không `/model` giữa chừng.
-- **Sửa `CLAUDE.md`/skill khi đang có phiên chạy** → sửa xong rồi mới mở phiên.
-- **Nạp thêm MCP server / skill giữa chừng** → bật sẵn từ đầu.
+- ⛔ **Đổi model giữa phiên** — thủ phạm đã xác nhận: một lần `/model` ghi lại 69k. Ở phiên
+  nặng 500k thì mất ~500k. **Chọn model từ đầu phiên.**
+- ⛔ **Bật/tắt MCP server hoặc skill giữa chừng** — danh sách tool nằm ở đầu prompt, đụng là vỡ.
+- ✅ **Sửa nội dung `CLAUDE.md` hay file `.md` khi phiên đang chạy — KHÔNG vỡ.** Đo 2 lần đổi
+  file trong cùng một phiên: request kế tiếp chỉ ghi 82–732 token. Nội dung đổi được nhét vào
+  CUỐI hội thoại chứ không phải đầu prompt. Cứ sửa thoải mái, không cần đợi task chạy xong.
 
 Luật 2 và 2b nhân nhau: vỡ ở phiên 100k mất 100k, vỡ ở phiên 926k mất 926k. Cắt phiên nhỏ lại
 thì vỡ cache cũng tự rẻ đi.
